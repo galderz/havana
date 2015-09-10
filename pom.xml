@@ -1,31 +1,32 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>java.g</groupId>
-  <artifactId>java.g</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
+   <groupId>java.g</groupId>
+   <artifactId>java.g</artifactId>
+   <version>1.0-SNAPSHOT</version>
+   <packaging>jar</packaging>
 
-  <name>java.g</name>
-  <url>http://maven.apache.org</url>
+   <name>java.g</name>
+   <url>http://maven.apache.org</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+   <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+   </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>io.reactivex</groupId>
-      <artifactId>rxjava</artifactId>
-      <version>1.0.8</version>
-    </dependency>
-     <dependency>
-        <groupId>com.higherfrequencytrading</groupId>
-        <artifactId>chronicle</artifactId>
-        <version>1.9.1</version>
-     </dependency>
-  </dependencies>
+   <dependencies>
+      <dependency>
+         <groupId>io.reactivex</groupId>
+         <artifactId>rxjava</artifactId>
+         <version>1.0.8</version>
+      </dependency>
+      <dependency>
+         <groupId>com.higherfrequencytrading</groupId>
+         <artifactId>chronicle</artifactId>
+         <version>1.9.1</version>
+      </dependency>
+   </dependencies>
 
    <build>
       <plugins>
