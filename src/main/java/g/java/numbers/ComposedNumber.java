@@ -17,6 +17,10 @@ public class ComposedNumber {
 //      System.out.println(Test.values()[2]);
 //      System.out.println(type >> 12);
 //      System.out.println((type | id) & 0x0FFF);
+
+      System.out.println(0x05 & 0x10);
+      System.out.println(0x11 & 0x10);
+      System.out.println(0x81 & 0x10);
    }
 
    enum Test {
