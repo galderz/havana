@@ -40,7 +40,7 @@ public final class BytesDataOutput implements DataOutput {
 
    @Override
    public void write(byte[] b) {
-      write(b);
+      write(bytes, 0, bytes.length);
    }
 
    @Override
@@ -57,49 +57,74 @@ public final class BytesDataOutput implements DataOutput {
 
    @Override
    public void writeShort(int v) {
-      writeByte((byte) (v >> 8));
-      writeByte((byte) v);
+      int newcount = checkCapacity(2);
+      final int s = count;
+      bytes[s] = (byte) (v >> 8);
+      bytes[s+1] = (byte) v;
+      count = newcount;
    }
 
    @Override
    public void writeChar(int v) {
-      writeByte((byte) (v >> 8));
-      writeByte((byte) v);
+      int newcount = checkCapacity(2);
+      final int s = count;
+      bytes[s] = (byte) (v >> 8);
+      bytes[s+1] = (byte) v;
+      count = newcount;
    }
 
    @Override
    public void writeInt(int v) {
-      writeByte((byte) (v >> 24));
-      writeByte((byte) (v >> 16));
-      writeByte((byte) (v >> 8));
-      writeByte((byte) v);
+      int newcount = checkCapacity(4);
+      final int s = count;
+      bytes[s] = (byte) (v >> 24);
+      bytes[s+1] = (byte) (v >> 16);
+      bytes[s+2] = (byte) (v >> 8);
+      bytes[s+3] = (byte) v;
+      count = newcount;
    }
 
    @Override
    public void writeLong(long v) {
-      writeByte((byte) (v >> 56L));
-      writeByte((byte) (v >> 48L));
-      writeByte((byte) (v >> 40L));
-      writeByte((byte) (v >> 32L));
-      writeByte((byte) (v >> 24L));
-      writeByte((byte) (v >> 16L));
-      writeByte((byte) (v >> 8L));
-      writeByte((byte) v);
+      int newcount = checkCapacity(8);
+      final int s = count;
+      bytes[s] = (byte) (v >> 56L);
+      bytes[s+1] = (byte) (v >> 48L);
+      bytes[s+2] = (byte) (v >> 40L);
+      bytes[s+3] = (byte) (v >> 32L);
+      bytes[s+4] = (byte) (v >> 24L);
+      bytes[s+5] = (byte) (v >> 16L);
+      bytes[s+6] = (byte) (v >> 8L);
+      bytes[s+7] = (byte) v;
+      count = newcount;
    }
 
    @Override
    public void writeFloat(float v) {
       final int bits = Float.floatToIntBits(v);
-      writeByte((byte) (bits >> 24));
-      writeByte((byte) (bits >> 16));
-      writeByte((byte) (bits >> 8));
-      writeByte((byte) bits);
+      int newcount = checkCapacity(4);
+      final int s = count;
+      bytes[s] = (byte) (bits >> 24);
+      bytes[s+1] = (byte) (bits >> 16);
+      bytes[s+2] = (byte) (bits >> 8);
+      bytes[s+3] = (byte) bits;
+      count = newcount;
    }
 
    @Override
    public void writeDouble(double v) {
       final long bits = Double.doubleToLongBits(v);
-      writeLong(bits);
+      int newcount = checkCapacity(8);
+      final int s = count;
+      bytes[s] = (byte) (bits >> 56L);
+      bytes[s+1] = (byte) (bits >> 48L);
+      bytes[s+2] = (byte) (bits >> 40L);
+      bytes[s+3] = (byte) (bits >> 32L);
+      bytes[s+4] = (byte) (bits >> 24L);
+      bytes[s+5] = (byte) (bits >> 16L);
+      bytes[s+6] = (byte) (bits >> 8L);
+      bytes[s+7] = (byte) bits;
+      count = newcount;
    }
 
    @Override
