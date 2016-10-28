@@ -11,5 +11,8 @@ public class Bitwise {
       //...
       System.out.println("2 ^ 55: " + Math.pow(2, 55));
       System.out.println("Hex: " + 0x80000000000002L);
+
+      System.out.println(0x40000000 | 1000);
+      System.out.println(0x4FFFFFFF);
    }
 }
