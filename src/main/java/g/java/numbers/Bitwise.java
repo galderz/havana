@@ -14,5 +14,9 @@ public class Bitwise {
 
       System.out.println(0x40000000 | 1000);
       System.out.println(0x4FFFFFFF);
+
+      System.out.println(0 | 0x01);
+      System.out.println(0 | 0x02);
+      System.out.println(1 | 0x02);
    }
 }
