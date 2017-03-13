@@ -5,14 +5,12 @@ import org.infinispan.test.SerializableTestPojo;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Comparator;
-import java.util.SortedMap;
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExternallyMarshallableViaMap {
 
-   private static final TreeSet<String> whiteListClasses =
-         new TreeSet<>(new ContainsComparator());
+   private static final List<String> whiteListClasses = new ArrayList<>();
 
    static {
       whiteListClasses.add("Exception");
@@ -86,51 +84,7 @@ public class ExternallyMarshallableViaMap {
    }
 
    private static boolean isWhiteList(String className) {
-      return whiteListClasses.contains(className);
-//      return className.endsWith("Exception")
-//            || className.contains("$$Lambda$")
-//            || className.equals("java.lang.Class")
-//            || className.equals("java.time.Instant") // prod
-//            || className.startsWith("org.hibernate.cache") // prod
-//            || className.equals("org.hibernate.search.query.engine.impl.LuceneHSQuery") // prod
-//            || className.equals("org.infinispan.distexec.RunnableAdapter") // prod
-//            || className.equals("org.infinispan.jcache.annotation.DefaultCacheKey") // prod
-//            || className.equals("org.infinispan.query.clustered.QueryResponse") // prod
-//            || className.equals("org.infinispan.server.core.transport.NettyTransport$ConnectionAdderTask") // prod
-//            || className.equals("org.infinispan.server.hotrod.CheckAddressTask") // prod
-//            || className.equals("org.infinispan.server.infinispan.task.DistributedServerTask") // prod
-//            || className.equals("org.infinispan.scripting.impl.DataType") // prod
-//            || className.equals("org.infinispan.scripting.impl.DistributedScript")
-//            || className.equals("org.infinispan.stats.impl.ClusterCacheStatsImpl$DistributedCacheStatsCallable") // prod
-//            || className.equals("org.infinispan.xsite.BackupSender$TakeSiteOfflineResponse") // prod
-//            || className.equals("org.infinispan.xsite.BackupSender$BringSiteOnlineResponse") // prod
-//            || className.equals("org.infinispan.xsite.XSiteAdminCommand$Status") // prod
-//            || className.equals("org.infinispan.util.logging.events.EventLogLevel") // prod
-//            || className.equals("org.infinispan.util.logging.events.EventLogCategory") // prod
-//            || className.equals("java.util.Date") // test
-//            || className.equals("java.lang.Byte") // test
-//            || className.equals("java.lang.Integer") // test
-//            || className.equals("java.lang.Double") // test
-//            || className.equals("java.lang.Short") // test
-//            || className.equals("java.lang.Long") // test
-//            || className.startsWith("org.infinispan.test") // test
-//            || className.startsWith("org.infinispan.server.test") // test
-//            || className.startsWith("org.infinispan.it") // test
-//            || className.startsWith("org.infinispan.all") // test
-//            || className.contains("org.jboss.as.quickstarts.datagrid") // quickstarts testing
-//            ;
-   }
-
-   static final class ContainsComparator implements Comparator<String> {
-
-      @Override
-      public int compare(String o1, String o2) {
-         if (o1.contains(o2))
-            return 0;
-         else
-            return o1.compareTo(o2);
-      }
-
+      return whiteListClasses.stream().anyMatch(className::contains);
    }
 
    public static void main(String[] args) {
