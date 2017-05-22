@@ -29,6 +29,15 @@ public class Optionals {
                .orElseGet(() -> 10);
          assert i2 == 10;
       }
+      {
+         // Same as map, except g returns Option
+         Optional<Integer> o1 = Optional.of(0)
+               .flatMap(x -> Optional.of(1));
+         assert Optional.of(1).equals(o1);
+         Optional<Integer> o2 = Optional.empty()
+               .flatMap(x -> Optional.of(1));
+         assert Optional.empty().equals(o2);
+      }
    }
 
 }
