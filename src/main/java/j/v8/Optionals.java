@@ -11,6 +11,13 @@ public class Optionals {
          Optional<Integer> o2 = o1.map(x -> x + 1);
          assert Optional.of(1).equals(o2);
       }
+      {
+         // Retrieves its content or a default value
+         String s1 = Optional.of("a").orElseGet(() -> "b");
+         assert s1.equals("a");
+         String s2 = Optional.<String>empty().orElseGet(() -> "b");
+         assert s2.equals("b");
+      }
    }
 
 }
