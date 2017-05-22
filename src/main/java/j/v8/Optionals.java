@@ -30,7 +30,7 @@ public class Optionals {
          assert i2 == 10;
       }
       {
-         // Same as map, except g returns Option
+         // Same as map, except g returns Optional
          Optional<Integer> o1 = Optional.of(0)
                .flatMap(x -> Optional.of(1));
          assert Optional.of(1).equals(o1);
@@ -39,7 +39,7 @@ public class Optionals {
          assert Optional.empty().equals(o2);
       }
       {
-         // Same as orElse/orElseGet, but returns an Option
+         // Same as orElse/orElseGet, but takes in an Optional
          // Useful to select the first valid option from a selection of possible choices.
          Optional<String> o1 = Optional.of("1");
          Optional<String> o2 = Optional.of("2");
@@ -48,6 +48,15 @@ public class Optionals {
          Optional<String> user = Optional.empty();
          // user.orElse(o1).orElse(o2).orElse(o3);
          // ^ Not available in Java
+      }
+      {
+         // Turns a Some into None if its content does not conform to p
+         Optional<Integer> o1 = Optional.of(1).filter(x -> x > 0);
+         assert Optional.of(1).equals(o1);
+         Optional<Integer> o2 = Optional.of(0).filter(x -> x > 0);
+         assert Optional.empty().equals(o2);
+         Optional<Integer> o3 = Optional.<Integer>empty().filter(x -> x > 0);
+         assert Optional.empty().equals(o3);
       }
    }
 
