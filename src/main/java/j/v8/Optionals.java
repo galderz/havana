@@ -38,6 +38,17 @@ public class Optionals {
                .flatMap(x -> Optional.of(1));
          assert Optional.empty().equals(o2);
       }
+      {
+         // Same as orElse/orElseGet, but returns an Option
+         // Useful to select the first valid option from a selection of possible choices.
+         Optional<String> o1 = Optional.of("1");
+         Optional<String> o2 = Optional.of("2");
+         Optional<String> o3 = Optional.of("3");
+
+         Optional<String> user = Optional.empty();
+         // user.orElse(o1).orElse(o2).orElse(o3);
+         // ^ Not available in Java
+      }
    }
 
 }
