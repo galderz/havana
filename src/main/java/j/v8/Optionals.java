@@ -18,6 +18,17 @@ public class Optionals {
          String s2 = Optional.<String>empty().orElseGet(() -> "b");
          assert s2.equals("b");
       }
+      {
+         // Apply f and get its content or get default value
+         Integer i1 = Optional.of(0)
+               .map(x -> x + 1)
+               .orElseGet(() -> 10);
+         assert i1 == 1;
+         Integer i2 = Optional.<Integer>empty()
+               .map(x -> x + 1)
+               .orElseGet(() -> 10);
+         assert i2 == 10;
+      }
    }
 
 }
