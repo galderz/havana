@@ -9,7 +9,7 @@ public class InnerGenerics {
       //foo(bar); // <- does not compile :-(
 
       Supplier<? extends A<?>> bar2 = () -> new A<>();
-      foo2(bar2); // compiles
+      //foo2(bar2); // <- still does not compile :-(
    }
 
    static class A<T> {}
