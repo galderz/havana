@@ -12,6 +12,9 @@ public class StringJoiners {
             .collect(Collectors.joining("\", \"", "[\"", "\"]"));
       System.out.println(commaSeparatedNumbers);
 
+      String carriageReturnSeparated = strs.stream()
+         .collect(Collectors.joining("\n"));
+      System.out.println(carriageReturnSeparated);
    }
 
 }
