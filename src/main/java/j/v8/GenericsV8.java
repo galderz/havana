@@ -48,7 +48,7 @@ public class GenericsV8 {
    private static List<Map.Entry<Integer, String>> supplierCollectMethodRef(ExtendedSet<Map.Entry<Integer, String>> entrySet) {
       return entrySet.stream().sorted(
          (e1, e2) -> Integer.compare(e1.getKey(), e2.getKey())).collect(
-         Collectors::toList);
+         Collectors::<Map.Entry<Integer, String>>toList);
    }
 
    private static List<Map.Entry<Integer, String>> helperCollect(ExtendedSet<Map.Entry<Integer, String>> entrySet) {
