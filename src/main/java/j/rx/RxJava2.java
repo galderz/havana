@@ -12,7 +12,7 @@ public class RxJava2 {
       flowable.subscribe(new Subscriber<Integer>() {
          @Override public void onSubscribe(Subscription s) {
             // IMPORTANT: Required
-            //s.request(Long.MAX_VALUE);
+            s.request(Long.MAX_VALUE);
          }
 
          @Override
