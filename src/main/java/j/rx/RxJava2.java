@@ -4,10 +4,17 @@ import io.reactivex.Flowable;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 public class RxJava2 {
 
    public static void main(String[] args) {
       final Flowable<Integer> flowable = Flowable.fromArray(1, 2, 3);
+
+      CompletableFuture<String> future = new CompletableFuture<>();
 
       flowable.subscribe(new Subscriber<Integer>() {
          @Override public void onSubscribe(Subscription s) {
@@ -25,16 +32,17 @@ public class RxJava2 {
          @Override
          public void onComplete() {
             System.out.println("Complete");
+            future.complete("Complete");
          }
       });
 
-//      flowable.subscribe(
-//         name -> System.out.println(name)
-//      );
-
       try {
-         Thread.sleep(10000);
+         future.get(5, TimeUnit.SECONDS);
       } catch (InterruptedException e) {
+         e.printStackTrace();  // TODO: Customise this generated block
+      } catch (ExecutionException e) {
+         e.printStackTrace();  // TODO: Customise this generated block
+      } catch (TimeoutException e) {
          e.printStackTrace();  // TODO: Customise this generated block
       }
    }
