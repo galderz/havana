@@ -12,6 +12,7 @@ public class Nashorn {
          ScriptEngine engine = new ScriptEngineManager().getEngineByName("js");
          Bindings obj = (Bindings) engine.eval(
             "var obj = { k: 1, v: 2}\n  obj");
+         System.out.println(obj.toString());
          Integer key = (Integer) obj.get("k");
          Integer value = (Integer) obj.get("v");
          System.out.println(key); // prints: 1
