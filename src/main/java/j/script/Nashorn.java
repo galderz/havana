@@ -17,6 +17,13 @@ public class Nashorn {
          System.out.println(key); // prints: 1
          System.out.println(value); // prints: 1
       }
+
+      {
+         ScriptEngine engine = new ScriptEngineManager().getEngineByName("js");
+         String result = (String) engine.eval(
+            "var obj = { k: 1, v: 2}\n  JSON.stringify(obj)");
+         System.out.println(result);
+      }
    }
 
 }
