@@ -9,7 +9,42 @@ public class FunctionExceptionHandling {
       // happyPath();
 
       // If second throws an exception, third is not called
-      unhappyPath();
+      // unhappyPath();
+
+      happyfierPath();
+   }
+
+   private static void happyfierPath() {
+      Function<String, Integer> first = s -> {
+         System.out.println("Called first");
+         return Integer.parseInt(s);
+      };
+
+      Function<Integer, Integer> second = i -> {
+         System.out.println("Called second");
+         throw new RuntimeException("boo");
+      };
+
+      Function<Integer, Object[]> happyfier = i -> {
+         try {
+            return new Object[]{second.apply(i)};
+         } catch (Throwable t) {
+            return new Object[]{i, t};
+         }
+      };
+
+      Function<Object[], String> third = obj -> {
+         System.out.println("Called third");
+         
+         if (obj.length > 0) {
+            final Throwable t = (Throwable) obj[1];
+            throw new AssertionError(t);
+         }
+
+         return String.valueOf(obj[0]);
+      };
+
+      System.out.println(first.andThen(happyfier).andThen(third).apply("1"));
    }
 
    private static void unhappyPath() {
