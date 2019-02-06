@@ -12,7 +12,6 @@ public class ControlFlowPoet {
    public static void main(String[] args) throws Exception {
       MethodSpec main = MethodSpec.methodBuilder("main")
          .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-         .returns(void.class)
          .addParameter(String[].class, "args")
          .addStatement("long now = $T.currentTimeMillis()", System.class)
          .beginControlFlow("if ($T.currentTimeMillis() < now) ", System.class)
