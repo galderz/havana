@@ -23,7 +23,7 @@ public class HelloWorldPoet {
          .addMethod(main)
          .build();
 
-      JavaFile javaFile = JavaFile.builder("j.poet", helloWorld)
+      JavaFile javaFile = JavaFile.builder("j.poet.gen", helloWorld)
          .build();
 
       //javaFile.writeTo(System.out);

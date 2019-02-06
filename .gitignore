@@ -12,3 +12,5 @@ target
 *.ipr
 *.iws
 .idea
+# generated class folder
+gen
