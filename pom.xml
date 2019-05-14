@@ -13,6 +13,7 @@
         <module>sandbox</module>
         <module>jmh</module>
         <module>quarkus-getting-started</module>
+        <module>aeron</module>
     </modules>
 
 </project>
