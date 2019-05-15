@@ -58,6 +58,11 @@
            <artifactId>agrona</artifactId>
            <version>0.9.30</version>
        </dependency>
+       <dependency>
+           <groupId>com.squareup.okhttp3</groupId>
+           <artifactId>okhttp</artifactId>
+           <version>3.14.1</version>
+       </dependency>
    </dependencies>
 
    <build>
