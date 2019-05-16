@@ -13,7 +13,6 @@ import java.util.Set;
 @Path("/country")
 public class CountriesResource {
 
-
    @Inject
    @RestClient
    CountriesService countriesService;
