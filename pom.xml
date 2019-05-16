@@ -14,6 +14,7 @@
         <module>jmh</module>
         <module>quarkus-getting-started</module>
         <module>aeron</module>
+        <module>quarkus-rest-client</module>
     </modules>
 
 </project>
