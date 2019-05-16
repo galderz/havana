@@ -33,6 +33,9 @@ final class CacheStage implements FragmentHandler {
    public void onFragment(DirectBuffer buffer, int offset, int length, Header header) {
       int index = offset;
 
+      int msgId = buffer.getInt(index);
+      index += 4;
+
       byte method = buffer.getByte(index);
       index++;
 
@@ -51,12 +54,17 @@ final class CacheStage implements FragmentHandler {
 
       switch (method) {
          case 0:
-            System.out.printf("putIfAbsent(key=%s, value=%s)", Arrays.toString(key), Arrays.toString(value));
-            bytesCache.putIfAbsent(key, value);
+            System.out.printf("[msgId=%d] putIfAbsent(key=%s, value=%s)%n", msgId, Arrays.toString(key), Arrays.toString(value));
+            boolean success = bytesCache.putIfAbsent(key, value);
+            EventSystem.cacheBridge().sink().complete(success, msgId);
             return;
          default:
             System.err.println("Unexpected method: " + method);
       }
+   }
+
+   public void stop() throws InterruptedException {
+      thread.join();
    }
 
    static final class Sink {
@@ -73,11 +81,13 @@ final class CacheStage implements FragmentHandler {
          buffer = new UnsafeBuffer(byteBuffer);
       }
 
-      void putIfAbsent(byte[] key, byte[] value) {
-         final int length = 1 + 4 + key.length + 4 + value.length;
+      void putIfAbsent(byte[] key, byte[] value, int msgId) {
+         // TODO if offer returns false, don't retry and just send false
 
+         int index = 0;
          do {
-            int index = 0;
+            buffer.putInt(msgId, msgId);
+            index += 4;
 
             buffer.putByte(index, (byte) 0); // put method
             index++;
@@ -92,7 +102,8 @@ final class CacheStage implements FragmentHandler {
             index += 4;
 
             buffer.putBytes(index, value);
-         } while (publication.offer(buffer, 0, length) < 0);
+            index += value.length;
+         } while (publication.offer(buffer, 0, index) < 0);
       }
 
    }

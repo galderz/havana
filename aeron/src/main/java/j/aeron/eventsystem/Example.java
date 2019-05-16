@@ -1,12 +1,14 @@
 package j.aeron.eventsystem;
 
+import org.agrona.concurrent.SigInt;
+
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
+
 public class Example {
 
-   public static void main(String[] args) throws InterruptedException {
-      //final AeronSubscriber subscriber = new AeronSubscriber();
-      //final AeronPublisher publisher = new AeronPublisher();
-
-      final AsyncCache asyncCache = new AsyncCache();
+   public static void main(String[] args) throws InterruptedException, ExecutionException {
+      SigInt.register(() -> Aeron.AERON.running.set(false));
 
       // Not fully an event driven system
       // since there's a requirement to tie in with sync apis.
@@ -14,8 +16,11 @@ public class Example {
       // CacheIn.putIfAbsent returns a CompletionStage
       // CacheOut.complete() returns void
 
-      asyncCache.putIfAbsent("123".getBytes(), "456".getBytes());
-      Thread.sleep(60000);
+      final CompletionStage future = EventSystem.cacheBridge().putIfAbsent("123".getBytes(), "456".getBytes());
+      final boolean success = (boolean) future.toCompletableFuture().get();
+      System.out.println("putIfAbsent: " + success);
+
+      EventSystem.stop();
    }
 
 }

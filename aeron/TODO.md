@@ -1,0 +1,4 @@
+- [ ] Add tests
+- [ ] More operations
+- [ ] Alternatives to CHM in bridge for tracking CFs
+- [ ] Don't retry putIfAbsent if overloaded, just return false

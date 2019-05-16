@@ -6,8 +6,8 @@ public class BytesCache {
 
    private final HashMap<byte[], byte[]> map = new HashMap<>();
 
-    void putIfAbsent(byte[] key, byte[] value) {
-       map.putIfAbsent(key, value);
+    boolean putIfAbsent(byte[] key, byte[] value) {
+       return map.putIfAbsent(key, value) == null;
     }
 
 }

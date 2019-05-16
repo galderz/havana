@@ -24,6 +24,7 @@ enum Aeron {
    }
 
    void stop() {
+      Aeron.AERON.running.set(false);
       aeron.close();
       driver.close();
    }
