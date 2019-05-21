@@ -83,10 +83,6 @@ public class CacheStage implements Runnable, AutoCloseable {
 
          switch (method) {
             case 0:
-               System.out.printf(
-                  "[correlationId=%d] putIfAbsent(key=%s, value=%s)%n",
-                  correlationId, Arrays.toString(key), Arrays.toString(value));
-
                boolean success = store.putIfAbsent(key, value);
                reply.complete(success, correlationId);
                return;

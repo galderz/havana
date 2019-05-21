@@ -25,7 +25,7 @@ public class CacheReply {
 
       buffer = new UnsafeBuffer(byteBuffer);
 
-      retryIdleStrategy = Constants.CACHE_OUT_IDLE_STRATEGY;
+      retryIdleStrategy = Constants.cacheOutIdleStrategy();
       retryAttempts = Constants.REPLY_RETRIES;
    }
 

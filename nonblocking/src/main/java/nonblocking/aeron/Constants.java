@@ -26,12 +26,13 @@ final class Constants {
    static final long MESSAGE_TIMEOUT_NS = TimeUnit.SECONDS.toNanos(5);
 
    // TODO make it configurable
-   static final IdleStrategy CACHE_OUT_IDLE_STRATEGY =
-      new BackoffIdleStrategy(
-         IDLE_MAX_SPINS, IDLE_MAX_YIELDS, IDLE_MIN_PARK_NS, IDLE_MAX_PARK_NS);
-
-   // TODO make it configurable
    static final IdleStrategy CACHE_IN_IDLE_STRATEGY =
       new BackoffIdleStrategy(1, 1, 1, 1);
+
+   // TODO make it configurable
+   static IdleStrategy cacheOutIdleStrategy() {
+      return new BackoffIdleStrategy(
+         IDLE_MAX_SPINS, IDLE_MAX_YIELDS, IDLE_MIN_PARK_NS, IDLE_MAX_PARK_NS);
+   }
 
 }

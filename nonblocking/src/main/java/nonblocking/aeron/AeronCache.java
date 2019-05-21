@@ -1,35 +1,30 @@
 package nonblocking.aeron;
 
-import io.aeron.exceptions.TimeoutException;
+import io.aeron.Subscription;
+import io.aeron.logbuffer.FragmentHandler;
+import io.aeron.logbuffer.Header;
 import nonblocking.BinaryCache;
+import org.agrona.DirectBuffer;
 import org.agrona.LangUtil;
+import org.agrona.collections.MutableInteger;
 import org.agrona.concurrent.IdleStrategy;
 import org.agrona.concurrent.NanoClock;
 
-import java.util.function.Function;
-
+import static io.aeron.Aeron.NULL_VALUE;
 import static nonblocking.aeron.AeronSystem.AERON;
+import static nonblocking.aeron.Constants.CACHE_OUT_STREAM;
+import static nonblocking.aeron.Constants.CHANNEL;
 
 public final class AeronCache implements BinaryCache {
-
-   private static final Function<Long, Boolean> FALSE_ON_DEADLINE = x -> false;
-   private static final Function<Long, Boolean> TIMEOUT_ON_DEADLINE =
-      correlationId -> {
-         throw new TimeoutException("awaiting response - correlationId=" + correlationId);
-      };
 
    private final CacheProxy cacheProxy;
    private final NanoClock nanoClock;
    private final long messageTimeoutNs;
-   private final IdleStrategy idleStrategy;
-   private final ResponsePoller responsePoller;
 
    public AeronCache() {
       this.cacheProxy = new CacheProxy();
       this.nanoClock = AERON.aeron.context().nanoClock();
       this.messageTimeoutNs = Constants.MESSAGE_TIMEOUT_NS;
-      this.idleStrategy = Constants.CACHE_OUT_IDLE_STRATEGY;
-      this.responsePoller = new ResponsePoller();
    }
 
    @Override
@@ -41,95 +36,57 @@ public final class AeronCache implements BinaryCache {
          return false;
 
       // If deadline for wait passed, return false to indicate no put
-      return pollForResponse(correlationId, FALSE_ON_DEADLINE);
+      return pollForResponse(correlationId);
    }
 
-   private <T> T pollForResponse(
-      final long correlationId,
-      final Function<Long, Boolean> deadlineFun) {
+   private boolean pollForResponse(final long correlationId) {
+      try (Subscription subs =
+              AERON.aeron.addSubscription(CHANNEL, CACHE_OUT_STREAM)) {
 
-      final long deadlineNs = nanoClock.nanoTime() + messageTimeoutNs;
-      final ResponsePoller poller = responsePoller;
+         // TODO wrap in image fragment handler? or deal individually?
+         final CorrelatingFragmentHandler handler =
+            new CorrelatingFragmentHandler(correlationId);
 
-      while (true) {
-         final Function<Long, Object> deadlineAction =
-            pollNextResponse(deadlineNs, poller, deadlineFun);
+         final IdleStrategy idleStrategy = Constants.cacheOutIdleStrategy();
 
-         if (deadlineAction != null)
-            return (T) deadlineAction.apply(correlationId);
+         final long deadlineNs = nanoClock.nanoTime() + messageTimeoutNs;
+         do {
+            if (subs.poll(handler, 1) == 0) {
+               if (Thread.interrupted())
+                  LangUtil.rethrowUnchecked(new InterruptedException());
 
-//         if (poller.controlSessionId() != controlSessionId ||
-//            poller.templateId() != ControlResponseDecoder.TEMPLATE_ID) {
-//            invokeAeronClient();
-//            continue;
-//         }
+               if (deadlineNs - nanoClock.nanoTime() < 0)
+                  return false;
 
-         if (poller.correlationId() == correlationId)
-            return (T) poller.result();
+               idleStrategy.idle();
+            }
+         } while (NULL_VALUE == handler.result.intValue());
 
-//         final ControlResponseCode code = poller.code();
-//         if (ControlResponseCode.ERROR == code) {
-//            final ArchiveException ex = new ArchiveException("response for correlationId=" + correlationId +
-//               ", error: " + poller.errorMessage(), (int) poller.relevantId());
-//
-//            if (poller.correlationId() == correlationId) {
-//               throw ex;
-//            } else if (context.errorHandler() != null) {
-//               context.errorHandler().onError(ex);
-//            }
-//         } else if (poller.correlationId() == correlationId) {
-//            if (ControlResponseCode.OK != code) {
-//               throw new ArchiveException("unexpected response code: " + code);
-//            }
-//
-//            return (T) poller.result();
-//         }
+         return handler.result.intValue() == 1;
       }
    }
 
-   private <T> Function<Long, T> pollNextResponse(
-      final long deadlineNs,
-      final ResponsePoller poller,
-      final Function<Long, Boolean> deadlineFun) {
+   static final class CorrelatingFragmentHandler implements FragmentHandler {
 
-      idleStrategy.reset();
+      private final MutableInteger result = new MutableInteger(NULL_VALUE);
+      private final long correlationId;
 
-      while (true) {
-         final int fragments = poller.poll();
-
-         if (poller.isPollComplete()) {
-            break;
-         }
-
-         if (fragments > 0) {
-            continue;
-         }
-
-//         if (!poller.subscription().isConnected()) {
-//            throw new RuntimeException("subscription to cache is not connected");
-//         }
-
-         Function<Long, T> deadlineAction = checkDeadline(deadlineNs, deadlineFun);
-         if (deadlineAction != null)
-            return deadlineAction;
-
-         idleStrategy.idle();
+      CorrelatingFragmentHandler(long correlationId) {
+         this.correlationId = correlationId;
       }
 
-      return null;
-   }
+      @Override
+      public void onFragment(DirectBuffer buffer, int offset, int length, Header header) {
+         int index = offset;
 
-   private <T> Function<Long, T> checkDeadline(
-      final long deadlineNs,
-      final Function<Long, Boolean> deadlineFun) {
+         long id = buffer.getLong(index);
+         index += 8;
 
-      if (Thread.interrupted())
-         LangUtil.rethrowUnchecked(new InterruptedException());
+         if (correlationId == id) {
+            result.set(buffer.getByte(index));
+         }
+      }
 
-      if (deadlineNs - nanoClock.nanoTime() < 0)
-         return (Function<Long, T>) deadlineFun;
-
-      return null;
    }
 
 }
