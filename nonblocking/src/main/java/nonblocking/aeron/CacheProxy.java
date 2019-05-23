@@ -53,6 +53,24 @@ public class CacheProxy {
       return offer(index);
    }
 
+   boolean getOrNull(final byte[] key, final long correlationId) {
+      int index = 0;
+
+      buffer.putLong(index, correlationId);
+      index += 8;
+
+      buffer.putByte(index, (byte) 1); // get method
+      index++;
+
+      buffer.putInt(index, key.length);
+      index += 4;
+
+      buffer.putBytes(index, key);
+      index += key.length;
+
+      return offer(index);
+   }
+
    private boolean offer(final int length) {
       return publication.offer(buffer, 0, length) > 0;
    }

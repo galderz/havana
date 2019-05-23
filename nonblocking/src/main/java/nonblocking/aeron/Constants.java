@@ -20,7 +20,7 @@ final class Constants {
    static final int FRAGMENT_LIMIT = 10;
 
    // TODO make it configurable
-   static final int REPLY_RETRIES = 3;
+   static final int REPLY_ATTEMPTS = 1_000;
 
    // TODO make it configurable
    static final long MESSAGE_TIMEOUT_NS = TimeUnit.SECONDS.toNanos(5);

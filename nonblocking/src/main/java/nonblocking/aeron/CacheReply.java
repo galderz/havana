@@ -2,7 +2,6 @@ package nonblocking.aeron;
 
 import io.aeron.Publication;
 import org.agrona.BufferUtil;
-import org.agrona.concurrent.IdleStrategy;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import java.nio.ByteBuffer;
@@ -10,27 +9,23 @@ import java.nio.ByteBuffer;
 import static nonblocking.aeron.AeronSystem.AERON;
 import static org.agrona.BitUtil.CACHE_LINE_LENGTH;
 
-public class CacheReply {
+class CacheReply {
 
    private final Publication publication;
    private final UnsafeBuffer buffer;
-   private final IdleStrategy retryIdleStrategy;
-   private final int retryAttempts;
 
-   public CacheReply() {
+   CacheReply() {
+      // TODO should be exclusive publication
       publication = AERON.aeron.addPublication(Constants.CHANNEL, Constants.CACHE_OUT_STREAM);
 
       final ByteBuffer byteBuffer = BufferUtil.allocateDirectAligned(
          publication.maxMessageLength(), CACHE_LINE_LENGTH);
 
       buffer = new UnsafeBuffer(byteBuffer);
-
-      retryIdleStrategy = Constants.cacheOutIdleStrategy();
-      retryAttempts = Constants.REPLY_RETRIES;
    }
 
    // TODO use return and maybe log it?
-   boolean complete(boolean success, long correlationId) {
+   boolean completeSuccess(boolean success, long correlationId) {
       int index = 0;
 
       buffer.putLong(index, correlationId);
@@ -42,33 +37,39 @@ public class CacheReply {
       return offer(index);
    }
 
-   private boolean offer(final int length) {
-      retryIdleStrategy.reset();
+   // TODO use return and maybe log it?
+   boolean completeBytes(byte[] bytes, long correlationId) {
+      int index = 0;
 
-      int attempts = retryAttempts;
-      while (true) {
-         final long result = publication.offer(buffer, 0, length);
-         if (result > 0)
-            return true;
+      buffer.putLong(index, correlationId);
+      index += 8;
 
-         if (result == Publication.CLOSED) {
-            throw new RuntimeException("connection to the archive has been closed");
-         }
+      final int length = bytes == null ? 0 : bytes.length;
+      buffer.putInt(index, length);
+      index += 4;
 
-         if (result == Publication.NOT_CONNECTED) {
-            throw new RuntimeException("connection to the archive is no longer available");
-         }
-
-         if (result == Publication.MAX_POSITION_EXCEEDED) {
-            throw new RuntimeException("offer failed due to max position being reached");
-         }
-
-         if (--attempts <= 0) {
-            return false;
-         }
-
-         retryIdleStrategy.idle();
+      if (length > 0) {
+         buffer.putBytes(index, bytes);
+         index += bytes.length;
       }
+
+      return offer(index);
+   }
+
+   private boolean offer(final int length) {
+      int attempts = Constants.REPLY_ATTEMPTS;
+      do {
+         // TODO use tryClaim for small messages (under MTU)
+         final long result = publication.offer(buffer, 0, length);
+         if (result > 0) {
+            return true;
+         }
+      }
+      while (--attempts > 0);
+
+      System.out.println("No attempts left");
+
+      return false;
    }
 
 }

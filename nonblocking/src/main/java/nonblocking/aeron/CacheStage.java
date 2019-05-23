@@ -1,15 +1,13 @@
 package nonblocking.aeron;
 
+import io.aeron.ImageFragmentAssembler;
 import io.aeron.Subscription;
 import io.aeron.logbuffer.FragmentHandler;
 import io.aeron.logbuffer.Header;
 import nonblocking.BinaryStore;
 import org.agrona.DirectBuffer;
 import org.agrona.LangUtil;
-import org.agrona.concurrent.BackoffIdleStrategy;
 import org.agrona.concurrent.IdleStrategy;
-
-import java.util.Arrays;
 
 import static nonblocking.aeron.AeronSystem.AERON;
 import static nonblocking.aeron.Constants.CACHE_IN_STREAM;
@@ -32,8 +30,9 @@ public class CacheStage implements Runnable, AutoCloseable {
    public void run() {
       final IdleStrategy idleStrategy = Constants.CACHE_IN_IDLE_STRATEGY;
 
-      // TODO wrap
-      final FragmentHandler fragmentHandler = new CacheFragmentHandler();
+      // Requests could have arbitrary length, so wait for complete requests
+      final FragmentHandler fragmentHandler =
+         new ImageFragmentAssembler(new CacheFragmentHandler());
 
       try {
          while (AERON.running.get()) {
@@ -68,6 +67,18 @@ public class CacheStage implements Runnable, AutoCloseable {
          byte method = buffer.getByte(index);
          index++;
 
+         switch (method) {
+            case 0:
+               putIfAbsent(correlationId, buffer, index);
+               break;
+            case 1:
+               getOrNull(correlationId, buffer, index);
+               break;
+         }
+
+      }
+
+      private void putIfAbsent(long correlationId, DirectBuffer buffer, int index) {
          int keyLength = buffer.getInt(index);
          index += 4;
 
@@ -81,14 +92,20 @@ public class CacheStage implements Runnable, AutoCloseable {
          byte[] value = new byte[valueLength];
          buffer.getBytes(index, value, 0, value.length);
 
-         switch (method) {
-            case 0:
-               boolean success = store.putIfAbsent(key, value);
-               reply.complete(success, correlationId);
-               return;
-            default:
-               System.err.println("Unexpected method: " + method);
-         }
+         boolean success = store.putIfAbsent(key, value);
+         reply.completeSuccess(success, correlationId);
+      }
+
+      private void getOrNull(long correlationId, DirectBuffer buffer, int index) {
+         int keyLength = buffer.getInt(index);
+         index += 4;
+
+         byte[] key = new byte[keyLength];
+         buffer.getBytes(index, key, 0, key.length);
+         index += key.length;
+
+         final byte[] value = store.getOrNull(key);
+         reply.completeBytes(value, correlationId);
       }
 
    }

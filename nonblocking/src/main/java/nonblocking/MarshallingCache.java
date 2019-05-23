@@ -7,4 +7,9 @@ final class MarshallingCache implements Cache {
       return false;  // TODO: Customise this generated block
    }
 
+   @Override
+   public Object getOrNull(Object key) {
+      return null;  // TODO: Customise this generated block
+   }
+
 }

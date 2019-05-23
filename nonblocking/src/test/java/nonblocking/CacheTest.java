@@ -1,8 +1,9 @@
 package nonblocking;
 
-import nonblocking.aeron.AeronCache;
 import org.junit.Test;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class CacheTest {
@@ -10,7 +11,10 @@ public class CacheTest {
    @Test
    public void testPutIfAbsent() {
       BinaryCache cache = new Caches().cache();
-      assertTrue(cache.putIfAbsent(new byte[]{1, 2, 3}, new byte[]{4, 5, 6}));
+      final byte[] key = {1, 2, 3};
+      assertNull(cache.getOrNull(key));
+      assertTrue(cache.putIfAbsent(key, new byte[]{4, 5, 6}));
+      assertArrayEquals(new byte[]{4, 5, 6}, cache.getOrNull(key));
    }
 
 }
