@@ -7,31 +7,33 @@ import org.agrona.concurrent.NoOpIdleStrategy;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public enum AeronSystem implements AutoCloseable {
+public enum AeronSystem implements AutoCloseable
+{
+    AERON;
 
-   AERON;
+    // TODO volatile?
+    final AtomicBoolean running = new AtomicBoolean(true);
+    final Aeron aeron;
 
-   // TODO volatile?
-   final AtomicBoolean running = new AtomicBoolean(true);
-   final Aeron aeron;
+    private final MediaDriver driver;
 
-   private final MediaDriver driver;
+    AeronSystem()
+    {
+        final MediaDriver.Context ctx = new MediaDriver.Context()
+            .threadingMode(ThreadingMode.SHARED)
+            .dirDeleteOnStart(true)
+            .sharedIdleStrategy(new NoOpIdleStrategy());
 
-   AeronSystem() {
-      final MediaDriver.Context ctx = new MediaDriver.Context()
-         .threadingMode(ThreadingMode.SHARED)
-         .dirDeleteOnStart(true)
-         .sharedIdleStrategy(new NoOpIdleStrategy());
+        driver = MediaDriver.launch(ctx);
+        aeron = io.aeron.Aeron.connect();
+    }
 
-      driver = MediaDriver.launch(ctx);
-      aeron = io.aeron.Aeron.connect();
-   }
-
-   @Override
-   public void close() {
-      AERON.running.set(false);
-      aeron.close();
-      driver.close();
-   }
+    @Override
+    public void close()
+    {
+        AERON.running.set(false);
+        aeron.close();
+        driver.close();
+    }
 
 }

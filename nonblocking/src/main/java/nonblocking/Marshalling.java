@@ -10,66 +10,83 @@ import java.io.ObjectOutputStream;
 import java.nio.charset.Charset;
 import java.util.function.Function;
 
-interface Marshalling {
+interface Marshalling
+{
 
-   Function<Object, byte[]> marshall();
+    Function<Object, byte[]> marshall();
 
-   Function<byte[], Object> unmarshall();
+    Function<byte[], Object> unmarshall();
 
-   Marshalling JAVA = new JavaMarshalling();
-   Marshalling UTF8 = new StringMarshalling();
+    Marshalling JAVA = new JavaMarshalling();
+    Marshalling UTF8 = new StringMarshalling();
 
-   final class JavaMarshalling implements Marshalling {
+    final class JavaMarshalling implements Marshalling
+    {
 
-      private JavaMarshalling() {
-      }
+        private JavaMarshalling()
+        {
+        }
 
-      @Override
-      public Function<Object, byte[]> marshall() {
-         return obj -> {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            try (ObjectOutput oo = new ObjectOutputStream(baos)) {
-               oo.writeObject(obj);
-               return baos.toByteArray();
-            } catch (IOException e) {
-               throw new RuntimeException(e);
-            }
-         };
-      }
+        @Override
+        public Function<Object, byte[]> marshall()
+        {
+            return obj ->
+            {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                try (ObjectOutput oo = new ObjectOutputStream(baos))
+                {
+                    oo.writeObject(obj);
+                    return baos.toByteArray();
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            };
+        }
 
-      @Override
-      public Function<byte[], Object> unmarshall() {
-         return bytes -> {
-            if (bytes == null)
-               return null;
+        @Override
+        public Function<byte[], Object> unmarshall()
+        {
+            return bytes ->
+            {
+                if (bytes == null) return null;
 
-            try (ObjectInput oi = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
-               return oi.readObject();
-            } catch (Exception e) {
-               throw new RuntimeException(e);
-            }
-         };
-      }
+                try (ObjectInput oi =
+                         new ObjectInputStream(new ByteArrayInputStream(bytes)))
+                {
+                    return oi.readObject();
+                }
+                catch (Exception e)
+                {
+                    throw new RuntimeException(e);
+                }
+            };
+        }
 
-   }
+    }
 
-   final class StringMarshalling implements Marshalling {
+    final class StringMarshalling implements Marshalling
+    {
 
-      private static Charset UTF8 = Charset.forName("UTF-8");
+        private static Charset UTF8 = Charset.forName("UTF-8");
 
-      private StringMarshalling() {
-      }
+        private StringMarshalling()
+        {
+        }
 
-      @Override
-      public Function<Object, byte[]> marshall() {
-         return obj -> obj == null ? null : ((String) obj).getBytes(UTF8);
-      }
+        @Override
+        public Function<Object, byte[]> marshall()
+        {
+            return obj -> obj == null ? null : ((String) obj).getBytes(UTF8);
+        }
 
-      @Override
-      public Function<byte[], Object> unmarshall() {
-         return bytes -> bytes == null ? null : new String(bytes, UTF8);
-      }
+        @Override
+        public Function<byte[], Object> unmarshall()
+        {
+            return bytes -> bytes == null ? null : new String(bytes, UTF8);
+        }
 
-   }
+    }
 
 }

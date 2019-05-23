@@ -11,68 +11,72 @@ import static nonblocking.aeron.Constants.CACHE_IN_STREAM;
 import static nonblocking.aeron.Constants.CHANNEL;
 import static org.agrona.BitUtil.CACHE_LINE_LENGTH;
 
-public class CacheProxy {
+public class CacheProxy
+{
 
-   private final Publication publication;
-   private final UnsafeBuffer buffer;
+    private final Publication publication;
+    private final UnsafeBuffer buffer;
 
-   public CacheProxy() {
-      publication = AERON.aeron.addPublication(CHANNEL, CACHE_IN_STREAM);
+    public CacheProxy()
+    {
+        publication = AERON.aeron.addPublication(CHANNEL, CACHE_IN_STREAM);
 
-      final ByteBuffer byteBuffer = BufferUtil.allocateDirectAligned(
-         publication.maxMessageLength(), CACHE_LINE_LENGTH);
+        final ByteBuffer byteBuffer =
+            BufferUtil.allocateDirectAligned(publication.maxMessageLength(), CACHE_LINE_LENGTH);
 
-      buffer = new UnsafeBuffer(byteBuffer);
-   }
+        buffer = new UnsafeBuffer(byteBuffer);
+    }
 
-   boolean putIfAbsent(
-      final byte[] key,
-      final byte[] value,
-      final long correlationId) {
+    boolean putIfAbsent(
+        final byte[] key,
+        final byte[] value,
+        final long correlationId)
+    {
+        int index = 0;
 
-      int index = 0;
+        buffer.putLong(index, correlationId);
+        index += 8;
 
-      buffer.putLong(index, correlationId);
-      index += 8;
+        buffer.putByte(index, (byte) 0); // put method
+        index++;
 
-      buffer.putByte(index, (byte) 0); // put method
-      index++;
+        buffer.putInt(index, key.length);
+        index += 4;
 
-      buffer.putInt(index, key.length);
-      index += 4;
+        buffer.putBytes(index, key);
+        index += key.length;
 
-      buffer.putBytes(index, key);
-      index += key.length;
+        buffer.putInt(index, value.length);
+        index += 4;
 
-      buffer.putInt(index, value.length);
-      index += 4;
+        buffer.putBytes(index, value);
+        index += value.length;
 
-      buffer.putBytes(index, value);
-      index += value.length;
+        return offer(index);
+    }
 
-      return offer(index);
-   }
+    boolean getOrNull(final byte[] key, final long correlationId)
+    {
+        int index = 0;
 
-   boolean getOrNull(final byte[] key, final long correlationId) {
-      int index = 0;
+        buffer.putLong(index, correlationId);
+        index += 8;
 
-      buffer.putLong(index, correlationId);
-      index += 8;
+        buffer.putByte(index, (byte) 1); // get method
+        index++;
 
-      buffer.putByte(index, (byte) 1); // get method
-      index++;
+        buffer.putInt(index, key.length);
+        index += 4;
 
-      buffer.putInt(index, key.length);
-      index += 4;
+        buffer.putBytes(index, key);
+        index += key.length;
 
-      buffer.putBytes(index, key);
-      index += key.length;
+        return offer(index);
+    }
 
-      return offer(index);
-   }
-
-   private boolean offer(final int length) {
-      return publication.offer(buffer, 0, length) > 0;
-   }
+    private boolean offer(final int length)
+    {
+        return publication.offer(buffer, 0, length) > 0;
+    }
 
 }

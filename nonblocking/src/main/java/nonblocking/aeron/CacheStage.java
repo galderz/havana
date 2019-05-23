@@ -13,102 +13,111 @@ import static nonblocking.aeron.AeronSystem.AERON;
 import static nonblocking.aeron.Constants.CACHE_IN_STREAM;
 import static nonblocking.aeron.Constants.CHANNEL;
 
-public class CacheStage implements Runnable, AutoCloseable {
+public class CacheStage implements Runnable, AutoCloseable
+{
 
-   private final Subscription subscription;
-   private final Thread thread;
+    private final Subscription subscription;
+    private final Thread thread;
 
-   public CacheStage() {
-      this.subscription =
-         AERON.aeron.addSubscription(CHANNEL, CACHE_IN_STREAM);
+    public CacheStage()
+    {
+        this.subscription = AERON.aeron.addSubscription(CHANNEL, CACHE_IN_STREAM);
 
-      thread = new Thread(this);
-      thread.start();
-   }
+        thread = new Thread(this);
+        thread.start();
+    }
 
-   @Override
-   public void run() {
-      final IdleStrategy idleStrategy = Constants.CACHE_IN_IDLE_STRATEGY;
+    @Override
+    public void run()
+    {
+        final IdleStrategy idleStrategy = Constants.CACHE_IN_IDLE_STRATEGY;
 
-      // Requests could have arbitrary length, so wait for complete requests
-      final FragmentHandler fragmentHandler =
-         new ImageFragmentAssembler(new CacheFragmentHandler());
+        // Requests could have arbitrary length, so wait for complete requests
+        final FragmentHandler fragmentHandler = new ImageFragmentAssembler(new CacheFragmentHandler());
 
-      try {
-         while (AERON.running.get()) {
-            final int fragmentsRead =
-               subscription.poll(fragmentHandler, Constants.FRAGMENT_LIMIT);
+        try
+        {
+            while (AERON.running.get())
+            {
+                final int fragmentsRead =
+                    subscription.poll(fragmentHandler, Constants.FRAGMENT_LIMIT);
 
-            idleStrategy.idle(fragmentsRead);
-         }
-      } catch (final Exception ex) {
-         // TODO propagate error somehow
-         LangUtil.rethrowUnchecked(ex);
-      }
-   }
+                idleStrategy.idle(fragmentsRead);
+            }
+        } catch (final Exception ex)
+        {
+            // TODO propagate error somehow
+            LangUtil.rethrowUnchecked(ex);
+        }
+    }
 
-   @Override
-   public void close() throws InterruptedException {
-      thread.join();
-   }
+    @Override
+    public void close() throws InterruptedException
+    {
+        thread.join();
+    }
 
-   private static final class CacheFragmentHandler implements FragmentHandler {
+    private static final class CacheFragmentHandler implements FragmentHandler
+    {
+        private final BinaryStore store = new BinaryStore();
+        private final CacheReply reply = new CacheReply();
 
-      private final BinaryStore store = new BinaryStore();
-      private final CacheReply reply = new CacheReply();
+        @Override
+        public void onFragment(DirectBuffer buffer, int offset, int length, Header header)
+        {
+            int index = offset;
 
-      @Override
-      public void onFragment(DirectBuffer buffer, int offset, int length, Header header) {
-         int index = offset;
+            long correlationId = buffer.getLong(index);
+            index += 8;
 
-         long correlationId = buffer.getLong(index);
-         index += 8;
+            byte method = buffer.getByte(index);
+            index++;
 
-         byte method = buffer.getByte(index);
-         index++;
+            switch (method)
+            {
+                case 0:
+                    putIfAbsent(correlationId, buffer, index);
+                    break;
+                case 1:
+                    getOrNull(correlationId, buffer, index);
+                    break;
+            }
 
-         switch (method) {
-            case 0:
-               putIfAbsent(correlationId, buffer, index);
-               break;
-            case 1:
-               getOrNull(correlationId, buffer, index);
-               break;
-         }
+        }
 
-      }
+        private void putIfAbsent(long correlationId, DirectBuffer buffer, int index)
+        {
+            int keyLength = buffer.getInt(index);
+            index += 4;
 
-      private void putIfAbsent(long correlationId, DirectBuffer buffer, int index) {
-         int keyLength = buffer.getInt(index);
-         index += 4;
+            byte[] key = new byte[keyLength];
+            buffer.getBytes(index, key, 0, key.length);
+            index += key.length;
 
-         byte[] key = new byte[keyLength];
-         buffer.getBytes(index, key, 0, key.length);
-         index += key.length;
+            int valueLength = buffer.getInt(index);
+            index += 4;
 
-         int valueLength = buffer.getInt(index);
-         index += 4;
+            byte[] value = new byte[valueLength];
+            buffer.getBytes(index, value, 0, value.length);
 
-         byte[] value = new byte[valueLength];
-         buffer.getBytes(index, value, 0, value.length);
+            boolean success = store.putIfAbsent(key, value);
+            reply.completeSuccess(success, correlationId);
+        }
 
-         boolean success = store.putIfAbsent(key, value);
-         reply.completeSuccess(success, correlationId);
-      }
+        private void getOrNull(long correlationId, DirectBuffer buffer, int index)
+        {
+            int keyLength = buffer.getInt(index);
+            index += 4;
 
-      private void getOrNull(long correlationId, DirectBuffer buffer, int index) {
-         int keyLength = buffer.getInt(index);
-         index += 4;
+            byte[] key = new byte[keyLength];
+            buffer.getBytes(index, key, 0, key.length);
+            index += key.length;
 
-         byte[] key = new byte[keyLength];
-         buffer.getBytes(index, key, 0, key.length);
-         index += key.length;
+            final byte[] value = store.getOrNull(key);
+            reply.completeBytes(value, correlationId);
+        }
 
-         final byte[] value = store.getOrNull(key);
-         reply.completeBytes(value, correlationId);
-      }
-
-   }
+    }
 
 
 }
