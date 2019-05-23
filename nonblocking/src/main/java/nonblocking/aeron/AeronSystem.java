@@ -20,6 +20,7 @@ public enum AeronSystem implements AutoCloseable {
    AeronSystem() {
       final MediaDriver.Context ctx = new MediaDriver.Context()
          .threadingMode(ThreadingMode.SHARED)
+         .dirDeleteOnStart(true)
          .sharedIdleStrategy(new NoOpIdleStrategy());
 
       driver = MediaDriver.launch(ctx);
