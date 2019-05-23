@@ -14,7 +14,9 @@ public class BinaryStore
 
     public boolean putIfAbsent(byte[] key, byte[] value)
     {
-        return map.putIfAbsent(key, value) == null;
+        boolean result = getOrNull(key) == null;
+        map.put(key, value);
+        return result;
     }
 
     public byte[] getOrNull(byte[] key)
