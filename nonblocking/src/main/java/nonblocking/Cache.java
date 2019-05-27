@@ -6,4 +6,6 @@ interface Cache {
 
    Object getOrNull(Object key);
 
+   void put(Object key, Object value);
+
 }

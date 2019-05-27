@@ -9,20 +9,25 @@ import java.nio.ByteBuffer;
 import static nonblocking.aeron.AeronSystem.AERON;
 import static nonblocking.aeron.Constants.CACHE_IN_STREAM;
 import static nonblocking.aeron.Constants.CHANNEL;
+import static nonblocking.aeron.Constants.GET_OR_NULL;
+import static nonblocking.aeron.Constants.PUT;
+import static nonblocking.aeron.Constants.PUT_IF_ABSENT;
+import static nonblocking.aeron.Constants.SEND_ATTEMPTS;
 import static org.agrona.BitUtil.CACHE_LINE_LENGTH;
+import static org.agrona.BitUtil.calculateShiftForScale;
 
-public class CacheProxy
+class CacheProxy
 {
-
     private final Publication publication;
     private final UnsafeBuffer buffer;
 
-    public CacheProxy()
+    CacheProxy()
     {
         publication = AERON.aeron.addPublication(CHANNEL, CACHE_IN_STREAM);
 
         final ByteBuffer byteBuffer =
-            BufferUtil.allocateDirectAligned(publication.maxMessageLength(), CACHE_LINE_LENGTH);
+            BufferUtil.allocateDirectAligned(
+                publication.maxMessageLength(), CACHE_LINE_LENGTH);
 
         buffer = new UnsafeBuffer(byteBuffer);
     }
@@ -32,12 +37,29 @@ public class CacheProxy
         final byte[] value,
         final long correlationId)
     {
+        return offerKeyValue(key, value, correlationId, PUT_IF_ABSENT);
+    }
+
+    boolean put(
+        final byte[] key,
+        final byte[] value,
+        final long correlationId)
+    {
+        return offerKeyValue(key, value, correlationId, PUT);
+    }
+
+    private boolean offerKeyValue(
+        final byte[] key,
+        final byte[] value,
+        final long correlationId,
+        final byte method)
+    {
         int index = 0;
 
         buffer.putLong(index, correlationId);
         index += 8;
 
-        buffer.putByte(index, (byte) 0); // put method
+        buffer.putByte(index, method);
         index++;
 
         buffer.putInt(index, key.length);
@@ -62,7 +84,7 @@ public class CacheProxy
         buffer.putLong(index, correlationId);
         index += 8;
 
-        buffer.putByte(index, (byte) 1); // get method
+        buffer.putByte(index, GET_OR_NULL);
         index++;
 
         buffer.putInt(index, key.length);
@@ -76,7 +98,16 @@ public class CacheProxy
 
     private boolean offer(final int length)
     {
-        return publication.offer(buffer, 0, length) > 0;
+        int attempts = SEND_ATTEMPTS;
+        do
+        {
+            final long result = publication.offer(buffer, 0, length);
+            if (result > 0) {
+                return true;
+            }
+        } while (--attempts > 0);
+
+        return false;
     }
 
 }

@@ -75,11 +75,14 @@ public class CacheStage implements Runnable, AutoCloseable
 
             switch (method)
             {
-                case 0:
+                case Constants.PUT_IF_ABSENT:
                     putIfAbsent(correlationId, buffer, index);
                     break;
-                case 1:
+                case Constants.GET_OR_NULL:
                     getOrNull(correlationId, buffer, index);
+                    break;
+                case Constants.PUT:
+                    put(correlationId, buffer, index);
                     break;
             }
 
@@ -117,6 +120,24 @@ public class CacheStage implements Runnable, AutoCloseable
             reply.completeBytes(value, correlationId);
         }
 
+        private void put(long correlationId, DirectBuffer buffer, int index)
+        {
+            int keyLength = buffer.getInt(index);
+            index += 4;
+
+            byte[] key = new byte[keyLength];
+            buffer.getBytes(index, key, 0, key.length);
+            index += key.length;
+
+            int valueLength = buffer.getInt(index);
+            index += 4;
+
+            byte[] value = new byte[valueLength];
+            buffer.getBytes(index, value, 0, value.length);
+
+            store.put(key, value);
+            reply.completeEmpty(correlationId);
+        }
     }
 
 

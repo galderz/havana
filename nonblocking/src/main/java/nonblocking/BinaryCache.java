@@ -6,4 +6,6 @@ public interface BinaryCache {
 
    byte[] getOrNull(byte[] key);
 
+   boolean put(byte[] key, byte[] value);
+
 }

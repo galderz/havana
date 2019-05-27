@@ -14,4 +14,9 @@ final class MarshallingCache implements Cache
         return null;  // TODO: Customise this generated block
     }
 
+    @Override
+    public void put(Object key, Object value)
+    {
+        // TODO: Customise this generated block
+    }
 }

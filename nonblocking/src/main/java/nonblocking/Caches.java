@@ -20,7 +20,8 @@ public class Caches implements AutoCloseable
         {
             AeronSystem.AERON.close();
             cacheStage.close();
-        } catch (InterruptedException e)
+        }
+        catch (InterruptedException e)
         {
             Thread.currentThread().interrupt();
         }

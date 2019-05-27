@@ -13,7 +13,6 @@ import static io.aeron.driver.Configuration.IDLE_MIN_PARK_NS;
 
 final class Constants
 {
-
     static final String CHANNEL = CommonContext.IPC_CHANNEL;
     static final int CACHE_IN_STREAM = 10;
     static final int CACHE_OUT_STREAM = 20;
@@ -21,7 +20,10 @@ final class Constants
     static final int FRAGMENT_LIMIT = 10;
 
     // TODO make it configurable
-    static final int REPLY_ATTEMPTS = 1_000;
+    static final int REPLY_ATTEMPTS = 1 << 10;
+
+    // TODO make it configurable
+    static final int SEND_ATTEMPTS = 1 << 10;
 
     // TODO make it configurable
     static final long MESSAGE_TIMEOUT_NS = TimeUnit.SECONDS.toNanos(5);
@@ -35,5 +37,9 @@ final class Constants
     {
         return new BackoffIdleStrategy(IDLE_MAX_SPINS, IDLE_MAX_YIELDS, IDLE_MIN_PARK_NS, IDLE_MAX_PARK_NS);
     }
+
+    static final byte PUT_IF_ABSENT = 0;
+    static final byte GET_OR_NULL = 1;
+    static final byte PUT = 2;
 
 }

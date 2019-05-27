@@ -9,7 +9,6 @@ import java.util.Map;
  */
 public class BinaryStore
 {
-
     private final HashMap<byte[], byte[]> map = new HashMap<>();
 
     public boolean putIfAbsent(byte[] key, byte[] value)
@@ -27,4 +26,8 @@ public class BinaryStore
             .orElse(null);
     }
 
+    public void put(byte[] key, byte[] value)
+    {
+        map.put(key, value);
+    }
 }

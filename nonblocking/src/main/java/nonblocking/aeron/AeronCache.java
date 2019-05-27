@@ -8,6 +8,7 @@ import nonblocking.BinaryCache;
 import org.agrona.DirectBuffer;
 import org.agrona.LangUtil;
 import org.agrona.collections.MutableInteger;
+import org.agrona.collections.MutableLong;
 import org.agrona.collections.MutableReference;
 import org.agrona.concurrent.IdleStrategy;
 import org.agrona.concurrent.NanoClock;
@@ -19,7 +20,6 @@ import static nonblocking.aeron.Constants.CHANNEL;
 
 public final class AeronCache implements BinaryCache
 {
-
     public static final byte[] EMPTY_BYTES = new byte[0];
 
     private final CacheProxy cacheProxy;
@@ -39,7 +39,8 @@ public final class AeronCache implements BinaryCache
         final long correlationId = AERON.aeron.nextCorrelationId();
 
         // Could not publish message, so could not put it
-        if (!cacheProxy.putIfAbsent(key, value, correlationId)) return false;
+        if (!cacheProxy.putIfAbsent(key, value, correlationId))
+            return false;
 
         // If deadline for wait passed, return false to indicate no put
         return pollForSuccess(correlationId);
@@ -51,9 +52,23 @@ public final class AeronCache implements BinaryCache
         final long correlationId = AERON.aeron.nextCorrelationId();
 
         // Could not publish message, so not found
-        if (!cacheProxy.getOrNull(key, correlationId)) return null;
+        if (!cacheProxy.getOrNull(key, correlationId))
+            return null;
 
         return pollForBytes(correlationId);
+    }
+
+    @Override
+    public boolean put(byte[] key, byte[] value)
+    {
+        final long correlationId = AERON.aeron.nextCorrelationId();
+
+        // Could not publish message, so could not put
+        if (!cacheProxy.put(key, value, correlationId))
+            return false;
+
+        // If deadline for wait passed, return false to indicate no put
+        return pollForEmpty(correlationId);
     }
 
     private boolean pollForSuccess(final long correlationId)
@@ -117,9 +132,37 @@ public final class AeronCache implements BinaryCache
         }
     }
 
+    private boolean pollForEmpty(final long correlationId)
+    {
+        try (Subscription subs = AERON.aeron.addSubscription(CHANNEL, CACHE_OUT_STREAM))
+        {
+            final CorrelatingEmptyHandler handler = new CorrelatingEmptyHandler();
+
+            final IdleStrategy idleStrategy = Constants.cacheOutIdleStrategy();
+
+            final long deadlineNs = nanoClock.nanoTime() + messageTimeoutNs;
+            do
+            {
+                if (subs.poll(handler, 1) == 0)
+                {
+                    if (Thread.interrupted())
+                        LangUtil.rethrowUnchecked(new InterruptedException());
+
+                    if (deadlineNs - nanoClock.nanoTime() < 0)
+                    {
+                        return false;
+                    }
+
+                    idleStrategy.idle();
+                }
+            } while (correlationId != handler.correlationId.longValue());
+
+            return true;
+        }
+    }
+
     static final class CorrelatingSuccessHandler implements FragmentHandler
     {
-
         private final MutableInteger result = new MutableInteger(NULL_VALUE);
         private final long correlationId;
 
@@ -141,12 +184,10 @@ public final class AeronCache implements BinaryCache
                 result.set(buffer.getByte(index));
             }
         }
-
     }
 
     static final class CorrelatingBytesHandler implements FragmentHandler
     {
-
         private final MutableReference<byte[]> result = new MutableReference<>();
         private final long correlationId;
 
@@ -175,8 +216,18 @@ public final class AeronCache implements BinaryCache
                 result.set(value);
             }
         }
-
     }
 
+    static final class CorrelatingEmptyHandler implements FragmentHandler
+    {
+        private final MutableLong correlationId = new MutableLong(NULL_VALUE);
+
+        @Override
+        public void onFragment(DirectBuffer buffer, int offset, int length, Header header)
+        {
+            long id = buffer.getLong(offset);
+            correlationId.set(id);
+        }
+    }
 
 }

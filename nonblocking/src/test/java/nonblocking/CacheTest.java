@@ -20,4 +20,15 @@ public class CacheTest {
       assertThat(cache.putIfAbsent(key, new byte[]{4, 5, 6}), is(false));
    }
 
+   @Test
+   public void testPut() {
+      BinaryCache cache = new Caches().cache();
+      final byte[] key = {7, 8, 9};
+
+      assertThat(cache.getOrNull(key), nullValue());
+      assertThat(cache.put(key, new byte[]{10, 11, 12}), is(true));
+      assertThat(cache.getOrNull(key), is(equalTo(new byte[]{10, 11, 12})));
+      assertThat(cache.put(key, new byte[]{10, 11, 12}), is(true));
+   }
+
 }
