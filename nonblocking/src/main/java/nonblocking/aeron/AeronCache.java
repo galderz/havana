@@ -71,6 +71,18 @@ public final class AeronCache implements BinaryCache
         return pollForEmpty(correlationId);
     }
 
+    @Override
+    public void invalidateAll()
+    {
+        final long correlationId = AERON.aeron.nextCorrelationId();
+
+        // Could not publish message, so could not put
+        if (!cacheProxy.invalidateAll(correlationId))
+            return;
+
+        pollForEmpty(correlationId);
+    }
+
     private boolean pollForSuccess(final long correlationId)
     {
         try (Subscription subs = AERON.aeron.addSubscription(CHANNEL, CACHE_OUT_STREAM))

@@ -15,7 +15,6 @@ import static nonblocking.aeron.Constants.CHANNEL;
 
 public class CacheStage implements Runnable, AutoCloseable
 {
-
     private final Subscription subscription;
     private final Thread thread;
 
@@ -84,6 +83,9 @@ public class CacheStage implements Runnable, AutoCloseable
                 case Constants.PUT:
                     put(correlationId, buffer, index);
                     break;
+                case Constants.INVALIDATE_ALL:
+                    invalidateAll(correlationId);
+                    break;
             }
 
         }
@@ -138,7 +140,11 @@ public class CacheStage implements Runnable, AutoCloseable
             store.put(key, value);
             reply.completeEmpty(correlationId);
         }
+
+        private void invalidateAll(long correlationId)
+        {
+            store.clear();
+            reply.completeEmpty(correlationId);
+        }
     }
-
-
 }

@@ -30,4 +30,9 @@ public class BinaryStore
     {
         map.put(key, value);
     }
+
+    public void clear()
+    {
+        map.clear();
+    }
 }

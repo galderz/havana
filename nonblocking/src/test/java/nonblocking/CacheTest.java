@@ -31,4 +31,19 @@ public class CacheTest {
       assertThat(cache.put(key, new byte[]{10, 11, 12}), is(true));
    }
 
+   @Test
+   public void testInvalidateAll() {
+      BinaryCache cache = new Caches().cache();
+      final byte[] k1 = {13, 14, 15};
+      final byte[] k2 = {16, 17, 18};
+
+      assertThat(cache.putIfAbsent(k1, new byte[]{19, 20, 21}), is(true));
+      assertThat(cache.putIfAbsent(k2, new byte[]{22, 23, 24}), is(true));
+      assertThat(cache.getOrNull(k1), is(equalTo(new byte[]{19, 20, 21})));
+      assertThat(cache.getOrNull(k2), is(equalTo(new byte[]{22, 23, 24})));
+      cache.invalidateAll();
+      assertThat(cache.getOrNull(k1), is(nullValue()));
+      assertThat(cache.getOrNull(k2), is(nullValue()));
+   }
+
 }

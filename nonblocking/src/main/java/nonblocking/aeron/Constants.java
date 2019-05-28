@@ -41,5 +41,6 @@ final class Constants
     static final byte PUT_IF_ABSENT = 0;
     static final byte GET_OR_NULL = 1;
     static final byte PUT = 2;
+    static final byte INVALIDATE_ALL = 3;
 
 }

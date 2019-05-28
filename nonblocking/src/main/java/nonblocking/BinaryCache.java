@@ -8,4 +8,6 @@ public interface BinaryCache {
 
    boolean put(byte[] key, byte[] value);
 
+   void invalidateAll();
+
 }
