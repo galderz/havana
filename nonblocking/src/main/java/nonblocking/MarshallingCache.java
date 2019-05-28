@@ -15,7 +15,19 @@ final class MarshallingCache implements Cache
     }
 
     @Override
-    public void put(Object key, Object value)
+    public boolean put(Object key, Object value)
+    {
+        return false;  // TODO: Customise this generated block
+    }
+
+    @Override
+    public void invalidateAll()
+    {
+        // TODO: Customise this generated block
+    }
+
+    @Override
+    public void invalidate(Object key)
     {
         // TODO: Customise this generated block
     }

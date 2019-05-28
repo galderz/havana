@@ -10,4 +10,6 @@ public interface BinaryCache {
 
    void invalidateAll();
 
+   void invalidate(byte[] key);
+
 }

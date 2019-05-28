@@ -83,6 +83,18 @@ public final class AeronCache implements BinaryCache
         pollForEmpty(correlationId);
     }
 
+    @Override
+    public void invalidate(byte[] key)
+    {
+        final long correlationId = AERON.aeron.nextCorrelationId();
+
+        // Could not publish message, so could not put
+        if (!cacheProxy.invalidate(key, correlationId))
+            return;
+
+        pollForEmpty(correlationId);
+    }
+
     private boolean pollForSuccess(final long correlationId)
     {
         try (Subscription subs = AERON.aeron.addSubscription(CHANNEL, CACHE_OUT_STREAM))
@@ -90,7 +102,7 @@ public final class AeronCache implements BinaryCache
             final CorrelatingSuccessHandler handler =
                 new CorrelatingSuccessHandler(correlationId);
 
-            final IdleStrategy idleStrategy = Constants.cacheOutIdleStrategy();
+            final IdleStrategy idleStrategy = Constants.pollIdleStrategy();
 
             final long deadlineNs = nanoClock.nanoTime() + messageTimeoutNs;
             do
@@ -123,7 +135,7 @@ public final class AeronCache implements BinaryCache
             // byte[] value could be big, so buffer it if does not fit MTU
             final FragmentHandler assembler = new ImageFragmentAssembler(handler);
 
-            final IdleStrategy idleStrategy = Constants.cacheOutIdleStrategy();
+            final IdleStrategy idleStrategy = Constants.pollIdleStrategy();
 
             final long deadlineNs = nanoClock.nanoTime() + messageTimeoutNs;
             do
@@ -150,7 +162,7 @@ public final class AeronCache implements BinaryCache
         {
             final CorrelatingEmptyHandler handler = new CorrelatingEmptyHandler();
 
-            final IdleStrategy idleStrategy = Constants.cacheOutIdleStrategy();
+            final IdleStrategy idleStrategy = Constants.pollIdleStrategy();
 
             final long deadlineNs = nanoClock.nanoTime() + messageTimeoutNs;
             do

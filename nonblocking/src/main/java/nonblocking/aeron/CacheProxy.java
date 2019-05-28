@@ -10,6 +10,7 @@ import static nonblocking.aeron.AeronSystem.AERON;
 import static nonblocking.aeron.Constants.CACHE_IN_STREAM;
 import static nonblocking.aeron.Constants.CHANNEL;
 import static nonblocking.aeron.Constants.GET_OR_NULL;
+import static nonblocking.aeron.Constants.INVALIDATE;
 import static nonblocking.aeron.Constants.INVALIDATE_ALL;
 import static nonblocking.aeron.Constants.PUT;
 import static nonblocking.aeron.Constants.PUT_IF_ABSENT;
@@ -106,6 +107,25 @@ class CacheProxy
 
         buffer.putByte(index, INVALIDATE_ALL);
         index++;
+
+        return offer(index);
+    }
+
+    boolean invalidate(final byte[] key, final long correlationId)
+    {
+        int index = 0;
+
+        buffer.putLong(index, correlationId);
+        index += 8;
+
+        buffer.putByte(index, INVALIDATE);
+        index++;
+
+        buffer.putInt(index, key.length);
+        index += 4;
+
+        buffer.putBytes(index, key);
+        index += key.length;
 
         return offer(index);
     }

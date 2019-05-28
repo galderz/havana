@@ -85,6 +85,8 @@ public class CacheStage implements Runnable, AutoCloseable
                     break;
                 case Constants.INVALIDATE_ALL:
                     invalidateAll(correlationId);
+                case Constants.INVALIDATE:
+                    invalidate(correlationId, buffer, index);
                     break;
             }
 
@@ -144,6 +146,19 @@ public class CacheStage implements Runnable, AutoCloseable
         private void invalidateAll(long correlationId)
         {
             store.clear();
+            reply.completeEmpty(correlationId);
+        }
+
+        private void invalidate(long correlationId, DirectBuffer buffer, int index)
+        {
+            int keyLength = buffer.getInt(index);
+            index += 4;
+
+            byte[] key = new byte[keyLength];
+            buffer.getBytes(index, key, 0, key.length);
+            index += key.length;
+
+            store.remove(key);
             reply.completeEmpty(correlationId);
         }
     }

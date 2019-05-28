@@ -6,6 +6,10 @@ interface Cache {
 
    Object getOrNull(Object key);
 
-   void put(Object key, Object value);
+   boolean put(Object key, Object value);
+
+   void invalidateAll();
+
+   void invalidate(Object key);
 
 }

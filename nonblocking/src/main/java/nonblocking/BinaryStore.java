@@ -2,7 +2,9 @@ package nonblocking;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Rudimentary byte[] key/value store
@@ -22,7 +24,7 @@ public class BinaryStore
     {
         return map.entrySet().stream()
             .filter(e -> Arrays.equals(e.getKey(), key))
-            .map(Map.Entry::getValue).findFirst()
+            .map(Entry::getValue).findFirst()
             .orElse(null);
     }
 
@@ -34,5 +36,18 @@ public class BinaryStore
     public void clear()
     {
         map.clear();
+    }
+
+    public void remove(byte[] key)
+    {
+        final Iterator<Entry<byte[], byte[]>> it = map.entrySet().iterator();
+        while (it.hasNext())
+        {
+            Entry<byte[], byte[]> entry = it.next();
+            if (Arrays.equals(entry.getKey(), key)) {
+                it.remove();
+                return;
+            }
+        }
     }
 }

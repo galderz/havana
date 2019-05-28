@@ -2,6 +2,7 @@ package nonblocking.aeron;
 
 import io.aeron.Publication;
 import org.agrona.BufferUtil;
+import org.agrona.concurrent.IdleStrategy;
 import org.agrona.concurrent.UnsafeBuffer;
 
 import java.nio.ByteBuffer;
@@ -14,6 +15,7 @@ class CacheReply
 
     private final Publication publication;
     private final UnsafeBuffer buffer;
+    private final IdleStrategy idleStrategy;
 
     CacheReply()
     {
@@ -26,6 +28,7 @@ class CacheReply
                         publication.maxMessageLength(), CACHE_LINE_LENGTH);
 
         buffer = new UnsafeBuffer(byteBuffer);
+        idleStrategy = Constants.CACHE_REPLY_IDLE_STRATEGY;
     }
 
     // TODO use return and maybe log it?
@@ -77,17 +80,23 @@ class CacheReply
     private boolean offer(final int length)
     {
         int attempts = Constants.REPLY_ATTEMPTS;
+
+        idleStrategy.reset();
+
         do
         {
             // TODO use tryClaim for small messages (under MTU)
             final long result = publication.offer(buffer, 0, length);
             if (result > 0)
             {
+                // System.out.println("Attempts: " + attempts);
                 return true;
             }
+
+            idleStrategy.idle();
         } while (--attempts > 0);
 
-        System.out.println("No attempts left");
+        System.out.println("No reply attempts left");
 
         return false;
     }
