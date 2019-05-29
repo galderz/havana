@@ -95,6 +95,18 @@ public final class AeronCache implements BinaryCache
         pollForEmpty(correlationId);
     }
 
+    @Override
+    public long count()
+    {
+        final long correlationId = AERON.aeron.nextCorrelationId();
+
+        // Could not publish message, so could not put
+        if (!cacheProxy.count(correlationId))
+            return NULL_VALUE;
+
+        return pollForLong(correlationId);
+    }
+
     private boolean pollForSuccess(final long correlationId)
     {
         try (Subscription subs = AERON.aeron.addSubscription(CHANNEL, CACHE_OUT_STREAM))
@@ -185,6 +197,36 @@ public final class AeronCache implements BinaryCache
         }
     }
 
+    private long pollForLong(final long correlationId)
+    {
+        try (Subscription subs = AERON.aeron.addSubscription(CHANNEL, CACHE_OUT_STREAM))
+        {
+            final CorrelatingLongHandler handler =
+                new CorrelatingLongHandler(correlationId);
+
+            final IdleStrategy idleStrategy = Constants.pollIdleStrategy();
+
+            final long deadlineNs = nanoClock.nanoTime() + messageTimeoutNs;
+            do
+            {
+                if (subs.poll(handler, 1) == 0)
+                {
+                    if (Thread.interrupted())
+                        LangUtil.rethrowUnchecked(new InterruptedException());
+
+                    if (deadlineNs - nanoClock.nanoTime() < 0)
+                    {
+                        return NULL_VALUE;
+                    }
+
+                    idleStrategy.idle();
+                }
+            } while (NULL_VALUE == handler.result.longValue());
+
+            return handler.result.longValue();
+        }
+    }
+
     static final class CorrelatingSuccessHandler implements FragmentHandler
     {
         private final MutableInteger result = new MutableInteger(NULL_VALUE);
@@ -254,4 +296,28 @@ public final class AeronCache implements BinaryCache
         }
     }
 
+    static final class CorrelatingLongHandler implements FragmentHandler
+    {
+        private final MutableLong result = new MutableLong(NULL_VALUE);
+        private final long correlationId;
+
+        CorrelatingLongHandler(long correlationId)
+        {
+            this.correlationId = correlationId;
+        }
+
+        @Override
+        public void onFragment(DirectBuffer buffer, int offset, int length, Header header)
+        {
+            int index = offset;
+
+            long id = buffer.getLong(index);
+            index += 8;
+
+            if (correlationId == id)
+            {
+                result.set(buffer.getLong(index));
+            }
+        }
+    }
 }

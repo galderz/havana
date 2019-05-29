@@ -1,6 +1,7 @@
 package nonblocking;
 
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -21,6 +22,11 @@ public class CacheTest
     @AfterClass
     public static void destroyCache() {
         // TODO
+    }
+
+    @Before
+    public void clear() {
+        CACHE.invalidateAll();
     }
 
     @Test
@@ -69,5 +75,17 @@ public class CacheTest
         assertThat(CACHE.getOrNull(key), is(equalTo(new byte[]{28, 29, 30})));
         CACHE.invalidate(key);
         assertThat(CACHE.getOrNull(key), is(nullValue()));
+    }
+
+    @Test
+    public void testCount()
+    {
+        final byte[] k1 = {31, 32, 33};
+        final byte[] k2 = {34, 35, 36};
+
+        assertThat(CACHE.count(), is(0L));
+        assertThat(CACHE.putIfAbsent(k1, new byte[]{37, 38, 39}), is(true));
+        assertThat(CACHE.putIfAbsent(k2, new byte[]{40, 41, 42}), is(true));
+        assertThat(CACHE.count(), is(2L));
     }
 }

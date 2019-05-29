@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 import static nonblocking.aeron.AeronSystem.AERON;
 import static nonblocking.aeron.Constants.CACHE_IN_STREAM;
 import static nonblocking.aeron.Constants.CHANNEL;
+import static nonblocking.aeron.Constants.COUNT;
 import static nonblocking.aeron.Constants.GET_OR_NULL;
 import static nonblocking.aeron.Constants.INVALIDATE;
 import static nonblocking.aeron.Constants.INVALIDATE_ALL;
@@ -16,7 +17,6 @@ import static nonblocking.aeron.Constants.PUT;
 import static nonblocking.aeron.Constants.PUT_IF_ABSENT;
 import static nonblocking.aeron.Constants.SEND_ATTEMPTS;
 import static org.agrona.BitUtil.CACHE_LINE_LENGTH;
-import static org.agrona.BitUtil.calculateShiftForScale;
 
 class CacheProxy
 {
@@ -130,6 +130,19 @@ class CacheProxy
         return offer(index);
     }
 
+    boolean count(long correlationId)
+    {
+        int index = 0;
+
+        buffer.putLong(index, correlationId);
+        index += 8;
+
+        buffer.putByte(index, COUNT);
+        index++;
+
+        return offer(index);
+    }
+
     private boolean offer(final int length)
     {
         int attempts = SEND_ATTEMPTS;
@@ -143,5 +156,4 @@ class CacheProxy
 
         return false;
     }
-
 }

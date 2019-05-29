@@ -47,5 +47,6 @@ final class Constants
     static final byte PUT = 2;
     static final byte INVALIDATE_ALL = 3;
     static final byte INVALIDATE = 4;
+    static final byte COUNT = 5;
 
 }

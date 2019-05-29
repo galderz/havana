@@ -77,6 +77,20 @@ class CacheReply
         return offer(index);
     }
 
+    // TODO use return and maybe log it?
+    boolean completeLong(long correlationId, long value)
+    {
+        int index = 0;
+
+        buffer.putLong(index, correlationId);
+        index += 8;
+
+        buffer.putLong(index, value);
+        index += 8;
+
+        return offer(index);
+    }
+
     private boolean offer(final int length)
     {
         int attempts = Constants.REPLY_ATTEMPTS;
@@ -100,5 +114,4 @@ class CacheReply
 
         return false;
     }
-
 }

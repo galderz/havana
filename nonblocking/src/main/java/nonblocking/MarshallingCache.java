@@ -31,4 +31,10 @@ final class MarshallingCache implements Cache
     {
         // TODO: Customise this generated block
     }
+
+    @Override
+    public long count()
+    {
+        return 0;  // TODO: Customise this generated block
+    }
 }

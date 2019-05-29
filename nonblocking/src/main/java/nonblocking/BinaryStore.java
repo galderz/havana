@@ -50,4 +50,9 @@ public class BinaryStore
             }
         }
     }
+
+    public long size()
+    {
+        return map.size();
+    }
 }

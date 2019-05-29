@@ -88,6 +88,9 @@ public class CacheStage implements Runnable, AutoCloseable
                 case Constants.INVALIDATE:
                     invalidate(correlationId, buffer, index);
                     break;
+                case Constants.COUNT:
+                    count(correlationId);
+                    break;
             }
 
         }
@@ -160,6 +163,12 @@ public class CacheStage implements Runnable, AutoCloseable
 
             store.remove(key);
             reply.completeEmpty(correlationId);
+        }
+
+        private void count(long correlationId)
+        {
+            long count = store.size();
+            reply.completeLong(correlationId, count);
         }
     }
 }

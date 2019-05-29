@@ -12,4 +12,6 @@ public interface BinaryCache {
 
    void invalidate(byte[] key);
 
+   long count();
+
 }

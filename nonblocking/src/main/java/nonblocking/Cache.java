@@ -12,4 +12,6 @@ interface Cache {
 
    void invalidate(Object key);
 
+   long count();
+
 }
