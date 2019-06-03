@@ -34,6 +34,16 @@ public class ManagementResource {
       );
    }
 
+   @GET
+   @Path("/running")
+   @Produces(MediaType.APPLICATION_JSON)
+   public String running() throws IOException {
+      return post(
+          "http://localhost:9990/management"
+          , "{\"operation\":\"read-attribute\",\"name\":\"server-state\"}"
+      );
+   }
+
    private String post(String url, String json) throws IOException {
       final Credentials credentials = new Credentials("admin123", "admin123");
       final DigestAuthenticator authenticator = new DigestAuthenticator(credentials);

@@ -1,3 +1,15 @@
+# Check server health
+
+```bash
+$ ./mvnw compile quarkus:dev
+...
+$ curl http://localhost:8080/management/health
+{"outcome" : "success", "result" : "HEALTHY"}
+
+$ curl http://localhost:8080/management/running
+{"outcome" : "success", "result" : "running"}
+```
+
 # Getting started
 
 ```bash
