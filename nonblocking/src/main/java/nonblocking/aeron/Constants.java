@@ -20,10 +20,10 @@ final class Constants
     static final int FRAGMENT_LIMIT = 10;
 
     // TODO make it configurable
-    static final int REPLY_ATTEMPTS = 1 << 5;
+    static final int SEND_ATTEMPTS = 3;
 
     // TODO make it configurable
-    static final int SEND_ATTEMPTS = 1 << 3;
+    static final int REPLY_ATTEMPTS = SEND_ATTEMPTS * 2;
 
     // TODO make it configurable
     static final long MESSAGE_TIMEOUT_NS = TimeUnit.SECONDS.toNanos(5);
