@@ -18,19 +18,21 @@ import static nonblocking.aeron.AeronSystem.AERON;
 import static nonblocking.aeron.Constants.CACHE_OUT_STREAM;
 import static nonblocking.aeron.Constants.CHANNEL;
 
-public final class AeronCache implements BinaryCache
+public final class AeronCache implements BinaryCache, AutoCloseable
 {
     public static final byte[] EMPTY_BYTES = new byte[0];
 
     private final CacheProxy cacheProxy;
     private final NanoClock nanoClock;
     private final long messageTimeoutNs;
+    private final Subscription subs;
 
     public AeronCache()
     {
         this.cacheProxy = new CacheProxy();
         this.nanoClock = AERON.aeron.context().nanoClock();
         this.messageTimeoutNs = Constants.MESSAGE_TIMEOUT_NS;
+        this.subs = AERON.aeron.addSubscription(CHANNEL, CACHE_OUT_STREAM);
     }
 
     @Override
@@ -109,122 +111,116 @@ public final class AeronCache implements BinaryCache
 
     private boolean pollForSuccess(final long correlationId)
     {
-        try (Subscription subs = AERON.aeron.addSubscription(CHANNEL, CACHE_OUT_STREAM))
+        final CorrelatingSuccessHandler handler =
+            new CorrelatingSuccessHandler(correlationId);
+
+        final IdleStrategy idleStrategy = Constants.pollIdleStrategy();
+
+        final long deadlineNs = nanoClock.nanoTime() + messageTimeoutNs;
+        do
         {
-            final CorrelatingSuccessHandler handler =
-                new CorrelatingSuccessHandler(correlationId);
-
-            final IdleStrategy idleStrategy = Constants.pollIdleStrategy();
-
-            final long deadlineNs = nanoClock.nanoTime() + messageTimeoutNs;
-            do
+            if (subs.poll(handler, 1) == 0)
             {
-                if (subs.poll(handler, 1) == 0)
+                if (Thread.interrupted())
+                    LangUtil.rethrowUnchecked(new InterruptedException());
+
+                if (deadlineNs - nanoClock.nanoTime() < 0)
                 {
-                    if (Thread.interrupted())
-                        LangUtil.rethrowUnchecked(new InterruptedException());
-
-                    if (deadlineNs - nanoClock.nanoTime() < 0)
-                    {
-                        return false;
-                    }
-
-                    idleStrategy.idle();
+                    return false;
                 }
-            } while (NULL_VALUE == handler.result.intValue());
 
-            return handler.result.intValue() == 1;
-        }
+                idleStrategy.idle();
+            }
+        } while (NULL_VALUE == handler.result.intValue());
+
+        return handler.result.intValue() == 1;
     }
 
     private byte[] pollForBytes(final long correlationId)
     {
-        try (Subscription subs = AERON.aeron.addSubscription(CHANNEL, CACHE_OUT_STREAM))
+        final CorrelatingBytesHandler handler =
+            new CorrelatingBytesHandler(correlationId);
+
+        // byte[] value could be big, so buffer it if does not fit MTU
+        final FragmentHandler assembler = new ImageFragmentAssembler(handler);
+
+        final IdleStrategy idleStrategy = Constants.pollIdleStrategy();
+
+        final long deadlineNs = nanoClock.nanoTime() + messageTimeoutNs;
+        do
         {
-            final CorrelatingBytesHandler handler =
-                new CorrelatingBytesHandler(correlationId);
-
-            // byte[] value could be big, so buffer it if does not fit MTU
-            final FragmentHandler assembler = new ImageFragmentAssembler(handler);
-
-            final IdleStrategy idleStrategy = Constants.pollIdleStrategy();
-
-            final long deadlineNs = nanoClock.nanoTime() + messageTimeoutNs;
-            do
+            if (subs.poll(assembler, 1) == 0)
             {
-                if (subs.poll(assembler, 1) == 0)
-                {
-                    if (Thread.interrupted())
-                        LangUtil.rethrowUnchecked(new InterruptedException());
+                if (Thread.interrupted())
+                    LangUtil.rethrowUnchecked(new InterruptedException());
 
-                    if (deadlineNs - nanoClock.nanoTime() < 0) return null;
+                if (deadlineNs - nanoClock.nanoTime() < 0) return null;
 
-                    idleStrategy.idle();
-                }
-            } while (null == handler.result.get());
+                idleStrategy.idle();
+            }
+        } while (null == handler.result.get());
 
-            final byte[] bytes = handler.result.get();
-            return bytes.length == 0 ? null : bytes;
-        }
+        final byte[] bytes = handler.result.get();
+        return bytes.length == 0 ? null : bytes;
     }
 
     private boolean pollForEmpty(final long correlationId)
     {
-        try (Subscription subs = AERON.aeron.addSubscription(CHANNEL, CACHE_OUT_STREAM))
+        final CorrelatingEmptyHandler handler = new CorrelatingEmptyHandler();
+
+        final IdleStrategy idleStrategy = Constants.pollIdleStrategy();
+
+        final long deadlineNs = nanoClock.nanoTime() + messageTimeoutNs;
+        do
         {
-            final CorrelatingEmptyHandler handler = new CorrelatingEmptyHandler();
-
-            final IdleStrategy idleStrategy = Constants.pollIdleStrategy();
-
-            final long deadlineNs = nanoClock.nanoTime() + messageTimeoutNs;
-            do
+            if (subs.poll(handler, 1) == 0)
             {
-                if (subs.poll(handler, 1) == 0)
+                if (Thread.interrupted())
+                    LangUtil.rethrowUnchecked(new InterruptedException());
+
+                if (deadlineNs - nanoClock.nanoTime() < 0)
                 {
-                    if (Thread.interrupted())
-                        LangUtil.rethrowUnchecked(new InterruptedException());
-
-                    if (deadlineNs - nanoClock.nanoTime() < 0)
-                    {
-                        return false;
-                    }
-
-                    idleStrategy.idle();
+                    return false;
                 }
-            } while (correlationId != handler.correlationId.longValue());
 
-            return true;
-        }
+                idleStrategy.idle();
+            }
+        } while (correlationId != handler.correlationId.longValue());
+
+        return true;
     }
 
     private long pollForLong(final long correlationId)
     {
-        try (Subscription subs = AERON.aeron.addSubscription(CHANNEL, CACHE_OUT_STREAM))
+        final CorrelatingLongHandler handler =
+            new CorrelatingLongHandler(correlationId);
+
+        final IdleStrategy idleStrategy = Constants.pollIdleStrategy();
+
+        final long deadlineNs = nanoClock.nanoTime() + messageTimeoutNs;
+        do
         {
-            final CorrelatingLongHandler handler =
-                new CorrelatingLongHandler(correlationId);
-
-            final IdleStrategy idleStrategy = Constants.pollIdleStrategy();
-
-            final long deadlineNs = nanoClock.nanoTime() + messageTimeoutNs;
-            do
+            if (subs.poll(handler, 1) == 0)
             {
-                if (subs.poll(handler, 1) == 0)
+                if (Thread.interrupted())
+                    LangUtil.rethrowUnchecked(new InterruptedException());
+
+                if (deadlineNs - nanoClock.nanoTime() < 0)
                 {
-                    if (Thread.interrupted())
-                        LangUtil.rethrowUnchecked(new InterruptedException());
-
-                    if (deadlineNs - nanoClock.nanoTime() < 0)
-                    {
-                        return NULL_VALUE;
-                    }
-
-                    idleStrategy.idle();
+                    return NULL_VALUE;
                 }
-            } while (NULL_VALUE == handler.result.longValue());
 
-            return handler.result.longValue();
-        }
+                idleStrategy.idle();
+            }
+        } while (NULL_VALUE == handler.result.longValue());
+
+        return handler.result.longValue();
+    }
+
+    @Override
+    public void close()
+    {
+        subs.close();
     }
 
     static final class CorrelatingSuccessHandler implements FragmentHandler
