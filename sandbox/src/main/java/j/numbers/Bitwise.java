@@ -20,5 +20,11 @@ public class Bitwise {
       System.out.println(1 | 0x02);
 
       System.out.println(1 << 20);
+
+      System.out.println(10_000 >> 10);
+
+      System.out.println(1_000_000 >> 10);
+
+      System.out.println(1048576 >> 10);
    }
 }
