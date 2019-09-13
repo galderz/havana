@@ -1,8 +1,0 @@
-[
-  {
-    "name": "sun.security.rsa.SunRsaSign",
-    "methods": [
-      { "name": "<init>", "parameterTypes": [] }
-    ]
-  }
-]
