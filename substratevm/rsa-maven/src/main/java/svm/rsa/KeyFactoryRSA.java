@@ -10,13 +10,17 @@ import java.util.Set;
 
 public class KeyFactoryRSA
 {
-    public static void main(String[] args) throws Exception
-    {
+    static {
+        System.out.println("Manually register provider");
         final String providerName = "SunRsaSign";
         List<String> providerClasses = registerProvider(providerName);
         System.out.printf("Provider=%s classes: %s%n", providerName, providerClasses);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        System.out.printf("Loaded RSA.KeyFactory: %s%n", keyFactory);
+    }
+
+    public static void main(String[] args) throws Exception
+    {
+        //System.out.printf("Loaded SHA-256.KeyFactory: %s%n", KeyFactory.getInstance("SHA-256"));
+        System.out.printf("Loaded RSA.KeyFactory: %s%n", KeyFactory.getInstance("RSA"));
     }
 
     /**

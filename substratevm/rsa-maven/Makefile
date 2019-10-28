@@ -8,6 +8,8 @@ native:
 	native-image \
 	-jar target/rsa-0.1.jar \
 	-H:+TraceSecurityServices \
+	-H:+PrintClassInitialization \
+	--initialize-at-build-time=svm.rsa.KeyFactoryRSA \
 	target/keyfactoryrsa
 
 native-with-security:

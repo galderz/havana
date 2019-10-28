@@ -15,3 +15,5 @@ target
 # generated class folder
 gen
 .mvn
+# ignore native-image reports
+reports
