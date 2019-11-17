@@ -17,3 +17,5 @@ gen
 .mvn
 # ignore native-image reports
 reports
+# classes
+*.class
