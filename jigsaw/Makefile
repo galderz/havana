@@ -1,7 +1,7 @@
 clean:
 	rm -drf mods
 
-build:
+build-separate:
 	mkdir -p mods/org.astro mods/com.greetings || true
 
 	javac \
@@ -14,6 +14,14 @@ build:
 	-d mods/com.greetings \
 	src/com.greetings/module-info.java \
 	src/com.greetings/com/greetings/Main.java
+
+build:
+	mkdir mods || true
+
+	javac \
+	-d mods \
+	--module-source-path src \
+	$$(find src -name "*.java")
 
 run:
 	java --module-path mods -m com.greetings/com.greetings.Main
