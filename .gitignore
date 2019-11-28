@@ -19,3 +19,5 @@ gen
 reports
 # classes
 *.class
+# built modules
+mods
