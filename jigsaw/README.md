@@ -13,7 +13,7 @@ Compile and run with exploded folders:
 make clean build run
 ```
 
-Alternatively, you can call `build-separate` instead of `build`,
+Alternatively, you can call `build-exploded` instead of `build`,
 to compile each module separately.
 It demonstrates how compilations are layered when depending on other modules.
 
@@ -30,4 +30,14 @@ Jar modules can be inspected to find out more about them:
 
 ```bash
 make describe
+```
+
+## Reference jar in compilation
+
+In this example, `astro` is first build and packaged into a jar.
+Then, `greetings` is compiled against the `astro` jar.
+Finally, the `greetings` jar is built and run.
+
+```bash
+make clean build-astro package-astro build-greetings package-greetings run-jar
 ```
