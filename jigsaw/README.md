@@ -25,3 +25,9 @@ how to combine and run them.
 ```bash
 make clean build package run-jar
 ```
+
+Jar modules can be inspected to find out more about them:
+
+```bash
+make describe
+```

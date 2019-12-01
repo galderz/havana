@@ -41,3 +41,7 @@ package:
 
 run-jar:
 	java -p mlib -m com.greetings
+
+describe:
+	jar --describe-module --file=mlib/org.astro@1.0.jar
+	jar --describe-module --file=mlib/com.greetings.jar
