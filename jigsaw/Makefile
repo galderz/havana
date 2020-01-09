@@ -14,6 +14,7 @@ build-greetings:
 	javac \
 	--module-path mlib \
 	-d mods/com.greetings \
+	-verbose \
 	src/com.greetings/module-info.java \
 	src/com.greetings/com/greetings/Main.java
 
