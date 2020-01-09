@@ -16,6 +16,7 @@
         <module>aeron</module>
         <module>quarkus-rest-client</module>
         <module>nonblocking</module>
+        <module>neo4j</module>
     </modules>
 
 </project>
