@@ -17,6 +17,7 @@
         <module>quarkus-rest-client</module>
         <module>nonblocking</module>
         <module>neo4j</module>
+        <module>kubernetes</module>
     </modules>
 
 </project>
