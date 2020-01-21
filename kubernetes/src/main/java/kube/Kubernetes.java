@@ -2,24 +2,23 @@ package kube;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class Kubernetes
 {
-    Queue<Op> operations = new ArrayDeque<>();
+    Queue<Event> events = new ArrayDeque<>();
 
     public Function<String, Boolean> createNamespace()
     {
         return namespaceName ->
         {
-            final Op top = operations.peek();
+            final Event top = events.peek();
             if (isError(top))
             {
-                operations.remove();
+                events.remove();
                 return false;
             }
-            operations.add(new Op(namespaceName, OpType.CREATE_NAMESPACE));
+            events.add(new Event(namespaceName, EventType.CREATE_NAMESPACE));
             return true;
         };
     }
@@ -40,7 +39,7 @@ public class Kubernetes
     private boolean isNamespaceCreated()
     {
         // TODO check if retrived
-        return operations.stream().anyMatch(op -> op.type == OpType.CREATE_NAMESPACE);
+        return events.stream().anyMatch(op -> op.type == EventType.CREATE_NAMESPACE);
     }
 
 //    public static Consumer<Kubernetes> apply()
@@ -48,27 +47,27 @@ public class Kubernetes
 //        return null;
 //    }
 
-    private final static class Op
+    public final static class Event
     {
         Object param;
-        OpType type;
+        EventType type;
 
-        public Op(Object param, OpType type)
+        public Event(Object param, EventType type)
         {
             this.param = param;
             this.type = type;
         }
     }
 
-    private enum OpType
+    public enum EventType
     {
         CREATE_NAMESPACE,
         GET_NAMESPACE,
         ERROR,
     }
 
-    private static boolean isError(Op op)
+    private static boolean isError(Event event)
     {
-        return op != null && op.type == OpType.ERROR;
+        return event != null && event.type == EventType.ERROR;
     }
 }
