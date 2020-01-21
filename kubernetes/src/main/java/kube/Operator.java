@@ -2,7 +2,7 @@ package kube;
 
 public class Operator
 {
-    public void reconcile(Kubernetes kube)
+    public void reconcile(Kubernetes kube, Logger logger)
     {
         String namespace = "my-namespace";
 
@@ -12,16 +12,16 @@ public class Operator
             final Boolean created = kube.createNamespace().apply("my-namespace");
             if (created)
             {
-                System.out.println("Namespace created");
+                logger.log("Namespace created");
             }
             else
             {
-                System.out.println("Namespace not created");
+                logger.log("Namespace not created");
             }
         }
         else
         {
-            System.out.println("Namespace exists");
+            logger.log("Namespace exists");
         }
     }
 }
