@@ -10,11 +10,9 @@
     <name>java</name>
 
     <modules>
-        <module>sandbox</module>
+<!--        <module>sandbox</module>-->
         <module>jmh</module>
-        <module>quarkus-getting-started</module>
-        <module>aeron</module>
-        <module>quarkus-rest-client</module>
+<!--        <module>aeron</module>-->
         <module>nonblocking</module>
         <module>neo4j</module>
         <module>kubernetes</module>
