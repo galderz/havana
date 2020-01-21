@@ -4,7 +4,7 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.function.Function;
 
-public class Kubernetes
+public class Kubernetes implements KubernetesFunctions
 {
     Queue<Event> events = new ArrayDeque<>();
 
@@ -18,7 +18,7 @@ public class Kubernetes
                 events.remove();
                 return false;
             }
-            events.add(new Event(namespaceName, EventType.CREATE_NAMESPACE));
+            events.add(new Event(namespaceName, EventType.CREATED_NAMESPACE));
             return true;
         };
     }
@@ -27,7 +27,7 @@ public class Kubernetes
     {
         return namespaceName ->
         {
-            if (isNamespaceCreated())
+            if (isNamespaceCreated() || isNamespacePresent())
             {
                 return true;
             }
@@ -36,10 +36,14 @@ public class Kubernetes
         };
     }
 
+    private boolean isNamespacePresent()
+    {
+        return events.stream().anyMatch(op -> op.type == EventType.NAMESPACE_PRESENT);
+    }
+
     private boolean isNamespaceCreated()
     {
-        // TODO check if retrived
-        return events.stream().anyMatch(op -> op.type == EventType.CREATE_NAMESPACE);
+        return events.stream().anyMatch(op -> op.type == EventType.CREATED_NAMESPACE);
     }
 
 //    public static Consumer<Kubernetes> apply()
@@ -61,7 +65,11 @@ public class Kubernetes
 
     public enum EventType
     {
-        CREATE_NAMESPACE,
+        EXISTS_NAMESPACE,
+        NAMESPACE_PRESENT,
+        NAMESPACE_NOT_PRESENT,
+
+        CREATED_NAMESPACE,
         GET_NAMESPACE,
         ERROR,
     }

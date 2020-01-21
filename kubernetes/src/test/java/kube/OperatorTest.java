@@ -25,7 +25,7 @@ public class OperatorTest
         var operator = new Operator();
         var kube = new Kubernetes();
         var logger = new RecordingLogger();
-        kube.events.add(new Event("my-namespace", CREATE_NAMESPACE));
+        kube.events.add(new Event("my-namespace", CREATED_NAMESPACE));
         operator.reconcile(kube, logger);
         assertThat(logger.messages.remove(), is("Namespace exists"));
     }
@@ -40,4 +40,5 @@ public class OperatorTest
         operator.reconcile(kube, logger);
         assertThat(logger.messages.remove(), is("Namespace not created"));
     }
+
 }

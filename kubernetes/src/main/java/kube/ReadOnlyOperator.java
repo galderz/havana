@@ -1,0 +1,28 @@
+package kube;
+
+public class ReadOnlyOperator
+{
+    public void reconcile(KubernetesFunctions kube, Logger logger)
+    {
+        String namespace = "my-namespace";
+
+        final Boolean exists = kube.existsNamespace().apply(namespace);
+        if (exists)
+        {
+            logger.log("Namespace exists");
+        }
+        else
+        {
+            logger.log("Namespace does not exist");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        final var operator = new ReadOnlyOperator();
+        final var logger = new SystemOutLogger();
+        try (var shell = new KubernetesShell()) {
+            operator.reconcile(shell, logger);
+        }
+    }
+}
