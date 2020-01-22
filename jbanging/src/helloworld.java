@@ -1,5 +1,4 @@
 //usr/bin/env jbang "$0" "$@" ; exit $?
-// JAVA_HOME /opt/java
 
 import java.lang.management.ManagementFactory;
 
