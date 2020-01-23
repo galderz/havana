@@ -6,17 +6,18 @@ import java.util.function.Function;
 
 import static kube.Kubernetes.EventType.EXISTS_NAMESPACE;
 
-public class KubernetesShell implements KubernetesFunctions, AutoCloseable
+public class KubernetesShell implements AutoCloseable
 {
     RemoteKubernetes remoteKubernetes = new RemoteKubernetes();
     Kubernetes kubernetes = new Kubernetes();
 
-    public Function<String, Boolean> existsNamespace()
+    public boolean existsNamespace(String namespaceName)
     {
         return toExistsNamespace()
             .andThen(remoteKubernetes.read())
             .andThen(recordEvent())
-            .andThen(kubernetes.existsNamespace());
+            .andThen(kubernetes::existsNamespace)
+            .apply(namespaceName);
     }
 
     private Function<Event, String> recordEvent()

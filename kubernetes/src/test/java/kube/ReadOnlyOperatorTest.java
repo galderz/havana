@@ -15,8 +15,9 @@ public class ReadOnlyOperatorTest
     {
         var operator = new ReadOnlyOperator();
         var kube = new Kubernetes();
+        var functions = new KubernetesFunctions(kube::existsNamespace, kube::createNamespace);
         var logger = new RecordingLogger();
-        operator.reconcile(kube, logger);
+        operator.reconcile(functions, logger);
         assertThat(logger.messages.remove(), is("Namespace does not exist"));
     }
 
@@ -25,9 +26,10 @@ public class ReadOnlyOperatorTest
     {
         var operator = new ReadOnlyOperator();
         var kube = new Kubernetes();
+        var functions = new KubernetesFunctions(kube::existsNamespace, kube::createNamespace);
         var logger = new RecordingLogger();
         kube.events.add(new Event("my-namespace", NAMESPACE_PRESENT));
-        operator.reconcile(kube, logger);
+        operator.reconcile(functions, logger);
         assertThat(logger.messages.remove(), is("Namespace exists"));
     }
 }

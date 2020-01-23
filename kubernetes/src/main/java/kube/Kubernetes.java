@@ -2,38 +2,31 @@ package kube;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
-import java.util.function.Function;
 
-public class Kubernetes implements KubernetesFunctions
+public class Kubernetes
 {
     Queue<Event> events = new ArrayDeque<>();
 
-    public Function<String, Boolean> createNamespace()
+    public boolean createNamespace(String namespaceName)
     {
-        return namespaceName ->
+        final Event top = events.peek();
+        if (isError(top))
         {
-            final Event top = events.peek();
-            if (isError(top))
-            {
-                events.remove();
-                return false;
-            }
-            events.add(new Event(namespaceName, EventType.CREATED_NAMESPACE));
-            return true;
-        };
+            events.remove();
+            return false;
+        }
+        events.add(new Event(namespaceName, EventType.CREATED_NAMESPACE));
+        return true;
     }
 
-    public Function<String, Boolean> existsNamespace()
+    public boolean existsNamespace(String namespaceName)
     {
-        return namespaceName ->
+        if (isNamespaceCreated() || isNamespacePresent())
         {
-            if (isNamespaceCreated() || isNamespacePresent())
-            {
-                return true;
-            }
+            return true;
+        }
 
-            return false;
-        };
+        return false;
     }
 
     private boolean isNamespacePresent()
@@ -45,11 +38,6 @@ public class Kubernetes implements KubernetesFunctions
     {
         return events.stream().anyMatch(op -> op.type == EventType.CREATED_NAMESPACE);
     }
-
-//    public static Consumer<Kubernetes> apply()
-//    {
-//        return null;
-//    }
 
     public final static class Event
     {

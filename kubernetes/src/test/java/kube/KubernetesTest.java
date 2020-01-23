@@ -10,8 +10,9 @@ public class KubernetesTest
     @Test
     public void testCreateNamespace() {
         final Kubernetes kube = new Kubernetes();
-        kube.createNamespace().apply("hello");
-        assertThat(kube.existsNamespace().apply("hello"), is(true));
+        var functions = new KubernetesFunctions(kube::existsNamespace, kube::createNamespace);
+        functions.createNamespace.apply("hello");
+        assertThat(functions.existsNamespace.apply("hello"), is(true));
     }
 
 }

@@ -6,7 +6,7 @@ public class ReadOnlyOperator
     {
         String namespace = "my-namespace";
 
-        final Boolean exists = kube.existsNamespace().apply(namespace);
+        final Boolean exists = kube.existsNamespace.apply(namespace);
         if (exists)
         {
             logger.log("Namespace exists");
@@ -22,7 +22,8 @@ public class ReadOnlyOperator
         final var operator = new ReadOnlyOperator();
         final var logger = new SystemOutLogger();
         try (var shell = new KubernetesShell()) {
-            operator.reconcile(shell, logger);
+            final var functions = new KubernetesFunctions(shell::existsNamespace, null);
+            operator.reconcile(functions, logger);
         }
     }
 }

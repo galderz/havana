@@ -14,8 +14,9 @@ public class OperatorTest
     {
         var operator = new Operator();
         var kube = new Kubernetes();
+        var functions = new KubernetesFunctions(kube::existsNamespace, kube::createNamespace);
         var logger = new RecordingLogger();
-        operator.reconcile(kube, logger);
+        operator.reconcile(functions, logger);
         assertThat(logger.messages.remove(), is("Namespace created"));
     }
 
@@ -24,9 +25,10 @@ public class OperatorTest
     {
         var operator = new Operator();
         var kube = new Kubernetes();
+        var functions = new KubernetesFunctions(kube::existsNamespace, kube::createNamespace);
         var logger = new RecordingLogger();
         kube.events.add(new Event("my-namespace", CREATED_NAMESPACE));
-        operator.reconcile(kube, logger);
+        operator.reconcile(functions, logger);
         assertThat(logger.messages.remove(), is("Namespace exists"));
     }
 
@@ -35,9 +37,10 @@ public class OperatorTest
     {
         var operator = new Operator();
         var kube = new Kubernetes();
+        var functions = new KubernetesFunctions(kube::existsNamespace, kube::createNamespace);
         var logger = new RecordingLogger();
         kube.events.add(new Event("error", ERROR));
-        operator.reconcile(kube, logger);
+        operator.reconcile(functions, logger);
         assertThat(logger.messages.remove(), is("Namespace not created"));
     }
 

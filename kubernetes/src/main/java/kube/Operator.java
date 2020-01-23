@@ -2,14 +2,14 @@ package kube;
 
 public class Operator
 {
-    public void reconcile(Kubernetes kube, Logger logger)
+    public void reconcile(KubernetesFunctions kube, Logger logger)
     {
         String namespace = "my-namespace";
 
-        final Boolean exists = kube.existsNamespace().apply(namespace);
+        final Boolean exists = kube.existsNamespace.apply(namespace);
         if (!exists)
         {
-            final Boolean created = kube.createNamespace().apply("my-namespace");
+            final Boolean created = kube.createNamespace.apply("my-namespace");
             if (created)
             {
                 logger.log("Namespace created");
