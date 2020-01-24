@@ -5,7 +5,7 @@ clean:
 	rm -f hellogdb
 
 build:
-	javac HelloGdb.java
+	javac -g HelloGdb.java
 
 native:
 	native-image -H:+TrackNodeSourcePosition HelloGdb
