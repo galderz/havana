@@ -2,36 +2,19 @@ package kube;
 
 import kube.Kubernetes.Event;
 
-import java.util.function.Function;
-
-import static kube.Kubernetes.EventType.EXISTS_NAMESPACE;
+import static kube.Kubernetes.EventType.GET_NAMESPACES;
 
 public class KubernetesShell implements AutoCloseable
 {
+    public static final Event EVENT_GET_NAMESPACES = new Event(null, GET_NAMESPACES);
     RemoteKubernetes remoteKubernetes = new RemoteKubernetes();
     Kubernetes kubernetes = new Kubernetes();
 
     public boolean existsNamespace(String namespaceName)
     {
-        return toExistsNamespace()
-            .andThen(remoteKubernetes.read())
-            .andThen(recordEvent())
-            .andThen(kubernetes::existsNamespace)
-            .apply(namespaceName);
-    }
-
-    private Function<Event, String> recordEvent()
-    {
-        return event ->
-        {
-            kubernetes.events.add(event);
-            return (String) event.param;
-        };
-    }
-
-    private Function<String, Event> toExistsNamespace()
-    {
-        return namespaceName -> new Event(namespaceName, EXISTS_NAMESPACE);
+        final var namespaceList = remoteKubernetes.read(EVENT_GET_NAMESPACES);
+        kubernetes.events.add(namespaceList);
+        return kubernetes.existsNamespace(namespaceName);
     }
 
     @Override

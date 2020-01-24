@@ -2,11 +2,11 @@ package kube;
 
 public class ReadOnlyOperator
 {
-    public void reconcile(KubernetesFunctions kube, Logger logger)
+    public void reconcile(KubernetesFunctions kubernetes, Logger logger)
     {
         String namespace = "my-namespace";
 
-        final Boolean exists = kube.existsNamespace.apply(namespace);
+        final Boolean exists = kubernetes.existsNamespace.apply(namespace);
         if (exists)
         {
             logger.log("Namespace exists");

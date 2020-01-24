@@ -3,8 +3,9 @@ package kube;
 import kube.Kubernetes.Event;
 import org.junit.jupiter.api.Test;
 
-import static kube.Kubernetes.EventType.NAMESPACE_NOT_PRESENT;
-import static kube.Kubernetes.EventType.NAMESPACE_PRESENT;
+import java.util.List;
+
+import static kube.Kubernetes.EventType.NAMESPACES_LIST;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -28,7 +29,7 @@ public class ReadOnlyOperatorTest
         var kube = new Kubernetes();
         var functions = new KubernetesFunctions(kube::existsNamespace, kube::createNamespace);
         var logger = new RecordingLogger();
-        kube.events.add(new Event("my-namespace", NAMESPACE_PRESENT));
+        kube.events.add(new Event(List.of("my-namespace").stream(), NAMESPACES_LIST));
         operator.reconcile(functions, logger);
         assertThat(logger.messages.remove(), is("Namespace exists"));
     }

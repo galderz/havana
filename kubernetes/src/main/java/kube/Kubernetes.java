@@ -2,6 +2,7 @@ package kube;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.stream.Stream;
 
 public class Kubernetes
 {
@@ -21,22 +22,17 @@ public class Kubernetes
 
     public boolean existsNamespace(String namespaceName)
     {
-        if (isNamespaceCreated() || isNamespacePresent())
-        {
-            return true;
+        final var event = events.peek();
+        if (event == null)
+            return false;
+
+        switch (event.type) {
+            case NAMESPACES_LIST:
+                final Stream<String> namespaces = (Stream<String>) event.param;
+                return namespaces.anyMatch(n -> n.equals(namespaceName));
+            default:
+                throw new RuntimeException("NYI");
         }
-
-        return false;
-    }
-
-    private boolean isNamespacePresent()
-    {
-        return events.stream().anyMatch(op -> op.type == EventType.NAMESPACE_PRESENT);
-    }
-
-    private boolean isNamespaceCreated()
-    {
-        return events.stream().anyMatch(op -> op.type == EventType.CREATED_NAMESPACE);
     }
 
     public final static class Event
@@ -53,12 +49,14 @@ public class Kubernetes
 
     public enum EventType
     {
+        GET_NAMESPACES,
+        NAMESPACES_LIST,
+
         EXISTS_NAMESPACE,
         NAMESPACE_PRESENT,
         NAMESPACE_NOT_PRESENT,
 
         CREATED_NAMESPACE,
-        GET_NAMESPACE,
         ERROR,
     }
 
