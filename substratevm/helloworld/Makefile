@@ -12,3 +12,6 @@ native:
 
 run:
 	./helloworld
+
+call-tree:
+	native-image -H:+PrintAnalysisCallTree HelloWorld
