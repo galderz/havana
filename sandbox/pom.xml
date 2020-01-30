@@ -15,6 +15,7 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
       <jmh.version>1.14</jmh.version>
+       <sun-tools.version>1.8.0</sun-tools.version>
    </properties>
 
    <dependencies>
@@ -72,8 +73,9 @@
             <artifactId>maven-compiler-plugin</artifactId>
             <version>3.1</version>
             <configuration>
-               <source>1.8</source>
-               <target>1.8</target>
+               <source>1.11</source>
+               <target>1.11</target>
+                <compilerArgs>-XDignore.symbol.file</compilerArgs>
             </configuration>
          </plugin>
 

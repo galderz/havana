@@ -1,4 +1,4 @@
-package j.javafx;
+package fx;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -24,7 +24,7 @@ public class TableViewUpdateSorted extends Application {
    private final ExecutorService exec = Executors.newSingleThreadExecutor();
 
    public static void main(String[] args) {
-      launch(args);
+      Application.launch(args);
    }
 
    @Override

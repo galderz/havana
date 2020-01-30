@@ -1,4 +1,4 @@
-package j.javafx;
+package fx;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 public class TableViewUpdate extends Application {
 
-   public static void main(String[] args) throws Exception { launch(args); }
+   public static void main(String[] args) throws Exception { Application.launch(args); }
    public void start(final Stage stage) throws Exception {
       final Label statusLabel = new Label("Status");
       final Label numberLabel =  new Label("Empty");

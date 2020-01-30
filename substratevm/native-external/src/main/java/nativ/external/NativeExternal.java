@@ -41,18 +41,18 @@ public class Main
             , jarCompiler
         );
 
-//        var imageClasspath = String.format(
-//            "%s"
-//            , jarSvm
-//        );
+        var imageClasspath = String.format(
+            "%s"
+            , jarSvm
+        );
 
         var command = Arrays.asList(
             "java"
             , "-cp"
             , classpath
-            , "com.oracle.svm.hosted.NativeImageGeneratorRunner"
-//            , "-imagecp"
-//            , imageClasspath
+            , "com.oracle.svm.hosted.NativeImageGeneratorRunner$JDK9Plus"
+            , "-imagecp"
+            , imageClasspath
         );
 
         System.out.println(String.join(" ", command));

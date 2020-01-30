@@ -1,4 +1,4 @@
-package j.javafx;
+package fx;
 
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
@@ -30,7 +30,7 @@ public class TableViewSample extends Application {
          );
 
    public static void main(String[] args) {
-      launch(args);
+      Application.launch(args);
    }
 
    @Override
