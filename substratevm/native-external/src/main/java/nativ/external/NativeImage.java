@@ -126,10 +126,10 @@ public class NativeImage
         );
 
         final Stream<String> hArguments = Stream.of(new String[][]{
-            {"Path", "/Users/g/1/graal-19.3/graal/substratevm"} // TODO: current dir?
+            {"Path", "/Users/g/1/jawa/substratevm/helloworld"} // Path to classes
             , {"CLibraryPath", cLibraryPath.collect(NativeImageArguments.cLibraryPath())}
             , {"Class", "HelloWorld"}
-            , {"Name", "HelloWorld"}
+            , {"Name", "helloworld"}
         }).map(entry -> NativeImageArguments.h(entry[0], entry[1]));
 
         final List<String> command = Stream.of(
