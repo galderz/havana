@@ -99,27 +99,27 @@ public class NativeImage
 
         final Stream<String> classPath = Stream.of(
             relativeTo("lib/svm/builder/llvm-wrapper-shadowed.jar", graalHome)
-            , relativeTo("org/graalvm/nativeimage/svm/19.3.1/svm-19.3.1.jar", mavenHome)
-            , relativeTo("org/graalvm/nativeimage/objectfile/19.3.1/objectfile-19.3.1.jar", mavenHome)
             , relativeTo("lib/svm/builder/graal-llvm.jar", graalHome)
             , relativeTo("lib/svm/builder/llvm-platform-specific-shadowed.jar", graalHome)
             , relativeTo("lib/svm/builder/javacpp-shadowed.jar", graalHome)
             , relativeTo("lib/svm/builder/svm-llvm.jar", graalHome)
+            , relativeTo("org/graalvm/nativeimage/objectfile/19.3.1/objectfile-19.3.1.jar", mavenHome)
             , relativeTo("org/graalvm/nativeimage/pointsto/19.3.1/pointsto-19.3.1.jar", mavenHome)
+            , relativeTo("org/graalvm/nativeimage/svm/19.3.1/svm-19.3.1.jar", mavenHome)
         );
 
         final String mainClass = "com.oracle.svm.hosted.NativeImageGeneratorRunner$JDK9Plus";
 
         final Stream<String> imageCp = Stream.of(
             relativeTo("lib/svm/builder/llvm-wrapper-shadowed.jar", graalHome)
-            , relativeTo("org/graalvm/nativeimage/svm/19.3.1/svm-19.3.1.jar", mavenHome)
-            , relativeTo("org/graalvm/nativeimage/objectfile/19.3.1/objectfile-19.3.1.jar", mavenHome)
             , relativeTo("lib/svm/builder/graal-llvm.jar", graalHome)
             , relativeTo("lib/svm/builder/llvm-platform-specific-shadowed.jar", graalHome)
             , relativeTo("lib/svm/builder/javacpp-shadowed.jar", graalHome)
             , relativeTo("lib/svm/builder/svm-llvm.jar", graalHome)
-            , relativeTo("org/graalvm/nativeimage/pointsto/19.3.1/pointsto-19.3.1.jar", mavenHome)
             , relativeTo("org/graalvm/nativeimage/library-support/19.3.1/library-support-19.3.1.jar", mavenHome)
+            , relativeTo("org/graalvm/nativeimage/objectfile/19.3.1/objectfile-19.3.1.jar", mavenHome)
+            , relativeTo("org/graalvm/nativeimage/pointsto/19.3.1/pointsto-19.3.1.jar", mavenHome)
+            , relativeTo("org/graalvm/nativeimage/svm/19.3.1/svm-19.3.1.jar", mavenHome)
             // Directory of classes, or link to jar(s)
             , "/Users/g/1/jawa/substratevm/helloworld/helloworld.jar"
         );
