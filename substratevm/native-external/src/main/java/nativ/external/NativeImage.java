@@ -91,8 +91,8 @@ public class NativeImage
         final String mavenHome =
             "/Users/g/.m2/repository";
 
-        final Stream<String> modulePath = JavaOptions.modulePath(
-            relativeTo("lib/truffle/truffle-api.jar", graalHome)
+         final Stream<String> modulePath = JavaOptions.modulePath(
+            relativeTo("org/graalvm/truffle/truffle-api/19.3.1/truffle-api-19.3.1.jar", mavenHome)
         );
 
         final Stream<String> javaAgent = Stream.of(
