@@ -16,6 +16,7 @@
         <module>nonblocking</module>
         <module>neo4j</module>
         <module>kubernetes</module>
+        <module>native-external</module>
     </modules>
 
 </project>
