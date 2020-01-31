@@ -18,6 +18,10 @@ public class NativeImage
             , "EnableJVMCI"
         ).map(JavaOptions::xxPlus);
 
+        final Stream<String> xxMinus = Stream.of(
+            "UseJVMCICompiler"
+        ).map(JavaOptions::xxMinus);
+
         final Stream<String> systemProperties = Stream.of(new String[][]{
             {"truffle.TrustAllTruffleRuntimeProviders", "true"}
             , {"truffle.TruffleRuntime", "com.oracle.truffle.api.impl.DefaultTruffleRuntime"}
@@ -76,8 +80,6 @@ public class NativeImage
             , "org.graalvm.truffle/com.oracle.truffle.api.impl"
         ).map(JavaOptions::addUnnamed)
             .flatMap(JavaOptions::addOpens);
-
-        // TODO: add -XX:-UseJVMCICompiler
 
         final Stream<String> xss = Stream.of("10m").map(JavaOptions::xss);
         final Stream<String> xms = Stream.of("1g").map(JavaOptions::xms);
@@ -140,6 +142,7 @@ public class NativeImage
         final List<String> command = Stream.of(
             Stream.of(relativeTo("bin/java", graalHome))
             , xxPlus
+            , xxMinus
             , systemProperties
             , exports
             , opens
@@ -161,7 +164,8 @@ public class NativeImage
         execute(command);
     }
 
-    private static void execute(List<String> command) throws Exception {
+    private static void execute(List<String> command) throws Exception
+    {
         Path outputDir = FileSystems.getDefault().getPath("/Users/g/1/graal-19.3/graal/substratevm");
         CountDownLatch errorReportLatch = new CountDownLatch(1);
 
@@ -180,7 +184,8 @@ public class NativeImage
         );
         executor.shutdown();
         errorReportLatch.await();
-        if (process.waitFor() != 0) {
+        if (process.waitFor() != 0)
+        {
             throw new RuntimeException("Image generation failed. Exit code: " + process.exitValue());
         }
     }
