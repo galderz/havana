@@ -117,7 +117,8 @@ public class NativeImage
             , relativeTo("lib/svm/builder/svm-llvm.jar", graalHome)
             , relativeTo("lib/svm/builder/pointsto.jar", graalHome)
             , relativeTo("lib/svm/library-support.jar", graalHome)
-            , "/Users/g/1/graal-19.3/graal/substratevm" // TODO: what's this? current dir?
+            // Directory of classes, or link to jar(s)
+            , "/Users/g/1/jawa/substratevm/helloworld/helloworld.jar"
         );
 
         final Stream<String> cLibraryPath = Stream.of(
@@ -126,9 +127,10 @@ public class NativeImage
         );
 
         final Stream<String> hArguments = Stream.of(new String[][]{
-            {"Path", "/Users/g/1/jawa/substratevm/helloworld"} // Path to classes
+            // Target directory for binary
+            {"Path", "/Users/g/1/jawa/substratevm/native-external/target"}
             , {"CLibraryPath", cLibraryPath.collect(NativeImageArguments.cLibraryPath())}
-            , {"Class", "HelloWorld"}
+            , {"Class", "HelloWorld"} // TODO: in a jar situation this should be extractable from jar
             , {"Name", "helloworld"}
         }).map(entry -> NativeImageArguments.h(entry[0], entry[1]));
 
