@@ -86,37 +86,40 @@ public class NativeImage
         final String graalHome =
             "/Users/g/1/graal-19.3/graal/sdk/mxbuild/darwin-amd64/GRAALVM_LIBGRAAL_JAVA11_BNATIVE-IMAGE_BNATIVE-IMAGE-CONFIGURE_NI_NIC_NIL_NJU_SJVMCICOMPILER_SNATIVE-IMAGE-AGENT/graalvm-libgraal-java11-19.3.1/Contents/Home";
 
+        final String mavenHome =
+            "/Users/g/.m2/repository";
+
         final Stream<String> modulePath = JavaOptions.modulePath(
             relativeTo("lib/truffle/truffle-api.jar", graalHome)
         );
 
         final Stream<String> javaAgent = Stream.of(
-            relativeTo("lib/svm/builder/svm.jar", graalHome)
+            relativeTo("org/graalvm/nativeimage/svm/19.3.1/svm-19.3.1.jar", mavenHome)
         ).map(JavaOptions::javaAgent);
 
         final Stream<String> classPath = Stream.of(
             relativeTo("lib/svm/builder/llvm-wrapper-shadowed.jar", graalHome)
-            , relativeTo("lib/svm/builder/svm.jar", graalHome)
-            , relativeTo("lib/svm/builder/objectfile.jar", graalHome)
+            , relativeTo("org/graalvm/nativeimage/svm/19.3.1/svm-19.3.1.jar", mavenHome)
+            , relativeTo("org/graalvm/nativeimage/objectfile/19.3.1/objectfile-19.3.1.jar", mavenHome)
             , relativeTo("lib/svm/builder/graal-llvm.jar", graalHome)
             , relativeTo("lib/svm/builder/llvm-platform-specific-shadowed.jar", graalHome)
             , relativeTo("lib/svm/builder/javacpp-shadowed.jar", graalHome)
             , relativeTo("lib/svm/builder/svm-llvm.jar", graalHome)
-            , relativeTo("lib/svm/builder/pointsto.jar", graalHome)
+            , relativeTo("org/graalvm/nativeimage/pointsto/19.3.1/pointsto-19.3.1.jar", mavenHome)
         );
 
         final String mainClass = "com.oracle.svm.hosted.NativeImageGeneratorRunner$JDK9Plus";
 
         final Stream<String> imageCp = Stream.of(
             relativeTo("lib/svm/builder/llvm-wrapper-shadowed.jar", graalHome)
-            , relativeTo("lib/svm/builder/svm.jar", graalHome)
-            , relativeTo("lib/svm/builder/objectfile.jar", graalHome)
+            , relativeTo("org/graalvm/nativeimage/svm/19.3.1/svm-19.3.1.jar", mavenHome)
+            , relativeTo("org/graalvm/nativeimage/objectfile/19.3.1/objectfile-19.3.1.jar", mavenHome)
             , relativeTo("lib/svm/builder/graal-llvm.jar", graalHome)
             , relativeTo("lib/svm/builder/llvm-platform-specific-shadowed.jar", graalHome)
             , relativeTo("lib/svm/builder/javacpp-shadowed.jar", graalHome)
             , relativeTo("lib/svm/builder/svm-llvm.jar", graalHome)
-            , relativeTo("lib/svm/builder/pointsto.jar", graalHome)
-            , relativeTo("lib/svm/library-support.jar", graalHome)
+            , relativeTo("org/graalvm/nativeimage/pointsto/19.3.1/pointsto-19.3.1.jar", mavenHome)
+            , relativeTo("org/graalvm/nativeimage/library-support/19.3.1/library-support-19.3.1.jar", mavenHome)
             // Directory of classes, or link to jar(s)
             , "/Users/g/1/jawa/substratevm/helloworld/helloworld.jar"
         );
