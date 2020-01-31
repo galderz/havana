@@ -129,8 +129,15 @@ public class NativeImage
             , {"Name", "helloworld"}
         }).map(entry -> NativeImageArguments.h(entry[0], entry[1]));
 
+        // Java home needs to be one that has amongst others,
+        // has org.graalvm.truffle installed.
+        // Standard java home not enough, neither java labs.
+        final Stream<String> javaBin = Stream.of(
+            relativeTo("bin/java", graalHome)
+        );
+
         final List<String> command = Stream.of(
-            Stream.of(relativeTo("bin/java", graalHome))
+            javaBin
             , xxPlus
             , xxMinus
             , systemProperties
