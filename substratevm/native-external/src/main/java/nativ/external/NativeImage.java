@@ -33,7 +33,7 @@ public class NativeImage
             , {"user.language", "en"}
             , {"org.graalvm.version", "dev"}
             , {"org.graalvm.config", ""}
-            , {"com.oracle.graalvm.isaot", "true"} // TODO probably not needed? only used by the binary
+            , {"com.oracle.graalvm.isaot", "true"} // TODO could it be set to false? what's the impact?
             , {"jdk.internal.lambda.disableEagerInitialization", "true"}
             , {"jdk.internal.lambda.eagerlyInitialize", "false"}
             , {"java.lang.invoke.InnerClassLambdaMetafactory.initializeLambdas", "false"}
@@ -116,16 +116,11 @@ public class NativeImage
             , "/Users/g/1/jawa/substratevm/helloworld/helloworld.jar"
         );
 
-        final Stream<String> cLibraryPath = Stream.of(
-            relativeTo("lib/svm/clibraries/darwin-amd64", graalHome)
-            , "/Users/g/1/graal-19.3/graal/substratevm/mxbuild/darwin-amd64/SVM_HOSTED_NATIVE/darwin-amd64" // TODO: what's this?
-        );
-
         final Stream<String> hArguments = Stream.of(new String[][]{
             // Target directory for binary
             {"Path", "/Users/g/1/jawa/substratevm/native-external/target"}
-            , {"CLibraryPath", cLibraryPath.collect(NativeImageArguments.cLibraryPath())}
-            , {"Class", "HelloWorld"} // TODO: in a jar situation this should be extractable from jar
+            , {"CLibraryPath", relativeTo("lib/svm/clibraries/darwin-amd64", graalHome)}
+            , {"Class", "HelloWorld"} // TODO: in a jar situation this should be extractable from jar?
             , {"Name", "helloworld"}
         }).map(entry -> NativeImageArguments.h(entry[0], entry[1]));
 
