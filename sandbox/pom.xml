@@ -15,7 +15,6 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
       <jmh.version>1.14</jmh.version>
-       <sun-tools.version>1.8.0</sun-tools.version>
    </properties>
 
    <dependencies>
