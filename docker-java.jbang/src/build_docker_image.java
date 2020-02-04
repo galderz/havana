@@ -10,7 +10,7 @@ import com.github.dockerjava.core.command.BuildImageResultCallback;
 import java.io.File;
 import java.util.Set;
 
-public class docker_java
+public class docker_java_build_image
 {
     public static void main(String[] args)
     {
