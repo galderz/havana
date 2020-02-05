@@ -95,6 +95,12 @@ public class NativeImageJavaHome
 
         final Stream<String> modulePath = Stream.of(
             relativeTo("org/graalvm/truffle/truffle-api/19.3.1/truffle-api-19.3.1.jar", mavenHome)
+            , relativeTo("org/graalvm/sdk/graal-sdk/19.3.1/graal-sdk-19.3.1.jar", mavenHome)
+            , relativeTo("org/graalvm/compiler/compiler/19.3.1/compiler-19.3.1.jar", mavenHome)
+        );
+
+        final Stream<String> upgradeModulePath = Stream.of(
+            relativeTo("org/graalvm/compiler/compiler/19.3.1/compiler-19.3.1.jar", mavenHome)
         );
 
         final Stream<String> javaAgent = Stream.of(
@@ -114,6 +120,14 @@ public class NativeImageJavaHome
             , relativeTo("org/graalvm/nativeimage/objectfile/19.3.1/objectfile-19.3.1.jar", mavenHome)
             , relativeTo("org/graalvm/nativeimage/pointsto/19.3.1/pointsto-19.3.1.jar", mavenHome)
             , relativeTo("org/graalvm/nativeimage/svm/19.3.1/svm-19.3.1.jar", mavenHome)
+
+            // With GraalVM home based setup, there doesn't seem to be a need for these jars here,
+            // because there native-image-modules.list seems to trigger early class loading,
+            // and annotaton processing.
+            // Without that list file, we just force the jars through as part of the imagecp
+            , relativeTo("org/graalvm/compiler/compiler/19.3.1/compiler-19.3.1.jar", mavenHome)
+            , relativeTo("org/graalvm/sdk/graal-sdk/19.3.1/graal-sdk-19.3.1.jar", mavenHome)
+
             // Directory of classes, or link to jar(s)
             , "/Users/g/1/jawa/substratevm/helloworld/helloworld.jar"
         );
@@ -126,11 +140,8 @@ public class NativeImageJavaHome
             , {"Name", "helloworld"}
         }).map(entry -> NativeImageArguments.h(entry[0], entry[1]));
 
-        // Java home needs to be one that has amongst others,
-        // has org.graalvm.truffle installed.
-        // Standard java home not enough, neither java labs.
         final Stream<String> javaBin = Stream.of(
-            relativeTo("bin/java", graalHome)
+            relativeTo("bin/java", "/opt/java-11-labs")
         );
 
         final Stream<String> debug = Stream.of(
@@ -148,8 +159,11 @@ public class NativeImageJavaHome
             , xss
             , xms
             , xmx
+            , Stream.of("--add-modules", "org.graalvm.truffle,org.graalvm.sdk")
             , JavaOptions.modulePath()
-            , modulePath
+            , Stream.of(modulePath.collect(JavaOptions.colon()))
+            , Stream.of("--upgrade-module-path")
+            , Stream.of(upgradeModulePath.collect(JavaOptions.colon()))
             , javaAgent
             , JavaOptions.cp()
             , Stream.of(classPath.collect(JavaOptions.colon()))
@@ -157,6 +171,7 @@ public class NativeImageJavaHome
             , NativeImageArguments.imageCp()
             , Stream.of(imageCp.collect(JavaOptions.colon()))
             , hArguments
+            , Stream.of("-H:+ReportExceptionStackTraces")
         ).flatMap(s -> s)
             .collect(
                 ArrayList::new
