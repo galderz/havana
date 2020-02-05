@@ -79,12 +79,9 @@ final class JavaOptions
         );
     }
 
-    static Stream<String> modulePath(String directory)
+    static Stream<String> modulePath()
     {
-        return Stream.of(
-            "--module-path"
-            , directory
-        );
+        return Stream.of("--module-path");
     }
 
     static String javaAgent(String javaAgent)

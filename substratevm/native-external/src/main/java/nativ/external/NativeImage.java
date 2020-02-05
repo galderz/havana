@@ -50,6 +50,7 @@ public class NativeImage
             , "jdk.internal.vm.ci/jdk.vm.ci.common"
             , "jdk.internal.vm.ci/jdk.vm.ci.code.site"
             , "jdk.internal.vm.ci/jdk.vm.ci.code.stack"
+            , "jdk.internal.vm.compiler/org.graalvm.compiler.serviceprovider"
         ).map(JavaOptions::addUnnamed)
             .flatMap(JavaOptions::addExports);
 
@@ -91,8 +92,14 @@ public class NativeImage
         final String mavenHome =
             "/Users/g/.m2/repository";
 
-         final Stream<String> modulePath = JavaOptions.modulePath(
+//         final Stream<String> modulePath = JavaOptions.modulePath(
+//            relativeTo("org/graalvm/truffle/truffle-api/19.3.1/truffle-api-19.3.1.jar", mavenHome)
+//        );
+
+        final Stream<String> modulePath = Stream.of(
             relativeTo("org/graalvm/truffle/truffle-api/19.3.1/truffle-api-19.3.1.jar", mavenHome)
+            , relativeTo("org/graalvm/sdk/graal-sdk/19.3.1/graal-sdk-19.3.1.jar", mavenHome)
+            , relativeTo("org/graalvm/compiler/compiler/19.3.1/compiler-19.3.1.jar", mavenHome)
         );
 
         final Stream<String> javaAgent = Stream.of(
@@ -103,6 +110,7 @@ public class NativeImage
             relativeTo("org/graalvm/nativeimage/objectfile/19.3.1/objectfile-19.3.1.jar", mavenHome)
             , relativeTo("org/graalvm/nativeimage/pointsto/19.3.1/pointsto-19.3.1.jar", mavenHome)
             , relativeTo("org/graalvm/nativeimage/svm/19.3.1/svm-19.3.1.jar", mavenHome)
+            , relativeTo("org/graalvm/compiler/compiler/19.3.1/compiler-19.3.1.jar", mavenHome)
         );
 
         final String mainClass = "com.oracle.svm.hosted.NativeImageGeneratorRunner$JDK9Plus";
@@ -112,6 +120,7 @@ public class NativeImage
             , relativeTo("org/graalvm/nativeimage/objectfile/19.3.1/objectfile-19.3.1.jar", mavenHome)
             , relativeTo("org/graalvm/nativeimage/pointsto/19.3.1/pointsto-19.3.1.jar", mavenHome)
             , relativeTo("org/graalvm/nativeimage/svm/19.3.1/svm-19.3.1.jar", mavenHome)
+            , relativeTo("org/graalvm/compiler/compiler/19.3.1/compiler-19.3.1.jar", mavenHome)
             // Directory of classes, or link to jar(s)
             , "/Users/g/1/jawa/substratevm/helloworld/helloworld.jar"
         );
@@ -128,9 +137,12 @@ public class NativeImage
         // has org.graalvm.truffle installed.
         // Standard java home not enough, neither java labs.
         final Stream<String> javaBin = Stream.of(
-            relativeTo("bin/java", graalHome)
+            //relativeTo("bin/java", graalHome)
+            // relativeTo("bin/java", "/Users/g/.sdkman/candidates/java/11.0.5.hs-adpt")
+            relativeTo("bin/java", "/opt/java-11-labs")
         );
 
+        final String modulePathCollected = modulePath.collect(JavaOptions.colon());
         final List<String> command = Stream.of(
             javaBin
             , xxPlus
@@ -141,7 +153,11 @@ public class NativeImage
             , xss
             , xms
             , xmx
-            , modulePath
+            , JavaOptions.modulePath()
+            , Stream.of(modulePathCollected)
+            , Stream.of("--upgrade-module-path")
+            , Stream.of(modulePathCollected)
+            , Stream.of("--add-modules", "org.graalvm.truffle")
             , javaAgent
             , JavaOptions.cp()
             , Stream.of(classPath.collect(JavaOptions.colon()))
