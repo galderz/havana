@@ -2,6 +2,7 @@ package nativ.external;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -13,6 +14,8 @@ public class NativeImageGraalHome
 {
     public static void main(String[] args) throws Exception
     {
+        final boolean isDebug = Boolean.getBoolean("debug");
+
         final Stream<String> xxPlus = Stream.of(
             "UnlockExperimentalVMOptions"
             , "EnableJVMCI"
@@ -131,8 +134,13 @@ public class NativeImageGraalHome
             relativeTo("bin/java", graalHome)
         );
 
+        final Stream<String> debug = Stream.of(
+            isDebug ? "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000" : ""
+        );
+
         final List<String> command = Stream.of(
             javaBin
+            , debug
             , xxPlus
             , xxMinus
             , systemProperties
@@ -151,7 +159,14 @@ public class NativeImageGraalHome
             , Stream.of(imageCp.collect(JavaOptions.colon()))
             , hArguments
         ).flatMap(s -> s)
-            .collect(Collectors.toList());
+            .collect(
+                ArrayList::new
+                , (list, entry) -> {
+                    if (!entry.isEmpty())
+                        list.add(entry);
+                }
+                , ArrayList::addAll
+            );
 
         // System.out.println(command);
         execute(command);
