@@ -1,4 +1,5 @@
-GRAAL_HOME ?= "${HOME}/1/graal-19.3/graal/sdk/mxbuild/darwin-amd64/GRAALVM_LIBGRAAL_JAVA11_BNATIVE-IMAGE_BNATIVE-IMAGE-CONFIGURE_NI_NIC_NIL_NJU_SJVMCICOMPILER_SNATIVE-IMAGE-AGENT/graalvm-libgraal-java11-19.3.1/Contents/Home"
+GRAAL_SRC_HOME ?= "${HOME}/1/graal-19.3/graal"
+GRAAL_HOME ?= "${GRAAL_SRC_HOME}/sdk/mxbuild/darwin-amd64/GRAALVM_LIBGRAAL_JAVA11_BNATIVE-IMAGE_BNATIVE-IMAGE-CONFIGURE_NI_NIC_NIL_NJU_SJVMCICOMPILER_SNATIVE-IMAGE-AGENT/graalvm-libgraal-java11-19.3.1/Contents/Home"
 TRIMMED_CLIBRARIES_PATH ?= "/opt/graal-19.3-clibraries"
 
 clean:
@@ -39,9 +40,15 @@ libffi: configure-libffi
 	cp ffi.h ../../../clibraries/libffi/include; \
 	cp `readlink ffitarget.h` ../../../clibraries/libffi/include
 
+svm-libffi: libffi
+	cp ${GRAAL_SRC_HOME}/substratevm/src/com.oracle.svm.libffi/include/svm_libffi.h target/clibraries/libffi/include
+	cp ${GRAAL_SRC_HOME}/truffle/src/com.oracle.truffle.nfi.native/include/trufflenfi.h target/clibraries/libffi/include
+
 trim-graal-clibraries:
-	rm -drf ${TRIMMED_CLIBRARIES_PATH}; \
+	rm -drf ${TRIMMED_CLIBRARIES_PATH}
 	cp -r "${GRAAL_HOME}/lib/svm/clibraries" ${TRIMMED_CLIBRARIES_PATH}
 	rm -f ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64/libffi.a
 	rm -f ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64/include/ffi.h
 	rm -f ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64/include/ffitarget.h
+	rm -f ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64/include/svm_libffi.h
+	rm -f ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64/include/trufflenfi.h
