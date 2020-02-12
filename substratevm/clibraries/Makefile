@@ -19,7 +19,7 @@ make-libffi-dirs: make-dirs
 
 download-libffi: make-libffi-dirs
 	cd target/archives; \
-	curl https://sourceware.org/pub/libffi/libffi-3.2.1.tar.gz > libffi.tar.gz
+	curl -o libffi.tar.gz https://sourceware.org/pub/libffi/libffi-3.2.1.tar.gz
 
 untar-libffi: download-libffi
 	tar -xzvpf target/archives/libffi.tar.gz -C target/src/libffi --strip-components 1
