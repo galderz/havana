@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class NativeImageJavaHome
@@ -132,10 +133,15 @@ public class NativeImageJavaHome
             , "/Users/g/1/jawa/substratevm/helloworld/helloworld.jar"
         );
 
+        final Stream<String> cLibraryPath = Stream.of(
+            "/Users/g/1/jawa/substratevm/clibraries/target/clibraries/libffi"
+            , "/opt/graal-19.3-clibraries/darwin-amd64"
+        );
+
         final Stream<String> hArguments = Stream.of(new String[][]{
             // Target directory for binary
             {"Path", "/Users/g/1/jawa/substratevm/native-external/target"}
-            , {"CLibraryPath", relativeTo("lib/svm/clibraries/darwin-amd64", graalHome)}
+            , {"CLibraryPath", cLibraryPath.collect(Collectors.joining(","))}
             , {"Class", "HelloWorld"} // TODO: in a jar situation this should be extractable from jar?
             , {"Name", "helloworld"}
         }).map(entry -> NativeImageArguments.h(entry[0], entry[1]));
