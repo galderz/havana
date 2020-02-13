@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class NativeImageJavaHome
+public class NativeImageLabsHome
 {
     public static void main(String[] args) throws Exception
     {
