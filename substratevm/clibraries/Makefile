@@ -4,7 +4,7 @@ TRIMMED_CLIBRARIES_PATH ?= "/opt/graal-19.3-clibraries"
 
 download-all: download-libffi download-fdlibm
 
-clean: clean-fdlibm clean-libffi
+clean: clean-strictmath clean-fdlibm clean-libffi
 
 clean-all:
 	rm -drf target
@@ -21,6 +21,7 @@ make-libffi-dirs: make-dirs
 	mkdir -p target/clibraries/libffi || true
 	mkdir -p target/clibraries/libffi/include || true
 
+# TODO platform specific CFLAGS
 download-libffi: make-libffi-dirs
 	cd target/archives; \
 	curl -o libffi.tar.gz https://sourceware.org/pub/libffi/libffi-3.2.1.tar.gz
@@ -62,6 +63,7 @@ trim-graal-clibraries:
 	rm -f ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64/include/ffitarget.h
 	rm -f ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64/include/svm_libffi.h
 	rm -f ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64/include/trufflenfi.h
+	rm -f ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64/libstrictmath.a
 
 make-fdlibm-dirs: make-dirs
 	mkdir -p target/src/fdlibm || true
@@ -156,6 +158,7 @@ define get-fdlibm
 curl -o ${1} http://www.netlib.org/fdlibm/${1}
 endef
 
+# TODO platform specific CFLAGS
 fdlibm:
 	cd target/src/fdlibm; \
 	CFLAGS="-fPIC -O1 -D_LITTLE_ENDIAN -ffunction-sections -fdata-sections -fvisibility=hidden" make; \
@@ -164,3 +167,19 @@ fdlibm:
 clean-fdlibm:
 	cd target/src/fdlibm; \
 	make clean
+
+make-strictmath-dirs:
+	mkdir -p target/src/strictmath
+	mkdir -p target/clibraries/strictmath
+
+# TODO platform specific CFLAGS
+strictmath: make-strictmath-dirs
+	cd target/src/strictmath; \
+	cp ${GRAAL_SRC_HOME}/substratevm/src/com.oracle.svm.native.strictmath/src/StrictMath.c .; \
+	cp ${GRAAL_SRC_HOME}/substratevm/src/com.oracle.svm.native.strictmath/src/fdlibm/include/jfdlibm.h .; \
+	cp ${GRAAL_SRC_HOME}/substratevm/src/com.oracle.svm.native.strictmath/src/fdlibm/include/fdlibm.h .; \
+	gcc -MMD -fPIC -O1 -D_LITTLE_ENDIAN -ffunction-sections -fdata-sections -fvisibility=hidden -c StrictMath.c; \
+	ar -rc ../../clibraries/strictmath/libstrictmath.a StrictMath.o
+
+clean-strictmath:
+	rm -drf target/src/strictmath/*

@@ -135,6 +135,8 @@ public class NativeImageLabsHome
 
         final Stream<String> cLibraryPath = Stream.of(
             "/Users/g/1/jawa/substratevm/clibraries/target/clibraries/libffi"
+            , "/Users/g/1/jawa/substratevm/clibraries/target/clibraries/fdlibm"
+            , "/Users/g/1/jawa/substratevm/clibraries/target/clibraries/strictmath"
             , "/opt/graal-19.3-clibraries/darwin-amd64"
         );
 
