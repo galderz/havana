@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -94,40 +95,54 @@ public class NativeImageLabsHome
         final String mavenHome =
             "/Users/g/.m2/repository";
 
+        final String graalVersion = "19.3.1";
+        final Function<String, String> mavenPath = relativeTo(mavenHome).compose(mavenVersioned(graalVersion));
+        // $ cd substratevm && mx build && mx maven-install
+        final String jarSvm = mavenPath.apply("org/graalvm/nativeimage/svm/%1$s/svm-%1$s.jar");
+        final String jarObjectFile = mavenPath.apply("org/graalvm/nativeimage/objectfile/%1$s/objectfile-%1$s.jar");
+        final String jarPointsTo = mavenPath.apply("org/graalvm/nativeimage/pointsto/%1$s/pointsto-%1$s.jar");
+        final String jarLibrarySupport = mavenPath.apply("org/graalvm/nativeimage/library-support/%1$s/library-support-%1$s.jar");
+        // $ cd truffle && mx maven-install
+        final String jarTruffleApi = mavenPath.apply("org/graalvm/truffle/truffle-api/%1$s/truffle-api-%1$s.jar");
+        // $ cd sdk && mx maven-install
+        final String jarGraalSdk = mavenPath.apply("org/graalvm/sdk/graal-sdk/%1$s/graal-sdk-%1$s.jar");
+        // $ cd compiler && mx maven-install
+        final String jarCompiler = mavenPath.apply("org/graalvm/compiler/compiler/%1$s/compiler-%1$s.jar");
+
         final Stream<String> modulePath = Stream.of(
-            relativeTo("org/graalvm/truffle/truffle-api/19.3.1/truffle-api-19.3.1.jar", mavenHome)
-            , relativeTo("org/graalvm/sdk/graal-sdk/19.3.1/graal-sdk-19.3.1.jar", mavenHome)
-            , relativeTo("org/graalvm/compiler/compiler/19.3.1/compiler-19.3.1.jar", mavenHome)
+            jarTruffleApi
+            , jarGraalSdk
+            , jarCompiler
         );
 
         final Stream<String> upgradeModulePath = Stream.of(
-            relativeTo("org/graalvm/compiler/compiler/19.3.1/compiler-19.3.1.jar", mavenHome)
+            jarCompiler
         );
 
         final Stream<String> javaAgent = Stream.of(
-            relativeTo("org/graalvm/nativeimage/svm/19.3.1/svm-19.3.1.jar", mavenHome)
+            jarSvm
         ).map(JavaOptions::javaAgent);
 
         final Stream<String> classPath = Stream.of(
-            relativeTo("org/graalvm/nativeimage/objectfile/19.3.1/objectfile-19.3.1.jar", mavenHome)
-            , relativeTo("org/graalvm/nativeimage/pointsto/19.3.1/pointsto-19.3.1.jar", mavenHome)
-            , relativeTo("org/graalvm/nativeimage/svm/19.3.1/svm-19.3.1.jar", mavenHome)
+            jarObjectFile
+            , jarPointsTo
+            , jarSvm
         );
 
         final String mainClass = "com.oracle.svm.hosted.NativeImageGeneratorRunner$JDK9Plus";
 
         final Stream<String> imageCp = Stream.of(
-            relativeTo("org/graalvm/nativeimage/library-support/19.3.1/library-support-19.3.1.jar", mavenHome)
-            , relativeTo("org/graalvm/nativeimage/objectfile/19.3.1/objectfile-19.3.1.jar", mavenHome)
-            , relativeTo("org/graalvm/nativeimage/pointsto/19.3.1/pointsto-19.3.1.jar", mavenHome)
-            , relativeTo("org/graalvm/nativeimage/svm/19.3.1/svm-19.3.1.jar", mavenHome)
+            jarLibrarySupport
+            , jarObjectFile
+            , jarPointsTo
+            , jarSvm
 
             // With GraalVM home based setup, there doesn't seem to be a need for these jars here,
             // because there native-image-modules.list seems to trigger early class loading,
             // and annotaton processing.
             // Without that list file, we just force the jars through as part of the imagecp
-            , relativeTo("org/graalvm/compiler/compiler/19.3.1/compiler-19.3.1.jar", mavenHome)
-            , relativeTo("org/graalvm/sdk/graal-sdk/19.3.1/graal-sdk-19.3.1.jar", mavenHome)
+            , jarCompiler
+            , jarGraalSdk
 
             // Directory of classes, or link to jar(s)
             , "/Users/g/1/jawa/substratevm/helloworld/helloworld.jar"
@@ -149,7 +164,7 @@ public class NativeImageLabsHome
         }).map(entry -> NativeImageArguments.h(entry[0], entry[1]));
 
         final Stream<String> javaBin = Stream.of(
-            relativeTo("bin/java", "/opt/java-11-labs")
+            relativeTo("/opt/java-11-labs").apply("bin/java")
         );
 
         final Stream<String> debug = Stream.of(
@@ -220,12 +235,22 @@ public class NativeImageLabsHome
         }
     }
 
-    private static String relativeTo(String path, String relativeTo)
+    private static Function<String, String> mavenVersioned(String version)
     {
-        return String.format(
-            "%s/%s"
-            , relativeTo
-            , path
-        );
+        return mavenPathFormat ->
+            String.format(
+                mavenPathFormat
+                , version
+            );
+    }
+
+    private static Function<String, String> relativeTo(String relativeTo)
+    {
+        return path ->
+            String.format(
+                "%s/%s"
+                , relativeTo
+                , path
+            );
     }
 }
