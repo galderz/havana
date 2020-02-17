@@ -56,72 +56,73 @@ public class update_jdk
         OperatingSystem.exec().apply(configureBash);
         OperatingSystem.exec().apply(buildJdk);
     }
-}
 
-class OperatingSystem
-{
-    static final Logger logger = LogManager.getLogger(OperatingSystem.class);
-
-    static Function<Command, Void> exec()
+    static class OperatingSystem
     {
-        return OperatingSystem::exec;
-    }
+        static final Logger logger = LogManager.getLogger(OperatingSystem.class);
 
-    private static Void exec(Command command)
-    {
-        final var commandList = command.command.collect(Collectors.toList());
-        logger.debug("Execute {} in {}", commandList, command.directory);
-        try
+        static Function<Command, Void> exec()
         {
-            var processBuilder = new ProcessBuilder(commandList)
-                .directory(command.directory)
-                .inheritIO();
+            return OperatingSystem::exec;
+        }
 
-            command.envVars.forEach(
-                envVar -> processBuilder.environment()
-                    .put(envVar.name, envVar.value)
-            );
-
-            Process process = processBuilder.start();
-
-            if (process.waitFor() != 0)
+        private static Void exec(Command command)
+        {
+            final var commandList = command.command.collect(Collectors.toList());
+            logger.debug("Execute {} in {}", commandList, command.directory);
+            try
             {
-                throw new RuntimeException(
-                    "Failed, exit code: " + process.exitValue()
+                var processBuilder = new ProcessBuilder(commandList)
+                    .directory(command.directory)
+                    .inheritIO();
+
+                command.envVars.forEach(
+                    envVar -> processBuilder.environment()
+                        .put(envVar.name, envVar.value)
                 );
+
+                Process process = processBuilder.start();
+
+                if (process.waitFor() != 0)
+                {
+                    throw new RuntimeException(
+                        "Failed, exit code: " + process.exitValue()
+                    );
+                }
+
+                return null;
             }
-
-            return null;
+            catch (Exception e)
+            {
+                throw new RuntimeException(e);
+            }
         }
-        catch (Exception e)
+
+        static class Command
         {
-            throw new RuntimeException(e);
+            final Stream<String> command;
+            final File directory;
+            final Stream<EnvVar> envVars;
+
+            Command(Stream<String> command, File directory, Stream<EnvVar> envVars)
+            {
+                this.command = command;
+                this.directory = directory;
+                this.envVars = envVars;
+            }
+        }
+
+        static class EnvVar
+        {
+            final String name;
+            final String value;
+
+            EnvVar(String name, String value)
+            {
+                this.name = name;
+                this.value = value;
+            }
         }
     }
 
-    static class Command
-    {
-        final Stream<String> command;
-        final File directory;
-        final Stream<EnvVar> envVars;
-
-        Command(Stream<String> command, File directory, Stream<EnvVar> envVars)
-        {
-            this.command = command;
-            this.directory = directory;
-            this.envVars = envVars;
-        }
-    }
-
-    static class EnvVar
-    {
-        final String name;
-        final String value;
-
-        EnvVar(String name, String value)
-        {
-            this.name = name;
-            this.value = value;
-        }
-    }
 }
