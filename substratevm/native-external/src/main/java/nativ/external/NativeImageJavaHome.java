@@ -158,10 +158,14 @@ public class NativeImageJavaHome
             , "/Users/g/1/jawa/substratevm/helloworld/helloworld.jar"
         );
 
+        final Stream<String> cLibraryPath = Stream.of(
+            relativeTo(graalHome).apply("lib/svm/clibraries/darwin-amd64")
+        );
+
         final Stream<String> hArguments = Stream.of(new String[][]{
             // Target directory for binary
             {"Path", "/Users/g/1/jawa/substratevm/native-external/target"}
-            , {"CLibraryPath", relativeTo(graalHome).apply("lib/svm/clibraries/darwin-amd64")}
+            , {"CLibraryPath", cLibraryPath.collect(Collectors.joining(","))}
             , {"Class", "HelloWorld"} // TODO: in a jar situation this should be extractable from jar?
             , {"Name", "helloworld"}
         }).map(entry -> NativeImageArguments.h(entry[0], entry[1]));
