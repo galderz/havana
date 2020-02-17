@@ -98,8 +98,7 @@ public class NativeImageJavaHome
 
 
         final String graalHome =
-            "/Users/g/1/graal-graal/graal/sdk/mxbuild/darwin-amd64/GRAALVM_LIBGRAAL_JAVA15_BNATIVE-IMAGE_BNATIVE-IMAGE-CONFIGURE_LLP_NI_NIC_NIL_NJU_SJVMCICOMPILER_SNATIVE-IMAGE-AGENT/graalvm-libgraal-java15-20.1.0-dev";
-            // "/Users/g/1/graal-graal/graal/sdk/latest_graalvm_home";
+            "/Users/g/1/graal-graal/graal/sdk/latest_graalvm_home";
 
         final String mavenHome =
             "/Users/g/.m2/repository";
