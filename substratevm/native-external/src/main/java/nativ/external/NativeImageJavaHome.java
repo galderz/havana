@@ -155,10 +155,11 @@ public class NativeImageJavaHome
             , jarGraalSdk
 
             // Directory of classes, or link to jar(s)
-            , "/Users/g/1/jawa/substratevm/helloworld/helloworld.jar"
+            , "/Users/g/1/jawa/substratevm/daytwo/daytwo.jar"
         );
 
         final Stream<String> cLibraryPath = Stream.of(
+            // "/opt/graal-graal-clibraries/darwin-amd64"
             relativeTo(graalHome).apply("lib/svm/clibraries/darwin-amd64")
         );
 
@@ -166,8 +167,8 @@ public class NativeImageJavaHome
             // Target directory for binary
             {"Path", "/Users/g/1/jawa/substratevm/native-external/target"}
             , {"CLibraryPath", cLibraryPath.collect(Collectors.joining(","))}
-            , {"Class", "HelloWorld"} // TODO: in a jar situation this should be extractable from jar?
-            , {"Name", "helloworld"}
+            , {"Class", "DayTwo"} // TODO: in a jar situation this should be extractable from jar?
+            , {"Name", "daytwo"}
         }).map(entry -> NativeImageArguments.h(entry[0], entry[1]));
 
         final Stream<String> javaBin = Stream.of(
