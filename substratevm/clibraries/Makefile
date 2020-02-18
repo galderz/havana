@@ -62,9 +62,6 @@ copy-graal-clibraries:
 
 link-openlibm: copy-graal-clibraries
 	rm -f ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64/libstrictmath.a
-	cp ${HOME}/1/openlibm/libopenlibm.3.0.dylib ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64
-	cp -R ${HOME}/1/openlibm/libopenlibm.3.dylib ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64
-	cp -R ${HOME}/1/openlibm/libopenlibm.dylib ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64
 
 trim-graal-clibraries: copy-graal-clibraries
 	rm -drf ${TRIMMED_CLIBRARIES_PATH}
