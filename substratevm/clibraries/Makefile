@@ -1,6 +1,7 @@
-GRAAL_HOME ?= "${GRAAL_SRC_HOME}/sdk/mxbuild/darwin-amd64/GRAALVM_LIBGRAAL_JAVA11_BNATIVE-IMAGE_BNATIVE-IMAGE-CONFIGURE_NI_NIC_NIL_NJU_SJVMCICOMPILER_SNATIVE-IMAGE-AGENT/graalvm-libgraal-java11-19.3.1/Contents/Home"
-GRAAL_SRC_HOME ?= "${HOME}/1/graal-19.3/graal"
-TRIMMED_CLIBRARIES_PATH ?= "/opt/graal-19.3-clibraries"
+GRAAL ?= "graal-19.3"
+GRAAL_HOME ?= "${GRAAL_SRC_HOME}/sdk/latest_graalvm_home"
+GRAAL_SRC_HOME ?= "${HOME}/1/${GRAAL}/graal"
+TRIMMED_CLIBRARIES_PATH ?= "/opt/${GRAAL}-clibraries"
 
 download-all: download-libffi download-fdlibm
 
@@ -55,7 +56,17 @@ clean-libffi:
 	rm -drf target/clibraries/libffi/*.a
 	rm -drf target/clibraries/include/*
 
-trim-graal-clibraries:
+copy-graal-clibraries:
+	rm -drf ${TRIMMED_CLIBRARIES_PATH}
+	cp -r "${GRAAL_HOME}/lib/svm/clibraries" ${TRIMMED_CLIBRARIES_PATH}
+
+link-openlibm: copy-graal-clibraries
+	rm -f ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64/libstrictmath.a
+	cp ${HOME}/1/openlibm/libopenlibm.3.0.dylib ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64
+	cp -R ${HOME}/1/openlibm/libopenlibm.3.dylib ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64
+	cp -R ${HOME}/1/openlibm/libopenlibm.dylib ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64
+
+trim-graal-clibraries: copy-graal-clibraries
 	rm -drf ${TRIMMED_CLIBRARIES_PATH}
 	cp -r "${GRAAL_HOME}/lib/svm/clibraries" ${TRIMMED_CLIBRARIES_PATH}
 	rm -f ${TRIMMED_CLIBRARIES_PATH}/darwin-amd64/libffi.a
