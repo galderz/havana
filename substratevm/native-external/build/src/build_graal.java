@@ -21,26 +21,33 @@ public class build_graal
         OperatingSystem
             .exec(graalHome.resolve("substratevm"))
             .apply("""
-                mx build
-                mx maven-install
+                mx -V build
+                mx -V maven-install
+                """);
+
+        OperatingSystem
+            .exec(graalHome.resolve("substratevm"))
+            .apply("""
+                mx -V build
+                mx -V maven-install
                 """);
 
         OperatingSystem
             .exec(graalHome.resolve("truffle"))
             .apply("""
-                mx maven-install
+                mx -V maven-install
                 """);
 
         OperatingSystem
             .exec(graalHome.resolve("sdk"))
             .apply("""
-                mx maven-install
+                mx -V maven-install
                 """);
 
         OperatingSystem
             .exec(graalHome.resolve("compiler"))
             .apply("""
-                mx maven-install
+                mx -V maven-install
                 """);
     }
 
