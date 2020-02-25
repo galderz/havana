@@ -17,9 +17,9 @@
         <module>neo4j</module>
         <module>kubernetes</module>
         <module>substratevm/jigsaw-maven</module>
-        <module>native-external</module>
         <module>fx</module>
         <module>docker-java</module>
+        <module>junit-quickcheck</module>
     </modules>
 
 </project>
