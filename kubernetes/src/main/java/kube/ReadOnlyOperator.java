@@ -22,7 +22,7 @@ public class ReadOnlyOperator
         final var operator = new ReadOnlyOperator();
         final var logger = new SystemOutLogger();
         try (var shell = new KubernetesShell()) {
-            final var functions = new KubernetesFunctions(shell::existsNamespace, null);
+            final var functions = new KubernetesFunctions(shell::existsNamespace, shell::createNamespace);
             operator.reconcile(functions, logger);
         }
     }

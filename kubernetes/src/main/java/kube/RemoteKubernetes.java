@@ -7,6 +7,7 @@ import kube.Kubernetes.Event;
 import java.util.stream.Stream;
 
 import static kube.Kubernetes.EventType.NAMESPACES_LIST;
+import static kube.Kubernetes.EventType.NAMESPACE_CREATED;
 
 public class RemoteKubernetes
 {
@@ -17,15 +18,28 @@ public class RemoteKubernetes
         System.out.println(client.getMasterUrl());
     }
 
-    public Event read(Event event)
+    public Event process(Event event)
     {
         switch (event.type)
         {
             case GET_NAMESPACES:
                 return new Event(listNamespaces(), NAMESPACES_LIST);
+            case CREATE_NAMESPACE:
+                final var namespace = (String) event.param;
+                createNamespace(namespace);
+                return new Event(namespace, NAMESPACE_CREATED);
             default:
                 throw new RuntimeException("NYI");
         }
+    }
+
+    private void createNamespace(String namespaceName)
+    {
+        client.namespaces().createNew()
+            .withNewMetadata()
+            .withName(namespaceName)
+            .endMetadata()
+            .done();
     }
 
     private Stream<String> listNamespaces()
@@ -34,5 +48,4 @@ public class RemoteKubernetes
         return namespaces.getItems().stream()
             .map(namespace -> namespace.getMetadata().getName());
     }
-
 }

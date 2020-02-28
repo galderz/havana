@@ -4,20 +4,24 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.stream.Stream;
 
+import static kube.Kubernetes.EventType.NAMESPACES_LIST;
+import static kube.Kubernetes.EventType.NAMESPACE_CREATED;
+
 public class Kubernetes
 {
     Queue<Event> events = new ArrayDeque<>();
 
     public boolean createNamespace(String namespaceName)
     {
-        final Event top = events.peek();
-        if (isError(top))
-        {
-            events.remove();
+        final var event = events.peek();
+        if (event == null)
             return false;
-        }
-        events.add(new Event(namespaceName, EventType.CREATED_NAMESPACE));
-        return true;
+
+        return events.stream()
+            .anyMatch(e ->
+                e.type == NAMESPACE_CREATED
+                    && e.<String>param().equals(namespaceName)
+            );
     }
 
     public boolean existsNamespace(String namespaceName)
@@ -26,13 +30,11 @@ public class Kubernetes
         if (event == null)
             return false;
 
-        switch (event.type) {
-            case NAMESPACES_LIST:
-                final Stream<String> namespaces = (Stream<String>) event.param;
-                return namespaces.anyMatch(n -> n.equals(namespaceName));
-            default:
-                throw new RuntimeException("NYI");
-        }
+        return events.stream()
+            .anyMatch(e ->
+                e.type == NAMESPACES_LIST
+                && e.<Stream<String>>param().anyMatch(n -> n.equals(namespaceName))
+            );
     }
 
     public final static class Event
@@ -45,6 +47,11 @@ public class Kubernetes
             this.param = param;
             this.type = type;
         }
+
+        @SuppressWarnings("unchecked")
+        <T> T param() {
+            return (T) param;
+        }
     }
 
     public enum EventType
@@ -52,11 +59,9 @@ public class Kubernetes
         GET_NAMESPACES,
         NAMESPACES_LIST,
 
-        EXISTS_NAMESPACE,
-        NAMESPACE_PRESENT,
-        NAMESPACE_NOT_PRESENT,
+        CREATE_NAMESPACE,
+        NAMESPACE_CREATED,
 
-        CREATED_NAMESPACE,
         ERROR,
     }
 

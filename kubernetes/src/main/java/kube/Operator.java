@@ -24,4 +24,15 @@ public class Operator
             logger.log("Namespace exists");
         }
     }
+
+    public static void main(String[] args)
+    {
+        final var operator = new Operator();
+        final var logger = new SystemOutLogger();
+        try (var shell = new KubernetesShell()) {
+            final var functions = new KubernetesFunctions(shell::existsNamespace, shell::createNamespace);
+            operator.reconcile(functions, logger);
+        }
+    }
+
 }
