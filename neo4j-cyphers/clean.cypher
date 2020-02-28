@@ -1,0 +1,6 @@
+:BEGIN
+
+MATCH (n)
+DETACH DELETE n;
+
+:COMMIT
