@@ -13,6 +13,15 @@ public class SimpleArgs
 
         params = readArgs("--test");
         assert params.containsKey("test");
+
+        params = readArgs("--install", "--version", "1.2.3");
+        assert params.containsKey("install");
+        assert params.get("version").equals(Arrays.asList("1.2.3")) : params;
+
+        params = readArgs("--deploy", "--version", "1.2.3", "--maven-proxy", "http://a.b.c.d");
+        assert params.containsKey("deploy");
+        assert params.get("version").equals(Arrays.asList("1.2.3")) : params;
+        assert params.get("maven-proxy").equals(Arrays.asList("http://a.b.c.d")) : params;
     }
 
     static Map<String, List<String>> readArgs(String... args)
