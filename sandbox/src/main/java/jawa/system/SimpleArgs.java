@@ -1,6 +1,7 @@
 package jawa.system;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,8 @@ public class SimpleArgs
 {
     public static void main(String[] args)
     {
+        checkAssertEnabled();
+
         Map<String, List<String>> params;
 
         params = readArgs("--test");
@@ -22,6 +25,14 @@ public class SimpleArgs
         assert params.containsKey("deploy");
         assert params.get("version").equals(Arrays.asList("1.2.3")) : params;
         assert params.get("maven-proxy").equals(Arrays.asList("http://a.b.c.d")) : params;
+    }
+
+    private static void checkAssertEnabled()
+    {
+        boolean enabled = false;
+        assert enabled = true;
+        if(!enabled)
+            throw new AssertionError("assert not enabled");
     }
 
     static Map<String, List<String>> readArgs(String... args)
