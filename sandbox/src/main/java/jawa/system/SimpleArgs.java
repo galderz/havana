@@ -25,6 +25,15 @@ public class SimpleArgs
         assert params.containsKey("deploy");
         assert params.get("version").equals(Arrays.asList("1.2.3")) : params;
         assert params.get("maven-proxy").equals(Arrays.asList("http://a.b.c.d")) : params;
+
+        params = readArgs("--artifacts", "a");
+        assert params.get("artifacts").equals(Arrays.asList("a")) : params;
+
+        params = readArgs("--artifacts", "a,b");
+        assert params.get("artifacts").equals(Arrays.asList("a,b")) : params;
+
+        params = readArgs("--artifacts", "a", "b");
+        assert params.get("artifacts").equals(Arrays.asList("a", "b")) : params;
     }
 
     private static void checkAssertEnabled()
