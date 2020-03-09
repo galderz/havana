@@ -1,4 +1,4 @@
-package j.regex;
+package jawa.regex;
 
 import java.io.IOException;
 import java.nio.file.Files;

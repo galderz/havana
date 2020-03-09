@@ -1,4 +1,4 @@
-package j.regex;
+package jawa.regex;
 
 public class RegularExpressions
 {
