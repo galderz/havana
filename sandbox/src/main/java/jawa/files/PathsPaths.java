@@ -17,5 +17,8 @@ public class PathsPaths
         System.out.println(underResources);
         final var siblingResources = resources.resolveSibling("target");
         System.out.println(siblingResources);
+
+        final var mavenRepoHome = Path.of(System.getProperty("user.home"), ".m2", "repository");
+        System.out.println(mavenRepoHome);
     }
 }
