@@ -89,7 +89,7 @@ public class NativeImageGraalHome
         final Stream<String> xmx = Stream.of("13743895344").map(JavaOptions::xmx);
 
         final String graalHome =
-            "/Users/g/1/graal-19.3/graal/sdk/mxbuild/darwin-amd64/GRAALVM_LIBGRAAL_JAVA11_BNATIVE-IMAGE_BNATIVE-IMAGE-CONFIGURE_NI_NIC_NIL_NJU_SJVMCICOMPILER_SNATIVE-IMAGE-AGENT/graalvm-libgraal-java11-19.3.1/Contents/Home";
+            "/Users/g/1/graal-19.3/graal/sdk/latest_graalvm_home";
 
         final String mavenHome =
             "/Users/g/.m2/repository";
