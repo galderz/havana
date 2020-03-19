@@ -1,4 +1,4 @@
-package j.numbers;
+package jawa.numbers;
 
 public class HexadecimalFloatingLiterals
 {
