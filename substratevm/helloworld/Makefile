@@ -3,6 +3,7 @@ all: clean build native run
 clean:
 	rm -f helloworld
 	rm -f *.class
+	rm -drf reports
 
 build:
 	javac HelloWorld.java
@@ -21,3 +22,6 @@ jar:
 
 run-jar:
 	java -jar helloworld.jar
+
+method-histogram:
+	native-image -H:+PrintMethodHistogram HelloWorld
