@@ -25,11 +25,14 @@ public class URLing
             , elements[2]
         );
         System.out.println(repo);
+        System.out.println(elements[2]);
 
         System.out.println("\nOption 2:");
         final var uri = url.toURI();
         System.out.println(uri);
-        System.out.println(Path.of(uri.getPath()).getFileName().toString());
+        final var path = Path.of(uri.getPath());
+        System.out.println(path.getFileName().toString());
         System.out.println(uri.resolve(".."));
+        System.out.println(path.getName(1));
     }
 }
