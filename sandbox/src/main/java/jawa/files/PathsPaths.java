@@ -20,5 +20,9 @@ public class PathsPaths
 
         final var mavenRepoHome = Path.of(System.getProperty("user.home"), ".m2", "repository");
         System.out.println(mavenRepoHome);
+
+        final var downloadMarker = Path.of(System.getProperty("user.home"), "target", "quarkus-with-graal", "2020.03.20", "jdk", "download.marker");
+        System.out.println(downloadMarker);
+        System.out.println(downloadMarker.getParent().getFileName());
     }
 }
