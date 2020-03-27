@@ -2,6 +2,8 @@ package jawa.picocli;
 
 import picocli.CommandLine;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -79,12 +81,12 @@ public class TestCli
     static class Test
     {
         @CommandLine.Option(names = "--suites", split = ",")
-        List<String> suites;
+        List<String> suites = new ArrayList<>();
 
         @CommandLine.Option(names = "--additional-test-args", split = "\\|")
-        Map<String, String> additionalTestArgs;
+        Map<String, String> additionalTestArgs = new HashMap<>();
 
         @CommandLine.Option(names = "--also-test", split = ",")
-        List<String> alsoTest;
+        List<String> alsoTest = new ArrayList<>();
     }
 }
