@@ -8,6 +8,8 @@ public class PathsPaths
     {
         final var path = Path.of("home", "g", "mandrel-mandrel");
         System.out.println(path);
+        System.out.println(path.resolve(Path.of("")));
+
         final var last = path.getFileName().toString();
         System.out.println(last);
 
