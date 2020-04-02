@@ -8,7 +8,18 @@ import static org.quicktheories.generators.SourceDSL.*;
 public class MatematikakTest
 {
     @Test
-    public void testJavaMath()
+    public void testJavaMathLog()
+    {
+        qt()
+            .forAll(doubles().any())
+            .check(d ->
+                Double.isNaN(Math.log(d))
+                || Math.log(d) == Math.log(d)
+            );
+    }
+
+    @Test
+    public void testJavaMathSin()
     {
         qt()
             .forAll(doubles().any())
