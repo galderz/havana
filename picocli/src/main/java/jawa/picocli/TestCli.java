@@ -81,12 +81,12 @@ public class TestCli
     static class Test
     {
         @CommandLine.Option(names = "--suites", split = ",")
-        private List<String> suites = new ArrayList<>();
+        private final List<String> suites = new ArrayList<>();
 
         @CommandLine.Option(names = "--additional-test-args", split = "\\|")
-        private Map<String, String> additionalTestArgs = new HashMap<>();
+        private final Map<String, String> additionalTestArgs = new HashMap<>();
 
         @CommandLine.Option(names = "--also-test", split = ",")
-        private List<String> alsoTest = new ArrayList<>();
+        private final List<String> alsoTest = new ArrayList<>();
     }
 }
