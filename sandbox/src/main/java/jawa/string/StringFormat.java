@@ -1,4 +1,4 @@
-package j.string;
+package jawa.string;
 
 public class StringFormat {
 
