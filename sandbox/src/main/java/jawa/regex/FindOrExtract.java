@@ -3,6 +3,7 @@ package jawa.regex;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class FindOrExtract
 {
@@ -17,14 +18,25 @@ public class FindOrExtract
             {
                 final var line = it.next();
 
-                final var matcher = Pattern
+                var mavenMatcher = Pattern
                     .compile(
-                        "maven[^({|\\n)]*\\{"
+                        "\"maven\"[^({|\\n)]*\\{"
                     )
                     .matcher(line);
-                if (matcher.find())
+                if (mavenMatcher.find())
                 {
                     System.out.println(line);
+                }
+
+                final var groupIdMatcher = Pattern
+                    .compile(
+                        "\"groupId\"[^\"]*\"([a-z0-9\\.]*)\""
+                    )
+                    .matcher(line);
+                if (groupIdMatcher.find())
+                {
+                    System.out.println(line);
+                    System.out.println(groupIdMatcher.group(1));
                 }
             }
         }
