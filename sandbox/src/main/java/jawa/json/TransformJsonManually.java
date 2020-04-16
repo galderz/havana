@@ -104,11 +104,13 @@ public class TransformJsonManually
 
     static Parsed parse(List<MavenArtifact> dependencies, Stream<String> lines)
     {
+        final Pattern SHA1_PATTERN = Pattern.compile("\"sha1\"\\s*:\\s*\"([a-f0-9]*)\"");
+        final Pattern SOURCE_SHA1_PATTERN = Pattern.compile("\"sourceSha1\"\\s*:\\s*\"([a-f0-9]*)\"");
+        final Pattern VERSION_PATTERN = Pattern.compile("\"version\"\\s*:\\s*\"([0-9.]*)\"");
+
         int lineNumber = -1;
         String id = null;
-        String sha1 = null;
-        String sourceSha1 = null;
-        String version = null;
+        String tmp;
 
         final var endlines = new ArrayList<String>();
         final Map<String, Coordinate> versions = new HashMap<>();
@@ -133,26 +135,24 @@ public class TransformJsonManually
             }
             else
             {
-                String tmpSha1 = getSha1(line);
-                if (tmpSha1 != null)
+                tmp = extract(line, SHA1_PATTERN);
+                if (tmp != null)
                 {
-                    sha1 = tmpSha1;
-                    sha1s.put(id, new Coordinate(sha1, lineNumber));
+                    sha1s.put(id, new Coordinate(tmp, lineNumber));
                     continue;
                 }
 
-                String tmpSourceSha1 = getSourceSha1(line);
-                if (tmpSourceSha1 != null)
+                tmp = extract(line, SOURCE_SHA1_PATTERN);
+                if (tmp != null)
                 {
-                    sourceSha1 = tmpSourceSha1;
-                    sourceSha1s.put(id, new Coordinate(sourceSha1, lineNumber));
+                    sourceSha1s.put(id, new Coordinate(tmp, lineNumber));
                     continue;
                 }
 
-                version = getVersion(line);
-                if (version != null)
+                tmp = extract(line, VERSION_PATTERN);
+                if (tmp != null)
                 {
-                    versions.put(id, new Coordinate(version, lineNumber));
+                    versions.put(id, new Coordinate(tmp, lineNumber));
                     id = null;
                 }
             }
@@ -169,37 +169,11 @@ public class TransformJsonManually
             .findFirst();
     }
 
-    static String getSha1(String line)
+    static String extract(String line, Pattern pattern)
     {
-        final var pattern = Pattern.compile("\"sha1\"\\s*:\\s*\"([a-f0-9]*)\"");
         final var matcher = pattern.matcher(line);
         if (matcher.find())
         {
-            // System.out.println(line);
-            return matcher.group(1);
-        }
-        return null;
-    }
-
-    static String getSourceSha1(String line)
-    {
-        final var pattern = Pattern.compile("\"sourceSha1\"\\s*:\\s*\"([a-f0-9]*)\"");
-        final var matcher = pattern.matcher(line);
-        if (matcher.find())
-        {
-            // System.out.println(line);
-            return matcher.group(1);
-        }
-        return null;
-    }
-
-    static String getVersion(String line)
-    {
-        final var pattern = Pattern.compile("\"version\"\\s*:\\s*\"([0-9\\.]*)\"");
-        final var matcher = pattern.matcher(line);
-        if (matcher.find())
-        {
-            // System.out.println(line);
             return matcher.group(1);
         }
         return null;
