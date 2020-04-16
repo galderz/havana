@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -112,7 +111,7 @@ public class TransformJsonManually
         String id = null;
         String tmp;
 
-        final var endlines = new ArrayList<String>();
+        final var output = new ArrayList<String>();
         final Map<String, Coordinate> versions = new HashMap<>();
         final Map<String, Coordinate> sha1s = new HashMap<>();
         final Map<String, Coordinate> sourceSha1s = new HashMap<>();
@@ -123,11 +122,14 @@ public class TransformJsonManually
             final var line = it.next();
 
             lineNumber++;
-            endlines.add(line);
+            output.add(line);
 
             if (id == null)
             {
-                final var maybeArtifact = getMavenArtifact(dependencies, line);
+                final var maybeArtifact = dependencies.stream()
+                    .filter(artifact -> artifact.pattern.matcher(line).find())
+                    .findFirst();
+
                 if (maybeArtifact.isPresent())
                 {
                     id = maybeArtifact.get().id;
@@ -158,15 +160,7 @@ public class TransformJsonManually
             }
         }
 
-        return new Parsed(endlines, versions, sha1s, sourceSha1s);
-    }
-
-    static Optional<MavenArtifact> getMavenArtifact(List<MavenArtifact> dependencies, String line)
-    {
-        // TODO cache pattern
-        return dependencies.stream()
-            .filter(artifact -> MavenArtifact.pattern(artifact).matcher(line).find())
-            .findFirst();
+        return new Parsed(output, versions, sha1s, sourceSha1s);
     }
 
     static String extract(String line, Pattern pattern)
@@ -278,18 +272,15 @@ public class TransformJsonManually
         final String version;
         final String sha1;
         final String sourceSha1;
+        final Pattern pattern;
 
-        private MavenArtifact(String id, String version, String sha1, String sourceSha1)
+        private MavenArtifact(String id, String version, String sha1, String sourceSha1, Pattern pattern)
         {
             this.id = id;
             this.version = version;
             this.sha1 = sha1;
             this.sourceSha1 = sourceSha1;
-        }
-
-        static Pattern pattern(MavenArtifact artifact)
-        {
-            return Pattern.compile(artifact.id + "[^({|\\n)]*\\{");
+            this.pattern = pattern;
         }
 
         @Override
@@ -309,7 +300,8 @@ public class TransformJsonManually
             final var version = fields.get("version");
             final var sha1 = fields.get("sha1");
             final var sourceSha1 = fields.get("sourceSha1");
-            return new MavenArtifact(id, version, sha1, sourceSha1);
+            final var pattern = Pattern.compile(String.format("%s[^({|\\n)]*\\{", id));
+            return new MavenArtifact(id, version, sha1, sourceSha1, pattern);
         }
     }
 
