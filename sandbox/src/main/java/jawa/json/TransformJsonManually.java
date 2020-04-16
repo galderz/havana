@@ -9,14 +9,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * -Dpath=...
+ * --dependencies id=ASM_7.1,version=0.1,sha1=a1b2c3,sourceSha1=a2b3c4 id=JACOCOAGENT_0.8.4,version=0.2,sha1=d1e2f3
+ */
 public class TransformJsonManually
 {
     public static void main(String[] args)
     {
+        checkAssertEnabled();
+
         System.out.println("Args: " + Arrays.toString(args));
         final var argsMap = readArgs(args);
         System.out.println("Args map: " + argsMap);
@@ -27,7 +35,16 @@ public class TransformJsonManually
         System.out.println("Path: " + path);
 
         final var transformed = transform(dependencies, Path.of(path));
-        System.out.println("Transformed: " + transformed);
+        System.out.println("Transformed: ");
+        System.out.println(transformed);
+    }
+
+    private static void checkAssertEnabled()
+    {
+        boolean enabled = false;
+        assert enabled = true;
+        if(!enabled)
+            throw new AssertionError("assert not enabled");
     }
 
     private static String transform(List<MavenArtifact> dependencies, Path path)
@@ -40,13 +57,49 @@ public class TransformJsonManually
                 System.out.println(parsed.versions);
                 System.out.println(parsed.sha1s);
                 System.out.println(parsed.sourceSha1s);
-                return null; // TODO
+
+                assert parsed.versions.get("ASM_7.1").lineNumber == 48;
+                assert parsed.versions.get("JACOCOAGENT_0.8.4").lineNumber == 24;
+
+                assert parsed.sha1s.get("ASM_7.1").lineNumber == 43;
+                assert parsed.sha1s.get("JACOCOAGENT_0.8.4").lineNumber == 19;
+
+                assert parsed.sourceSha1s.get("ASM_7.1").lineNumber == 44;
+
+                return apply(dependencies, parsed);
             }
         }
         catch (IOException e)
         {
             throw new RuntimeException(e);
         }
+    }
+
+    static String apply(List<MavenArtifact> dependencies, Parsed parsed)
+    {
+        final var result = new ArrayList<>(parsed.lines);
+        dependencies.forEach(apply(a -> a.version, parsed.versions, result));
+        dependencies.forEach(apply(a -> a.sha1, parsed.sha1s, result));
+        dependencies.forEach(apply(a -> a.sourceSha1, parsed.sourceSha1s, result));
+        return String.join("\n", result);
+    }
+
+    static Consumer<MavenArtifact> apply(
+        Function<MavenArtifact, String> extract
+        , Map<String, Coordinate> values
+        , List<String> lines
+    )
+    {
+        return artifact ->
+        {
+            final var coordinate = values.get(artifact.id);
+            if (coordinate != null)
+            {
+                final var line = lines.get(coordinate.lineNumber);
+                final var replaced = line.replace(coordinate.value, extract.apply(artifact));
+                lines.set(coordinate.lineNumber, replaced);
+            }
+        };
     }
 
     static Parsed parse(List<MavenArtifact> dependencies, Stream<String> lines)
@@ -70,7 +123,7 @@ public class TransformJsonManually
             lineNumber++;
             endlines.add(line);
 
-            if (id==null)
+            if (id == null)
             {
                 final var maybeArtifact = getMavenArtifact(dependencies, line);
                 if (maybeArtifact.isPresent())
@@ -81,7 +134,7 @@ public class TransformJsonManually
             else
             {
                 String tmpSha1 = getSha1(line);
-                if (tmpSha1!=null)
+                if (tmpSha1 != null)
                 {
                     sha1 = tmpSha1;
                     sha1s.put(id, new Coordinate(sha1, lineNumber));
@@ -89,7 +142,7 @@ public class TransformJsonManually
                 }
 
                 String tmpSourceSha1 = getSourceSha1(line);
-                if (tmpSourceSha1!=null)
+                if (tmpSourceSha1 != null)
                 {
                     sourceSha1 = tmpSourceSha1;
                     sourceSha1s.put(id, new Coordinate(sourceSha1, lineNumber));
@@ -97,7 +150,7 @@ public class TransformJsonManually
                 }
 
                 version = getVersion(line);
-                if (version!=null)
+                if (version != null)
                 {
                     versions.put(id, new Coordinate(version, lineNumber));
                     id = null;
@@ -231,7 +284,7 @@ public class TransformJsonManually
                 options = new ArrayList<>();
                 params.put(arg.substring(2), options);
             }
-            else if (options!=null)
+            else if (options != null)
             {
                 options.add(arg);
             }
