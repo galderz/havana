@@ -32,12 +32,14 @@ public class TransformJsonManually
 
     private static String transform(List<MavenArtifact> dependencies, Path path)
     {
-        final var parser = MavenArtifactParser.of(dependencies);
         try
         {
             try (var lines = Files.lines(path))
             {
-                parser.parse(lines);
+                Parsed parsed = parse(dependencies, lines);
+                System.out.println(parsed.versions);
+                System.out.println(parsed.sha1s);
+                System.out.println(parsed.sourceSha1s);
                 return null; // TODO
             }
         }
@@ -47,165 +49,148 @@ public class TransformJsonManually
         }
     }
 
-    static class MavenArtifactParser
+    static Parsed parse(List<MavenArtifact> dependencies, Stream<String> lines)
     {
-        final List<MavenArtifact> dependencies;
-        final List<Pattern> dependencyPatterns;
+        int lineNumber = -1;
+        String id = null;
+        String sha1 = null;
+        String sourceSha1 = null;
+        String version = null;
 
-        String id;
-        String sha1;
-        String sourceSha1;
-        String version;
+        final var endlines = new ArrayList<String>();
+        final Map<String, Coordinate> versions = new HashMap<>();
+        final Map<String, Coordinate> sha1s = new HashMap<>();
+        final Map<String, Coordinate> sourceSha1s = new HashMap<>();
 
-        MavenArtifactParser(List<MavenArtifact> dependencies, List<Pattern> dependencyPatterns)
+        final var it = lines.iterator();
+        while (it.hasNext())
         {
-            this.dependencies = dependencies;
-            this.dependencyPatterns = dependencyPatterns;
-        }
+            final var line = it.next();
 
-        static MavenArtifactParser of(List<MavenArtifact> dependencies)
-        {
-            final var dependencyPatterns = dependencies.stream()
-                .map(
-                    artifact -> Pattern.compile(artifact.id + "[^({|\\n)]*\\{")
-                )
-                .collect(Collectors.toList());
-            return new MavenArtifactParser(dependencies, dependencyPatterns);
-        }
+            lineNumber++;
+            endlines.add(line);
 
-        void parse(Stream<String> lines)
-        {
-            final var it = lines.iterator();
-            while (it.hasNext())
+            if (id==null)
             {
-                final var line = it.next();
-                if (id == null)
+                final var maybeArtifact = getMavenArtifact(dependencies, line);
+                if (maybeArtifact.isPresent())
                 {
-                    final var maybeArtifact = getMavenArtifact(line);
-                    if (maybeArtifact.isPresent())
-                    {
-                        System.out.println(line);
-                        id = maybeArtifact.get().id;
-                    }
+                    id = maybeArtifact.get().id;
                 }
-                else
+            }
+            else
+            {
+                String tmpSha1 = getSha1(line);
+                if (tmpSha1!=null)
                 {
-                    String tmpSha1 = getSha1(line);
-                    if (tmpSha1 != null)
-                    {
-                        sha1 = tmpSha1;
-                        continue;
-                    }
+                    sha1 = tmpSha1;
+                    sha1s.put(id, new Coordinate(sha1, lineNumber));
+                    continue;
+                }
 
-                    String tmpSourceSha1 = getSourceSha1(line);
-                    if (tmpSourceSha1 != null)
-                    {
-                        sourceSha1 = tmpSourceSha1;
-                        continue;
-                    }
+                String tmpSourceSha1 = getSourceSha1(line);
+                if (tmpSourceSha1!=null)
+                {
+                    sourceSha1 = tmpSourceSha1;
+                    sourceSha1s.put(id, new Coordinate(sourceSha1, lineNumber));
+                    continue;
+                }
 
-                    version = getVersion(line);
-                    if (version != null)
-                    {
-                        final var artifact = MavenArtifact.of(id, version, sha1, sourceSha1);
-                        System.out.println(artifact);
-                        id = null;
-                        sha1 = null;
-                        sourceSha1 = null;
-                        version = null;
-                    }
+                version = getVersion(line);
+                if (version!=null)
+                {
+                    versions.put(id, new Coordinate(version, lineNumber));
+                    id = null;
                 }
             }
         }
 
-        Optional<MavenArtifact> getMavenArtifact(String line)
-        {
-            // TODO cache pattern
-            return dependencies.stream()
-                .filter(artifact -> MavenArtifact.pattern(artifact).matcher(line).find())
-                .findFirst();
-        }
-
-        static String getSha1(String line)
-        {
-            final var pattern = Pattern.compile("\"sha1\"\\s*:\\s*\"([a-f0-9]*)\"");
-            final var matcher = pattern.matcher(line);
-            if (matcher.find())
-            {
-                // System.out.println(line);
-                return matcher.group(1);
-            }
-            return null;
-        }
-
-        static String getSourceSha1(String line)
-        {
-            final var pattern = Pattern.compile("\"sourceSha1\"\\s*:\\s*\"([a-f0-9]*)\"");
-            final var matcher = pattern.matcher(line);
-            if (matcher.find())
-            {
-                // System.out.println(line);
-                return matcher.group(1);
-            }
-            return null;
-        }
-
-        static String getVersion(String line)
-        {
-            final var pattern = Pattern.compile("\"version\"\\s*:\\s*\"([0-9\\.]*)\"");
-            final var matcher = pattern.matcher(line);
-            if (matcher.find())
-            {
-                // System.out.println(line);
-                return matcher.group(1);
-            }
-            return null;
-        }
+        return new Parsed(endlines, versions, sha1s, sourceSha1s);
     }
 
-    static final class MavenArtifact
+    static Optional<MavenArtifact> getMavenArtifact(List<MavenArtifact> dependencies, String line)
     {
-        final String id;
-        final String version;
-        final String sha1;
-        final String sourceSha1;
+        // TODO cache pattern
+        return dependencies.stream()
+            .filter(artifact -> MavenArtifact.pattern(artifact).matcher(line).find())
+            .findFirst();
+    }
 
-        private MavenArtifact(String id, String version, String sha1, String sourceSha1)
+    static String getSha1(String line)
+    {
+        final var pattern = Pattern.compile("\"sha1\"\\s*:\\s*\"([a-f0-9]*)\"");
+        final var matcher = pattern.matcher(line);
+        if (matcher.find())
         {
-            this.id = id;
-            this.version = version;
-            this.sha1 = sha1;
-            this.sourceSha1 = sourceSha1;
+            // System.out.println(line);
+            return matcher.group(1);
         }
+        return null;
+    }
 
-        static Pattern pattern(MavenArtifact artifact)
+    static String getSourceSha1(String line)
+    {
+        final var pattern = Pattern.compile("\"sourceSha1\"\\s*:\\s*\"([a-f0-9]*)\"");
+        final var matcher = pattern.matcher(line);
+        if (matcher.find())
         {
-            return Pattern.compile(artifact.id + "[^({|\\n)]*\\{");
+            // System.out.println(line);
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    static String getVersion(String line)
+    {
+        final var pattern = Pattern.compile("\"version\"\\s*:\\s*\"([0-9\\.]*)\"");
+        final var matcher = pattern.matcher(line);
+        if (matcher.find())
+        {
+            // System.out.println(line);
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    static final class Coordinate
+    {
+        final String value;
+        final int lineNumber;
+
+        Coordinate(String value, int lineNumber)
+        {
+            this.value = value;
+            this.lineNumber = lineNumber;
         }
 
         @Override
         public String toString()
         {
-            return "MavenArtifact{" +
-                "id='" + id + '\'' +
-                ", version='" + version + '\'' +
-                ", sha1='" + sha1 + '\'' +
-                ", sourceSha1='" + sourceSha1 + '\'' +
+            return "Coordinate{" +
+                "value='" + value + '\'' +
+                ", lineNumber=" + lineNumber +
                 '}';
         }
+    }
 
-        static MavenArtifact of(String id, String version, String sha1, String sourceSha1)
-        {
-            return new MavenArtifact(id, version, sha1, sourceSha1);
-        }
+    static final class Parsed
+    {
+        final List<String> lines;
+        final Map<String, Coordinate> versions;
+        final Map<String, Coordinate> sha1s;
+        final Map<String, Coordinate> sourceSha1s;
 
-        static MavenArtifact of(Map<String, String> fields)
+        Parsed(
+            List<String> lines
+            , Map<String, Coordinate> versions
+            , Map<String, Coordinate> sha1s
+            , Map<String, Coordinate> sourceSha1s
+        )
         {
-            final var id = fields.get("id");
-            final var version = fields.get("version");
-            final var sha1 = fields.get("sha1");
-            final var sourceSha1 = fields.get("sourceSha1");
-            return new MavenArtifact(id, version, sha1, sourceSha1);
+            this.lines = lines;
+            this.versions = versions;
+            this.sha1s = sha1s;
+            this.sourceSha1s = sourceSha1s;
         }
     }
 
@@ -259,4 +244,46 @@ public class TransformJsonManually
 
         return params;
     }
+
+    static final class MavenArtifact
+    {
+        final String id;
+        final String version;
+        final String sha1;
+        final String sourceSha1;
+
+        private MavenArtifact(String id, String version, String sha1, String sourceSha1)
+        {
+            this.id = id;
+            this.version = version;
+            this.sha1 = sha1;
+            this.sourceSha1 = sourceSha1;
+        }
+
+        static Pattern pattern(MavenArtifact artifact)
+        {
+            return Pattern.compile(artifact.id + "[^({|\\n)]*\\{");
+        }
+
+        @Override
+        public String toString()
+        {
+            return "MavenArtifact{" +
+                "id='" + id + '\'' +
+                ", version='" + version + '\'' +
+                ", sha1='" + sha1 + '\'' +
+                ", sourceSha1='" + sourceSha1 + '\'' +
+                '}';
+        }
+
+        static MavenArtifact of(Map<String, String> fields)
+        {
+            final var id = fields.get("id");
+            final var version = fields.get("version");
+            final var sha1 = fields.get("sha1");
+            final var sourceSha1 = fields.get("sourceSha1");
+            return new MavenArtifact(id, version, sha1, sourceSha1);
+        }
+    }
+
 }
