@@ -34,6 +34,16 @@ public class SimpleArgs
 
         params = readArgs("--artifacts", "a", "b");
         assert params.get("artifacts").equals(Arrays.asList("a", "b")) : params;
+
+        params = readArgs(
+            "--dependencies"
+            , "id=ABC_1.1,version=1.1.0.abc-00001,sha1=a1b2c3,sourceSha1=a4b5c6"
+            , "id=DEF_2.1,version=2.1.0.def-00001,sha1=d1e2f3,sourceSha1=d4e5f6"
+        );
+        assert params.get("dependencies").equals(Arrays.asList(
+            "id=ABC_1.1,version=1.1.0.abc-00001,sha1=a1b2c3,sourceSha1=a4b5c6"
+            , "id=DEF_2.1,version=2.1.0.def-00001,sha1=d1e2f3,sourceSha1=d4e5f6"
+        )) : params;
     }
 
     private static void checkAssertEnabled()
