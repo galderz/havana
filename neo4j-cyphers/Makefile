@@ -6,5 +6,8 @@ set-password:
 basic-tree:
 	cat basic-tree.cypher | ${NEO4J_HOME}/bin/cypher-shell -u neo4j -p p
 
+batch:
+	cat batch.cypher | ${NEO4J_HOME}/bin/cypher-shell -u neo4j -p p
+
 clean:
 	cat clean.cypher | ${NEO4J_HOME}/bin/cypher-shell -u neo4j -p p
