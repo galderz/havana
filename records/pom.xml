@@ -6,6 +6,7 @@
 
     <groupId>records</groupId>
     <artifactId>records</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 
     <build>
         <plugins>
@@ -16,6 +17,8 @@
                 <configuration>
                     <release>14</release>
                     <compilerArgs>--enable-preview</compilerArgs>
+                    <source>13</source>
+                    <target>13</target>
                 </configuration>
             </plugin>
         </plugins>
