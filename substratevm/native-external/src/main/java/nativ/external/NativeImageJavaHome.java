@@ -108,7 +108,6 @@ public class NativeImageJavaHome
         final String jarSvm = mavenPath.apply("org/graalvm/nativeimage/svm/%1$s/svm-%1$s.jar");
         final String jarObjectFile = mavenPath.apply("org/graalvm/nativeimage/objectfile/%1$s/objectfile-%1$s.jar");
         final String jarPointsTo = mavenPath.apply("org/graalvm/nativeimage/pointsto/%1$s/pointsto-%1$s.jar");
-        final String jarLibrarySupport = mavenPath.apply("org/graalvm/nativeimage/library-support/%1$s/library-support-%1$s.jar");
         // $ cd truffle && mx maven-install
         final String jarTruffleApi = mavenPath.apply("org/graalvm/truffle/truffle-api/%1$s/truffle-api-%1$s.jar");
         // $ cd sdk && mx maven-install
@@ -141,8 +140,7 @@ public class NativeImageJavaHome
         final String mainClass = "com.oracle.svm.hosted.NativeImageGeneratorRunner$JDK9Plus";
 
         final Stream<String> imageCp = Stream.of(
-            jarLibrarySupport
-            , jarObjectFile
+            jarObjectFile
             , jarPointsTo
             , jarSvm
 
