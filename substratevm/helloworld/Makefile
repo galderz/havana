@@ -1,8 +1,10 @@
 all: clean build native run
 
-clean:
+clean: clean-reports
 	rm -f helloworld
 	rm -f *.class
+
+clean-reports:
 	rm -drf reports
 
 build:
