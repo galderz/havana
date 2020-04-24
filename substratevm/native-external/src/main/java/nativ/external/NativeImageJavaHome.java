@@ -97,13 +97,12 @@ public class NativeImageJavaHome
         final Stream<String> xmx = Stream.of("13743895344").map(JavaOptions::xmx);
 
 
-        final String graalHome =
-            "/Users/g/1/graal-graal/graal/sdk/latest_graalvm_home";
+        final String graalHome = System.getProperty("native.graal.home");
 
         final String mavenHome =
             "/Users/g/.m2/repository";
 
-        final String graalVersion = "20.1.0-SNAPSHOT";
+        final String graalVersion = "20.2.0-SNAPSHOT";
         final Function<String, String> mavenPath = relativeTo(mavenHome).compose(mavenVersioned(graalVersion));
         // $ cd substratevm && mx build && mx maven-install
         final String jarSvm = mavenPath.apply("org/graalvm/nativeimage/svm/%1$s/svm-%1$s.jar");
@@ -155,7 +154,8 @@ public class NativeImageJavaHome
             , jarGraalSdk
 
             // Directory of classes, or link to jar(s)
-            , "/Users/g/1/jawa/substratevm/daytwo/daytwo.jar"
+            // , "/Users/g/1/jawa/substratevm/daytwo/daytwo.jar"
+            , "/Users/g/1/jawa/substratevm/helloworld/helloworld.jar"
         );
 
         final Stream<String> cLibraryPath = Stream.of(
@@ -167,12 +167,15 @@ public class NativeImageJavaHome
             // Target directory for binary
             {"Path", "/Users/g/1/jawa/substratevm/native-external/target"}
             , {"CLibraryPath", cLibraryPath.collect(Collectors.joining(","))}
-            , {"Class", "DayTwo"} // TODO: in a jar situation this should be extractable from jar?
-            , {"Name", "daytwo"}
+            // , {"Class", "DayTwo"} // TODO: in a jar situation this should be extractable from jar?
+            // , {"Name", "daytwo"}
+            , {"Class", "HelloWorld"} // TODO: in a jar situation this should be extractable from jar?
+            , {"Name", "helloworld"}
         }).map(entry -> NativeImageArguments.h(entry[0], entry[1]));
 
         final Stream<String> javaBin = Stream.of(
-            relativeTo("/opt/java-graal").apply("bin/java")
+            relativeTo(System.getProperty("native.java.home"))
+                .apply("bin/java")
         );
 
         final Stream<String> debug = Stream.of(
