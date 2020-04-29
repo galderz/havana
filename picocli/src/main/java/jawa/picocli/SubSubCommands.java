@@ -12,9 +12,13 @@ public class SubSubCommands
         Qollider.main("graal");
         Qollider.main("graal", "get");
         Qollider.main("graal", "build");
+
+        Qollider.main("--help");
     }
 
-    @CommandLine.Command
+    @CommandLine.Command(
+        mixinStandardHelpOptions = true
+    )
     static class Qollider
     {
         @CommandLine.Spec
@@ -74,10 +78,16 @@ public class SubSubCommands
         )
         static class Graal implements Runnable
         {
+            @CommandLine.Spec
+            CommandLine.Model.CommandSpec spec;
+
             @Override
             public void run()
             {
-                System.out.println("Graal...");
+                throw new CommandLine.ParameterException(
+                    spec.commandLine()
+                    , "Missing required subcommand"
+                );
             }
 
             @CommandLine.Command(
