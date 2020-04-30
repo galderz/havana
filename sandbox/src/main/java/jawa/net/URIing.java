@@ -3,13 +3,16 @@ package jawa.net;
 import jawa.lang.Assert;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 
 public class URIing
 {
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         Assert.check();
+
+        constructURI();
 
         extractWithBranchAndRemoteWithCommitId();
         extractWithBranch();
@@ -17,6 +20,17 @@ public class URIing
 
         shortenedURIs();
         enhancingURIs();
+    }
+
+    private static void constructURI() throws URISyntaxException
+    {
+        final var uri = new URI(
+            "https"
+            , "github.com"
+            , Path.of("/","galderz", "jawa").toString()
+            , null
+        );
+        assert uri.toString().equals("https://github.com/galderz/jawa") : uri.toString();
     }
 
     private static void extractWithBranchAndRemoteWithCommitId()
