@@ -9,8 +9,16 @@ public class URLing
 {
     public static void main(String[] args) throws MalformedURLException, URISyntaxException
     {
+        extractFileName();
         extractURL();
         differentiateURLs();
+    }
+
+    private static void extractFileName() throws MalformedURLException
+    {
+        var url = new URL("http://s01.yyz.redhat.com/~sgehwolf/mandrel/jdk-11/linux-x86_64/svm.tar.gz");
+        System.out.println(url.getFile());
+        System.out.println(Path.of(url.getFile()).getFileName());
     }
 
     private static void differentiateURLs() throws MalformedURLException
