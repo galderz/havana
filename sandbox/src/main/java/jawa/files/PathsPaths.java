@@ -26,5 +26,9 @@ public class PathsPaths
         final var downloadMarker = Path.of(System.getProperty("user.home"), "target", "quarkus-with-graal", "2020.03.20", "jdk", "download.marker");
         System.out.println(downloadMarker);
         System.out.println(downloadMarker.getParent().getFileName());
+
+        final var relativePath = Path.of("sdk", "mxbuild", "dists", "jdk11", "graal-sdk");
+        System.out.println(relativePath.getName(0));
+        System.out.println(relativePath.getRoot());
     }
 }
