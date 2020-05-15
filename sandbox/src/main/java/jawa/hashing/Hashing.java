@@ -17,6 +17,8 @@ public class Hashing
         System.out.println(sha256(msg2));
         System.out.println(sha1(msg1));
         System.out.println(sha1(msg2));
+        System.out.println(base64(msg1));
+        System.out.println(base64(msg2));
     }
 
     static String sha256(String s) throws NoSuchAlgorithmException
@@ -31,5 +33,10 @@ public class Hashing
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
         messageDigest.update(s.getBytes(StandardCharsets.UTF_8));
         return Base64.getEncoder().encodeToString(messageDigest.digest());
+    }
+
+    static String base64(String s)
+    {
+        return Base64.getEncoder().encodeToString(s.getBytes(StandardCharsets.UTF_8));
     }
 }
