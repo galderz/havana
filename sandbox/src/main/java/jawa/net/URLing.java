@@ -9,9 +9,17 @@ public class URLing
 {
     public static void main(String[] args) throws MalformedURLException, URISyntaxException
     {
+        extractFirstPath();
         extractFileName();
         extractURL();
         differentiateURLs();
+    }
+
+    private static void extractFirstPath() throws MalformedURLException
+    {
+        var url = new URL("https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-19.3.0/graalvm-ce-java8-linux-amd64-19.3.0.tar.gz");
+        System.out.println(url.getPath());
+        System.out.println(Path.of(url.getPath()).getName(0));
     }
 
     private static void extractFileName() throws MalformedURLException
