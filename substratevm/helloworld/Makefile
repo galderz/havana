@@ -13,6 +13,15 @@ build:
 native:
 	native-image HelloWorld
 
+native-verbose:
+	native-image --verbose HelloWorld
+
+native-debug-attach:
+	native-image --debug-attach=8000 HelloWorld
+
+native-debug-remote-attach:
+	native-image --debug-attach=*:8000 HelloWorld
+
 run:
 	./helloworld
 
