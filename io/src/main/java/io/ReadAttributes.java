@@ -18,6 +18,26 @@ public class ReadAttributes
         final var sourcesJar = Path.of(home, ".m2/repository/org/jboss/slf4j/slf4j-jboss-logging/1.2.0.Final/slf4j-jboss-logging-1.2.0.Final-sources.jar");
         final var filePath = Path.of("org/jboss/slf4j/JBossLoggerFactory.java");
         System.out.println(readAttributes(filePath, sourcesJar));
+        System.out.println(isRegularFile(filePath, sourcesJar));
+    }
+
+    /**
+     * Use Files.isRegularFile() to see if a file within a jar is a file or not.
+     */
+    private static boolean isRegularFile(Path clazz, Path jar) throws IOException
+    {
+        final var fs = FileSystems.newFileSystem(jar, null);
+        List<Path> srcRoots = new ArrayList<>();
+        for (Path root : fs.getRootDirectories()) {
+            srcRoots.add(root);
+        }
+
+        for (Path root : srcRoots) {
+            Path sourcePath = extendPath(root, clazz);
+            return Files.isRegularFile(sourcePath);
+        }
+
+        return false;
     }
 
     private static Object readAttributes(Path clazz, Path jar) throws IOException
