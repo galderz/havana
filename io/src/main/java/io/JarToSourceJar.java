@@ -2,7 +2,7 @@ package io;
 
 import java.nio.file.Path;
 
-public class IoFiles
+public class JarToSourceJar
 {
     public static void main(String[] args)
     {
