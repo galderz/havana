@@ -39,7 +39,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>svm.zipfs.SubstituteZipFs</mainClass>
+                            <mainClass>svm.zipfs.SubstituteZipFsAtRuntime</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

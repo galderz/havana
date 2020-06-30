@@ -1,9 +1,23 @@
 package svm.zipfs.graal;
 
+import com.oracle.svm.core.annotate.Alias;
+import com.oracle.svm.core.annotate.RecomputeFieldValue;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
+import java.time.zone.ZoneOffsetTransition;
+import java.time.zone.ZoneRules;
 import java.util.Date;
+import java.util.concurrent.ConcurrentMap;
+
+@TargetClass(ZoneRules.class)
+final class Target_java_time_zone_ZoneRules {
+
+    @Alias
+    @RecomputeFieldValue(kind = RecomputeFieldValue.Kind.Reset)
+    transient ConcurrentMap<Integer, ZoneOffsetTransition[]> lastRulesCache;
+
+}
 
 @TargetClass(className = "jdk.nio.zipfs.ZipUtils")
 final class Target_jdk_nio_zipfs_ZipUtils {
