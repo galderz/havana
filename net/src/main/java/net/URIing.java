@@ -1,6 +1,4 @@
-package jawa.net;
-
-import jawa.lang.Assert;
+package net;
 
 import java.net.URI;
 import java.net.URISyntaxException;

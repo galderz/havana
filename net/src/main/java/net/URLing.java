@@ -1,4 +1,4 @@
-package jawa.net;
+package net;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
