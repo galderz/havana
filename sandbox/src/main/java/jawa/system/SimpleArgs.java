@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Inspired by https://stackoverflow.com/a/26376532/186429
+ */
 public class SimpleArgs
 {
     public static void main(String[] args)
