@@ -7,8 +7,10 @@ public class Main
 {
     public static void main(String[] args)
     {
-        System.out.println(Greeter.greet(args[0]));
-        final var hashCode = System.identityHashCode(JBossLoggerFactory.class);
-        System.out.println("A value: " + hashCode / 41);
+        final var greet = Greeter.greet(args[0]);
+        final var loggerFactory = new JBossLoggerFactory();
+        final var logger = loggerFactory.getLogger(args[0]);
+        System.out.println("Stdout: " + greet);
+        logger.info("Logger: " + greet);
     }
 }
