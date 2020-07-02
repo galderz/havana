@@ -23,12 +23,32 @@ public class ParamsWithURI
 
         final var uri = URI.create("https://github.com/openjdk/jdk11u-dev/tree/master?depth=0");
         System.out.println(uri.getRawQuery());
-        final var parameters = splitQuery(uri);
-        assert parameters.size() == 1 : parameters;
-        assert parameters.get("depth").equals(List.of("0")) : parameters;
+        final var paramsMapList = splitQueryList(uri);
+        assert paramsMapList.size() == 1 : paramsMapList;
+        assert paramsMapList.get("depth").equals(List.of("0")) : paramsMapList;
+        final var paramsMap = splitQuery(uri);
+        assert paramsMap.size() == 1 : paramsMap;
+        assert paramsMap.get("depth").equals("0") : paramsMap;
     }
 
-    public static Map<String, List<String>> splitQuery(URI uri)
+    public static Map<String, String> splitQuery(URI uri)
+    {
+        if (uri.getRawQuery() == null || uri.getRawQuery().isEmpty())
+        {
+            return Collections.emptyMap();
+        }
+
+        return Stream.of(uri.getRawQuery().split("&"))
+            .map(e -> e.split("="))
+            .collect(
+                Collectors.toMap(
+                    e -> decode(e[0])
+                    , e -> decode(e[1])
+                )
+            );
+    }
+
+    public static Map<String, List<String>> splitQueryList(URI uri)
     {
         if (uri.getRawQuery() == null || uri.getRawQuery().isEmpty())
         {
