@@ -1,22 +1,19 @@
 package net;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.AbstractMap;
-import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
-
 /**
- * Based on https://stackoverflow.com/a/13592567/186429
+ * Based on :
+ * https://stackoverflow.com/a/13592567/186429
+ * https://stackoverflow.com/a/55290418/186429
  */
 public class ParamsWithURI
 {
@@ -31,21 +28,26 @@ public class ParamsWithURI
         assert parameters.get("depth").equals(List.of("0")) : parameters;
     }
 
-    public static Map<String, List<String>> splitQuery(URI uri) {
-        if (uri.getRawQuery() == null || uri.getRawQuery().isEmpty()) {
+    public static Map<String, List<String>> splitQuery(URI uri)
+    {
+        if (uri.getRawQuery() == null || uri.getRawQuery().isEmpty())
+        {
             return Collections.emptyMap();
         }
+
         return Stream.of(uri.getRawQuery().split("&"))
-            .map(ParamsWithURI::splitQueryParameter)
-            .collect(Collectors.groupingBy(SimpleImmutableEntry::getKey, LinkedHashMap::new, Collectors.mapping(Map.Entry::getValue, toList())));
+            .map(e -> e.split("="))
+            .collect(
+                Collectors.groupingBy(
+                    e -> decode(e[0])
+                    , HashMap::new
+                    , Collectors.mapping(e -> decode(e[1]), Collectors.toList())
+                )
+            );
     }
 
-    public static SimpleImmutableEntry<String, String> splitQueryParameter(String element)
+    static String decode(String s)
     {
-        final var split = element.split("=");
-        return new SimpleImmutableEntry<>(
-            URLDecoder.decode(split[0], StandardCharsets.UTF_8),
-            URLDecoder.decode(split[1], StandardCharsets.UTF_8)
-        );
+        return URLDecoder.decode(s, StandardCharsets.UTF_8);
     }
 }
