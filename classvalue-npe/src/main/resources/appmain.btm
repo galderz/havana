@@ -14,26 +14,46 @@ IF true
 DO traceln("exiting main")
 ENDRULE
 
-RULE delay constructor test 1
+RULE trace method 1
 CLASS java.lang.ClassValue
 METHOD getCacheCarefully
 AT ENTRY
 IF true
-DO traceln("entering getCacheCarefully")
+DO traceln("[" + Thread.currentThread().getName() + "] entering getCacheCarefully(" + $1.toString() + ")")
 ENDRULE
 
 RULE delay constructor test 2
 CLASS java.lang.ClassValue$ClassValueMap
-METHOD <init>
+METHOD sizeCache
 AT ENTRY
-IF true
-DO traceln("entering ClassValueMap constructor")
+IF Thread.currentThread().getName().equals("slow-thread")
+DO traceln("[" + Thread.currentThread().getName() + "] entering and delaying sizeCache method");
+   delay(24000)
 ENDRULE
 
-RULE delay constructor test 3
-CLASS java.lang.ClassValue
-METHOD initializeMap
-AT ENTRY
-IF true
-DO traceln("entering initializeMap for type " + $1.toString())
-ENDRULE
+# RULE delay constructor test 2
+# CLASS java.lang.ClassValue$ClassValueMap
+# METHOD <init>
+# AT ENTRY
+# IF Thread.currentThread().getName().equals("main")
+# DO traceln("entering ClassValueMap constructor");
+#    delay(6000)
+# ENDRULE
+
+# RULE delay constructor test 3
+# CLASS java.lang.ClassValue
+# METHOD getMap
+# AT ENTRY
+# IF true
+# DO traceln("entering getMap for type " + $1.toString())
+# ENDRULE
+
+# RULE delay constructor test 4
+# CLASS java.lang.ClassValue$ClassValueMap
+# METHOD sizeCache
+# AT ENTRY
+# IF Thread.currentThread().getName().equals("main")
+# DO traceln("entering sizeCache");
+#    Thread.sleep(60000)
+#    traceln("exit sizeCache");
+# ENDRULE
