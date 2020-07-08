@@ -2,24 +2,29 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>java</groupId>
-    <artifactId>java</artifactId>
+    <groupId>havana</groupId>
+    <artifactId>havana</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>java</name>
 
     <modules>
-<!--        <module>sandbox</module>-->
+        <module>sandbox</module>
         <module>jmh</module>
-<!--        <module>aeron</module>-->
         <module>nonblocking</module>
         <module>neo4j</module>
         <module>kubernetes</module>
-        <module>substratevm/jigsaw-maven</module>
         <module>fx</module>
         <module>docker-java</module>
         <module>junit-quickcheck</module>
+        <module>maven</module>
+        <module>records</module>
+        <module>hamcrest</module>
+        <module>junit-programmatic</module>
+        <module>guava</module>
+        <module>classvalue-npe</module>
+        <module>util</module>
     </modules>
 
 </project>
