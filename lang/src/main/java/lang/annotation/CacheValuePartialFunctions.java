@@ -1,4 +1,4 @@
-package j.annotations;
+package lang.annotation;
 
 import java.util.ArrayList;
 import java.util.List;

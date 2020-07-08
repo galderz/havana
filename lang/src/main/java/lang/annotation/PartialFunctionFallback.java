@@ -1,9 +1,7 @@
-package j.annotations;
+package lang.annotation;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class PartialFunctionFallback
 {

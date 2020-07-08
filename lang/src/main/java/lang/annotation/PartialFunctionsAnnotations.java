@@ -1,4 +1,4 @@
-package j.annotations;
+package lang.annotation;
 
 import java.util.List;
 import java.util.function.BiFunction;

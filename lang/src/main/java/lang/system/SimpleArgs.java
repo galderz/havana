@@ -1,4 +1,4 @@
-package p.system;
+package lang.system;
 
 import java.util.ArrayList;
 import java.util.Arrays;

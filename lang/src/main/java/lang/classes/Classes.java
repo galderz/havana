@@ -1,4 +1,4 @@
-package j.classes;
+package lang.classes;
 
 public class Classes {
 

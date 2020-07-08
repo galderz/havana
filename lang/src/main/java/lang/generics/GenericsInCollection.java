@@ -1,4 +1,4 @@
-package j.generics;
+package lang.generics;
 
 import java.util.List;
 
