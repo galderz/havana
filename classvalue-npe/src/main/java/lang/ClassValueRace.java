@@ -3,7 +3,7 @@ package lang;
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.TimeUnit;
 
-public class ClassValueNPE
+public class ClassValueRace
 {
     public static void main(String[] args) throws Exception
     {
@@ -31,7 +31,7 @@ public class ClassValueNPE
         @Override
         public void run()
         {
-            ClassValueNPE.sleepShort();
+            ClassValueRace.sleepShort();
             log(MethodHandles.arrayElementGetter(int[].class));
         }
     }
@@ -60,7 +60,7 @@ public class ClassValueNPE
         @Override
         public void run()
         {
-            ClassValueNPE.sleepShort();
+            ClassValueRace.sleepShort();
             log(MethodHandles.arrayElementGetter(Object[].class));
         }
     }
