@@ -111,12 +111,11 @@ public class ClassValueRaceTest
         }
     }
 
-    static void log(Object... args)
+    static void log(Object arg)
     {
         final var threadName = Thread.currentThread().getName();
-        final var msg = String.format("%s", args);
-        if (msg.hashCode() % 41 == 0)
-            System.out.printf("[%s] %s%n", threadName, msg);
+        final var msg = String.format("%s(%d)", arg, System.identityHashCode(arg));
+        System.out.printf("[%s] %s%n", threadName, msg);
     }
 
 }
