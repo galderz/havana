@@ -1,14 +1,10 @@
 package lang;
 
-import org.junit.Test;
-
 import java.lang.invoke.MethodHandles;
-import java.util.concurrent.TimeUnit;
 
-public class ClassValueRace
+public class ClassValueBytemanRace
 {
-    @Test
-    public void test() throws Throwable
+    public static void main(String[] args) throws Throwable
     {
         final var objectArrayGetter = new ObjectArrayGetter();
         objectArrayGetter.start();
@@ -70,7 +66,7 @@ public class ClassValueRace
         @Override
         public void run()
         {
-            ClassValueRace.sleepShort();
+            ClassValueBytemanRace.sleepShort();
             log(MethodHandles.arrayElementGetter(int[].class));
         }
     }
@@ -99,7 +95,7 @@ public class ClassValueRace
         @Override
         public void run()
         {
-            ClassValueRace.sleepShort();
+            ClassValueBytemanRace.sleepShort();
             log(MethodHandles.arrayElementGetter(Object[].class));
         }
     }

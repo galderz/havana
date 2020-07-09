@@ -28,7 +28,7 @@ METHOD sizeCache
 AT ENTRY
 IF Thread.currentThread().getName().equals("slow-thread")
 DO traceln("[" + Thread.currentThread().getName() + "] entering and delaying sizeCache method");
-   delay(24000)
+   delay(200)
 ENDRULE
 
 # RULE delay constructor test 2
