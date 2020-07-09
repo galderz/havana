@@ -1,11 +1,14 @@
 package lang;
 
+import org.junit.Test;
+
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.TimeUnit;
 
 public class ClassValueRace
 {
-    public static void main(String[] args) throws Exception
+    @Test
+    public void test() throws Throwable
     {
         final var objectArrayGetter = new ObjectArrayGetter();
         objectArrayGetter.start();
@@ -19,9 +22,45 @@ public class ClassValueRace
 
         fastIntArrayGetter.join();
         slowIntArrayGetter.join();
+
+        objectArrayGetter.checkUncaught();
+        fastIntArrayGetter.checkUncaught();
+        slowIntArrayGetter.checkUncaught();
     }
 
-    static final class FastIntArrayGetter extends Thread
+    static final class UncaughtHandler implements Thread.UncaughtExceptionHandler
+    {
+        public volatile Throwable throwable;
+
+        @Override
+        public void uncaughtException(Thread th, Throwable ex) {
+            System.err.print("Exception in thread \"" + th.getName() + "\" ");
+            ex.printStackTrace(System.err);
+            this.throwable = ex;
+        }
+    }
+
+    static abstract class UncaughtThread extends Thread
+    {
+        final UncaughtHandler uncaughtHandler;
+
+        public UncaughtThread(String name)
+        {
+            super(name);
+            uncaughtHandler = new UncaughtHandler();
+            setUncaughtExceptionHandler(uncaughtHandler);
+        }
+
+        void checkUncaught() throws Throwable
+        {
+            if (uncaughtHandler.throwable != null)
+            {
+                throw uncaughtHandler.throwable;
+            }
+        }
+    }
+
+    static final class FastIntArrayGetter extends UncaughtThread
     {
         public FastIntArrayGetter()
         {
@@ -36,7 +75,7 @@ public class ClassValueRace
         }
     }
 
-    static final class SlowIntArrayGetter extends Thread
+    static final class SlowIntArrayGetter extends UncaughtThread
     {
         public SlowIntArrayGetter()
         {
@@ -50,7 +89,7 @@ public class ClassValueRace
         }
     }
 
-    static final class ObjectArrayGetter extends Thread
+    static final class ObjectArrayGetter extends UncaughtThread
     {
         public ObjectArrayGetter()
         {
@@ -76,7 +115,7 @@ public class ClassValueRace
     {
         try
         {
-            Thread.sleep(TimeUnit.SECONDS.toMillis(3));
+            Thread.sleep(100);
         }
         catch (InterruptedException e)
         {
