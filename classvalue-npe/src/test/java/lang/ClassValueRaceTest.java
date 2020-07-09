@@ -13,6 +13,8 @@ public class ClassValueRaceTest
     @Test
     public void test() throws Throwable
     {
+        System.out.printf("Number of threads: %d", NUM_THREADS);
+
         final var objectArrayGetter = new ObjectArrayGetter();
         objectArrayGetter.start();
         objectArrayGetter.join();
