@@ -17,18 +17,28 @@ import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * To get logging and verify it's exercising the right thing:
+ * -ea -Dnum.iterations=5 -Dnum.threads=5 -javaagent:/opt/byteman/lib/byteman.jar=boot:/opt/byteman/lib/byteman.jar,script:/Users/g/1/havana/classvalue-npe/src/main/resources/logging.btm -Dorg.jboss.byteman.transform.all=true
+ *
+ * Otherwise, just run it with:
+ * -ea
+ */
 public class ClassValueStress
 {
     static final int NUM_ITERATIONS = Integer.getInteger("num.iterations", Integer.MAX_VALUE);
-    static final int NUM_CORES = Integer.getInteger("num.cores", Runtime.getRuntime().availableProcessors() - 1);
+    static final int NUM_THREADS = Integer.getInteger("num.threads", Runtime.getRuntime().availableProcessors() - 1);
 
     public static void main(String[] args) throws Exception
     {
         needEnabledAsserts();
         System.out.printf("Number of iterations: %d%n", NUM_ITERATIONS);
-        System.out.printf("Number of cores: %d%n", NUM_CORES);
+        System.out.printf("Number of threads: %d%n", NUM_THREADS);
 
-        final var executor = Executors.newFixedThreadPool(NUM_CORES);
+        // Get Object[] out of the picture for other threads
+        MethodHandles.arrayElementGetter(Object[].class);
+
+        final var executor = Executors.newFixedThreadPool(NUM_THREADS);
         IntStream.range(0, NUM_ITERATIONS).forEach(runIteration(executor));
 
         executor.shutdown();
@@ -38,14 +48,16 @@ public class ClassValueStress
     {
         return i ->
         {
-            if (i % 1000 == 0)
+            if (i < 1000 || i % 1000 == 0)
                 System.out.printf("Iteration %d%n", i);
 
-            final var barrier = new CyclicBarrier(NUM_CORES + 1);
+            final var barrier = new CyclicBarrier(NUM_THREADS + 1);
+
+            final Class<?> type = newDynamicArrayType();
 
             final var futures =
-                IntStream.range(0, NUM_CORES)
-                    .mapToObj(x -> fireArrayGetter(barrier, executor))
+                IntStream.range(0, NUM_THREADS)
+                    .mapToObj(x -> fireArrayGetter(type, barrier, executor))
                     .collect(Collectors.toList());
 
             // Wait for all threads to reach starting point
@@ -61,38 +73,39 @@ public class ClassValueStress
         assert methodHandle != null;
     }
 
-    private static Future<MethodHandle> fireArrayGetter(CyclicBarrier barrier, ExecutorService executor)
+    private static Future<MethodHandle> fireArrayGetter(Class<?> type, CyclicBarrier barrier, ExecutorService executor)
     {
-        return executor.submit(new ArrayGetter(barrier));
+        return executor.submit(new ArrayGetter(type, barrier));
+    }
+
+    private static Class<?> newDynamicArrayType()
+    {
+        DynamicType.Unloaded<?> dynamicType = new ByteBuddy()
+            .subclass(Object.class)
+            .make();
+
+        final Class<?> loadedClass = dynamicType
+            .load(ClassValueStress.class.getClassLoader())
+            .getLoaded();
+
+        return Array.newInstance(loadedClass, 1).getClass();
     }
 
     static class ArrayGetter implements Callable<MethodHandle>
     {
+        final Class<?> type;
         final CyclicBarrier barrier;
 
-        ArrayGetter(CyclicBarrier barrier) {
+        ArrayGetter(Class<?> type, CyclicBarrier barrier) {
+            this.type = type;
             this.barrier = barrier;
         }
 
         @Override
         public MethodHandle call() throws Exception
         {
-            final Class<?> type = newDynamicArrayType();
             barrier.await();
             return MethodHandles.arrayElementGetter(type);
-        }
-
-        private Class<?> newDynamicArrayType()
-        {
-            DynamicType.Unloaded<?> dynamicType = new ByteBuddy()
-                .subclass(Object.class)
-                .make();
-
-            final Class<?> loadedClass = dynamicType
-                .load(ClassValueStress.class.getClassLoader())
-                .getLoaded();
-
-            return Array.newInstance(loadedClass, 1).getClass();
         }
     }
 
@@ -104,25 +117,6 @@ public class ClassValueStress
         if (!enabled)
             throw new AssertionError("assert not enabled");
     }
-
-//        IntStream.range(0, 10)
-//            .forEach(i ->
-//            {
-//                DynamicType.Unloaded<?> dynamicType = new ByteBuddy()
-//                    .subclass(Object.class)
-//                    .make();
-//
-//                final Class<?> loadedClass = dynamicType
-//                    .load(ClassValueStress.class.getClassLoader())
-//                    .getLoaded();
-//
-//                // System.out.println(loadedClass);
-//                final var array = Array.newInstance(loadedClass, 1);
-//
-//                final var mh = MethodHandles.arrayElementGetter(array.getClass());
-//                // System.out.println(mh);
-//                assert mh != null;
-//            });
 
     private static void barrierAwait(CyclicBarrier barrier)
     {
