@@ -1,4 +1,4 @@
-package p.lang;
+package lang;
 
 public final class Assert
 {
