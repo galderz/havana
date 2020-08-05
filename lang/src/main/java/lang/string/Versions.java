@@ -14,6 +14,7 @@ public class Versions
         final var V_SNAPSHOT = check(Integer.MAX_VALUE, Integer.MAX_VALUE, Version.Distribution.MANDREL).compose(Version::of);
         final var V_1_0 = check(1, 0, Version.Distribution.ORACLE).compose(Version::of);
         final var V_19_0 = check(19, 0, Version.Distribution.ORACLE).compose(Version::of);
+        final var V_19_3 = check(19, 3, Version.Distribution.ORACLE).compose(Version::of);
         final var V_20_0 = check(20, 0, Version.Distribution.ORACLE).compose(Version::of);
         final var V_20_1 = check(20, 1, Version.Distribution.ORACLE).compose(Version::of);
         final var V_20_1_MANDREL = check(20, 1, Version.Distribution.MANDREL).compose(Version::of);
@@ -24,6 +25,11 @@ public class Versions
         {
             final var version = V_SNAPSHOT.apply("GraalVM Version beb2fd6 (Mandrel Distribution) (Java Version 11.0.9-internal)");
             assert version.distro == Version.Distribution.MANDREL;
+        }
+        {
+            final var version = V_20_0.apply("GraalVM Version 20.0.0");
+            final var other = V_19_3.apply("GraalVM Version 19.3.0");
+            assert version.compareTo(other) > 0;
         }
         {
             final var version = V_20_0.apply("GraalVM Version 20.0.0");
@@ -63,7 +69,8 @@ public class Versions
         {
             assert version.major == major : version;
             assert version.minor == minor : version;
-            assert version.distro == distro : distro;
+            assert version.distro == distro : version;
+            assert version.isDetected() : version;
             return version;
         };
     }
@@ -71,7 +78,7 @@ public class Versions
     static final class Version implements Comparable<Version>
     {
         private static final Pattern PATTERN = Pattern.compile(
-            "GraalVM Version ((1|[1-9][0-9]).([0-2]).[0-9]|\\p{XDigit}*)[^(\n$]*(\\(Mandrel Distribution\\))?\\s*"
+            "GraalVM Version ((1|[1-9][0-9]).([0-3]).[0-9]|\\p{XDigit}*)[^(\n$]*(\\(Mandrel Distribution\\))?\\s*"
         );
 
         static final Version UNVERSIONED = new Version(-1, -1, null);
@@ -87,6 +94,10 @@ public class Versions
             this.major = major;
             this.minor = minor;
             this.distro = distro;
+        }
+
+        boolean isDetected() {
+            return this != UNVERSIONED;
         }
 
         @Override
@@ -145,6 +156,7 @@ public class Versions
             return "Version{" +
                 "major=" + major +
                 ", minor=" + minor +
+                ", distro=" + distro +
                 '}';
         }
 
