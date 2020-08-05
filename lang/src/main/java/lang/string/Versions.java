@@ -16,7 +16,11 @@ public class Versions
         final var V_19_0 = check(19, 0, Version.Distribution.ORACLE).compose(Version::of);
         final var V_20_0 = check(20, 0, Version.Distribution.ORACLE).compose(Version::of);
         final var V_20_1 = check(20, 1, Version.Distribution.ORACLE).compose(Version::of);
+        final var V_20_1_MANDREL = check(20, 1, Version.Distribution.MANDREL).compose(Version::of);
         final var V_21_0 = check(21, 0, Version.Distribution.ORACLE).compose(Version::of);
+        {
+            V_20_1_MANDREL.apply("GraalVM Version 20.1.0.1.Alpha2 56d4ee1b28 (Mandrel Distribution) (Java Version 11.0.8)");
+        }
         {
             final var version = V_SNAPSHOT.apply("GraalVM Version beb2fd6 (Mandrel Distribution) (Java Version 11.0.9-internal)");
             assert version.distro == Version.Distribution.MANDREL;
@@ -67,8 +71,7 @@ public class Versions
     static final class Version implements Comparable<Version>
     {
         private static final Pattern PATTERN = Pattern.compile(
-            // "GraalVM Version (1.0.0|([1-9][0-9]).([0-3]).[0-9]|\\p{XDigit}{7})\\s*(\\(Mandrel Distribution\\))?\\s*"
-            "GraalVM Version ((1|[1-9][0-9]).([0-2]).[0-9]|\\p{XDigit}{7})\\s*(\\(Mandrel Distribution\\))?\\s*"
+            "GraalVM Version ((1|[1-9][0-9]).([0-2]).[0-9]|\\p{XDigit}*)[^(\n$]*(\\(Mandrel Distribution\\))?\\s*"
         );
 
         static final Version UNVERSIONED = new Version(-1, -1, null);
@@ -108,17 +111,18 @@ public class Versions
             final var matcher = PATTERN.matcher(version);
             if (matcher.find() && matcher.groupCount() >= 3)
             {
-                if (isSnapshot(matcher.group(1)))
+                final var distro = matcher.group(4);
+                if (isSnapshot(matcher.group(2)))
                 {
-                    final var distro = matcher.group(4);
                     return isMandrel(distro) ? SNAPSHOT_MANDREL : SNAPSHOT_ORACLE;
                 }
                 else
                 {
                     return new Version(
                         Integer.parseInt(matcher.group(2))
-                        , Integer.parseInt(matcher.group(3)),
-                        Distribution.ORACLE);
+                        , Integer.parseInt(matcher.group(3))
+                        , isMandrel(distro) ? Distribution.MANDREL : Distribution.ORACLE
+                    );
                 }
             }
 
@@ -127,7 +131,7 @@ public class Versions
 
         private static boolean isSnapshot(String s)
         {
-            return s.length() == 7;
+            return s == null;
         }
 
         private static boolean isMandrel(String s)
