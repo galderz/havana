@@ -12,11 +12,16 @@ public class Versions
     {
         Assert.check();
 
+        final var V_SNAPSHOT = check(Integer.MAX_VALUE, Integer.MAX_VALUE).compose(Version::of);
         final var V_1_0 = check(1, 0).compose(Version::of);
         final var V_19_0 = check(19, 0).compose(Version::of);
         final var V_20_0 = check(20, 0).compose(Version::of);
         final var V_20_1 = check(20, 1).compose(Version::of);
         final var V_21_0 = check(21, 0).compose(Version::of);
+        {
+            final var version = V_SNAPSHOT.apply("GraalVM Version beb2fd6 (Mandrel Distribution) (Java Version 11.0.9-internal)");
+            assert version.distro == Version.Distribution.ORACLE; // TODO fix
+        }
         {
             final var version = V_20_0.apply("GraalVM Version 20.0.0");
             final var other = V_19_0.apply("GraalVM Version 19.0.0");
@@ -62,16 +67,22 @@ public class Versions
     static final class Version implements Comparable<Version>
     {
         private static final Pattern PATTERN = Pattern.compile(
-            "GraalVM Version (1.0.0|([1-9][0-9]).([0-3]).[0-9])\\s*"
+            // "GraalVM Version (1.0.0|([1-9][0-9]).([0-3]).[0-9]|\\p{XDigit}{7})\\s*(\\(Mandrel Distribution\\))?\\s*"
+            "GraalVM Version ((1|[1-9][0-9]).([0-2]).[0-9]|\\p{XDigit}{7})\\s*"
         );
+
+        static final Version UNVERSIONED = new Version(-1, -1, Distribution.ORACLE);
+        static final Version SNAPSHOT = new Version(Integer.MAX_VALUE, Integer.MAX_VALUE, Distribution.ORACLE);
 
         final int major;
         final int minor;
+        final Distribution distro;
 
-        private Version(int major, int minor)
+        private Version(int major, int minor, Distribution distro)
         {
             this.major = major;
             this.minor = minor;
+            this.distro = distro;
         }
 
         @Override
@@ -94,22 +105,23 @@ public class Versions
         static Version of(String version)
         {
             final var matcher = PATTERN.matcher(version);
-            if (matcher.find() && matcher.groupCount() == 3)
+            if (matcher.find() && matcher.groupCount() >= 3)
             {
-                if (Objects.isNull(matcher.group(2)))
+                final var first = matcher.group(1);
+                if (first.length() == 7)
                 {
-                    return new Version(1, 0);
+                    return SNAPSHOT;
                 }
                 else
                 {
                     return new Version(
                         Integer.parseInt(matcher.group(2))
-                        , Integer.parseInt(matcher.group(3))
-                    );
+                        , Integer.parseInt(matcher.group(3)),
+                        Distribution.ORACLE);
                 }
             }
 
-            return new Version(-1, -1);
+            return UNVERSIONED;
         }
 
         @Override
@@ -119,6 +131,12 @@ public class Versions
                 "major=" + major +
                 ", minor=" + minor +
                 '}';
+        }
+
+        enum Distribution {
+            ORACLE
+            , MANDREL
+            ;
         }
     }
 }
