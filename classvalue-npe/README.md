@@ -1,7 +1,5 @@
-Uses surefire snapshot to be able to do:
+Run stress test with:
 
-```bash
-mvn -Dsurefire.untilFailureLoopCount=10 tes
 ```
-
-See [here](https://github.com/apache/maven-surefire/pull/221) for more info.
+MAVEN_OPTS="-ea" mvn exec:java -Dexec.mainClass="lang.ClassValueStress"
+```
