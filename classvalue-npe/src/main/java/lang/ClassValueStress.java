@@ -69,7 +69,7 @@ public class ClassValueStress
     {
         return i ->
         {
-            if (i < 1000 || i % 1000 == 0)
+            if (i < 1000 || i % 10000 == 0)
                 System.out.printf("Iteration %d%n", i);
 
             final var barrier = new CyclicBarrier(NUM_THREADS + 1);
