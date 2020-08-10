@@ -3,7 +3,6 @@ package lang;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.management.ManagementFactory;
-import java.lang.reflect.Field;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CyclicBarrier;
@@ -28,21 +27,23 @@ public class ClassValueStress
     static final int NUM_THREADS = Integer.getInteger("num.threads", Runtime.getRuntime().availableProcessors() - 1);
 
     static final Class<?> TYPE = int[].class;
-    static final Field CLASS_VALUE_MAP_FIELD;
+    static final MethodHandle CLASS_VALUE_MAP_MH;
 
     static {
         try
         {
             final var field = Class.class.getDeclaredField("classValueMap");
             field.setAccessible(true);
-            CLASS_VALUE_MAP_FIELD = field;
+
+            MethodHandles.Lookup lookup = MethodHandles.lookup();
+            CLASS_VALUE_MAP_MH = lookup.unreflectSetter(field);
         } catch (Throwable t)
         {
             throw new RuntimeException(t);
         }
     }
 
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args)
     {
         needEnabledAsserts();
         System.out.printf("Number of iterations: %d%n", NUM_ITERATIONS);
@@ -75,7 +76,7 @@ public class ClassValueStress
 
             final var futures =
                 IntStream.range(0, NUM_THREADS)
-                    .mapToObj(x -> fireArrayGetter(TYPE, barrier, executor))
+                    .mapToObj(x -> fireArrayGetter(barrier, executor))
                     .collect(Collectors.toList());
 
             // Wait for all threads to reach starting point
@@ -91,11 +92,11 @@ public class ClassValueStress
     {
         try
         {
-            CLASS_VALUE_MAP_FIELD.set(TYPE, null);
+            CLASS_VALUE_MAP_MH.invoke(TYPE, null);
         }
-        catch (IllegalAccessException e)
+        catch (Throwable t)
         {
-            throw new RuntimeException(e);
+            throw new RuntimeException(t);
         }
     }
 
@@ -105,9 +106,9 @@ public class ClassValueStress
         assert methodHandle != null;
     }
 
-    private static Future<MethodHandle> fireArrayGetter(Class<?> type, CyclicBarrier barrier, ExecutorService executor)
+    private static Future<MethodHandle> fireArrayGetter(CyclicBarrier barrier, ExecutorService executor)
     {
-        return executor.submit(new ArrayGetter(type, barrier));
+        return executor.submit(new ArrayGetter(ClassValueStress.TYPE, barrier));
     }
 
     static class ArrayGetter implements Callable<MethodHandle>
