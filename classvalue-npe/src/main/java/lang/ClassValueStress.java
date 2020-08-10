@@ -1,12 +1,9 @@
 package lang;
 
-import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.dynamic.DynamicType;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.management.ManagementFactory;
-import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CyclicBarrier;
@@ -14,7 +11,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -31,8 +27,20 @@ public class ClassValueStress
     static final int NUM_ITERATIONS = Integer.getInteger("num.iterations", Integer.MAX_VALUE - 8);
     static final int NUM_THREADS = Integer.getInteger("num.threads", Runtime.getRuntime().availableProcessors() - 1);
 
-    static final int BATCH_SIZE = Integer.getInteger("batch.size", 100_000);
-    static final Class<?>[] types = new Class<?>[BATCH_SIZE];
+    static final Class<?> TYPE = int[].class;
+    static final Field CLASS_VALUE_MAP_FIELD;
+
+    static {
+        try
+        {
+            final var field = Class.class.getDeclaredField("classValueMap");
+            field.setAccessible(true);
+            CLASS_VALUE_MAP_FIELD = field;
+        } catch (Throwable t)
+        {
+            throw new RuntimeException(t);
+        }
+    }
 
     public static void main(String[] args) throws Exception
     {
@@ -50,22 +58,6 @@ public class ClassValueStress
         executor.shutdown();
     }
 
-    private static void generateDynamicTypes(int size)
-    {
-        System.out.printf("Generate %d dynamic types%n", size);
-        final var start = System.nanoTime();
-        IntStream.range(0, size).forEach(addDynamicType());
-        System.out.printf(
-            "Dynamic types generated in %d seconds %n"
-            , TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - start)
-        );
-    }
-
-    private static IntConsumer addDynamicType()
-    {
-        return i -> types[i] = newDynamicArrayType();
-    }
-
     private static Object getJvmArguments()
     {
         final var runtimeMXBean = ManagementFactory.getRuntimeMXBean();
@@ -79,23 +71,32 @@ public class ClassValueStress
             if (i < 1000 || i % 1000 == 0)
                 System.out.printf("Iteration %d%n", i);
 
-            if (i == 0 || i % BATCH_SIZE == 0)
-                generateDynamicTypes(BATCH_SIZE);
-
             final var barrier = new CyclicBarrier(NUM_THREADS + 1);
-
-            int typeIndex = i % BATCH_SIZE;
 
             final var futures =
                 IntStream.range(0, NUM_THREADS)
-                    .mapToObj(x -> fireArrayGetter(types[typeIndex], barrier, executor))
+                    .mapToObj(x -> fireArrayGetter(TYPE, barrier, executor))
                     .collect(Collectors.toList());
 
             // Wait for all threads to reach starting point
             barrierAwait(barrier);
 
             futures.forEach(ClassValueStress::assertMethodHandle);
+
+            nullify();
         };
+    }
+
+    private static void nullify()
+    {
+        try
+        {
+            CLASS_VALUE_MAP_FIELD.set(TYPE, null);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     private static void assertMethodHandle(Future<MethodHandle> future)
@@ -107,19 +108,6 @@ public class ClassValueStress
     private static Future<MethodHandle> fireArrayGetter(Class<?> type, CyclicBarrier barrier, ExecutorService executor)
     {
         return executor.submit(new ArrayGetter(type, barrier));
-    }
-
-    private static Class<?> newDynamicArrayType()
-    {
-        DynamicType.Unloaded<?> dynamicType = new ByteBuddy()
-            .subclass(Object.class)
-            .make();
-
-        final Class<?> loadedClass = dynamicType
-            .load(ClassValueStress.class.getClassLoader())
-            .getLoaded();
-
-        return Array.newInstance(loadedClass, 1).getClass();
     }
 
     static class ArrayGetter implements Callable<MethodHandle>
