@@ -39,6 +39,16 @@ public class MethodHandling
         }
 
         {
+            final var p = new Person();
+            assert p.getName() != null;
+            final var field = Person.class.getDeclaredField("name");
+            field.setAccessible(true);
+            final var fieldHandle = lookup.unreflectSetter(field);
+            fieldHandle.invoke(p, null);
+            assert p.getName() == null;
+        }
+
+        {
             // Invoking a method handle using the invokeWithArguments method,
             // is the least restrictive of the three options.
             // In fact, it allows a variable arity invocation,
@@ -104,6 +114,24 @@ public class MethodHandling
         private String formatBook()
         {
             return id + " > " + title;
+        }
+    }
+
+    static class Person
+    {
+        private String name = "a person";
+
+        public String getName()
+        {
+            return name;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "Person{" +
+                "nam='" + name + '\'' +
+                '}';
         }
     }
 }
