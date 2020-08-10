@@ -5,6 +5,8 @@ import net.bytebuddy.dynamic.DynamicType;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Array;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.Callable;
@@ -34,6 +36,7 @@ public class ClassValueStress
         needEnabledAsserts();
         System.out.printf("Number of iterations: %d%n", NUM_ITERATIONS);
         System.out.printf("Number of threads: %d%n", NUM_THREADS);
+        System.out.printf("JVM arguments: %s%n", getJvmArguments());
 
         // Get Object[] out of the picture for other threads
         MethodHandles.arrayElementGetter(Object[].class);
@@ -42,6 +45,12 @@ public class ClassValueStress
         IntStream.range(0, NUM_ITERATIONS).forEach(runIteration(executor));
 
         executor.shutdown();
+    }
+
+    private static Object getJvmArguments()
+    {
+        final var runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+        return runtimeMXBean.getInputArguments();
     }
 
     private static IntConsumer runIteration(ExecutorService executor)
