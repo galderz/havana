@@ -1,4 +1,4 @@
-package j.mime;
+package charset;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;

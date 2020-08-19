@@ -1,4 +1,4 @@
-package j.mime;
+package charset;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
