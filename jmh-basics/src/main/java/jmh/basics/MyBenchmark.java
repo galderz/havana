@@ -1,4 +1,4 @@
-package j.jmh;
+package jmh.basics;
 
 import org.openjdk.jmh.annotations.Benchmark;
 
