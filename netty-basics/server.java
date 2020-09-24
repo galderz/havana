@@ -6,7 +6,6 @@
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -38,7 +37,7 @@ public class server
             b.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 100)
-                .handler(new LoggingHandler(LogLevel.INFO))
+                // .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new ChannelInitializer<SocketChannel>()
                 {
                     @Override
@@ -53,6 +52,8 @@ public class server
             // Start the server.
             ChannelFuture f = b.bind(PORT).sync();
 
+            out.println("Server is up!");
+
             // Wait until the server socket is closed.
             f.channel().closeFuture().sync();
         }
@@ -62,70 +63,7 @@ public class server
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
-
-
-//        out.println("Configure server");
-//        // Configure the server.
-//        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-//        EventLoopGroup workerGroup = new NioEventLoopGroup();
-//
-//        out.println("Booting server...");
-//        try
-//        {
-//            ServerBootstrap b = new ServerBootstrap();
-//            b.group(bossGroup, workerGroup)
-//                .channel(NioServerSocketChannel.class)
-//                .option(ChannelOption.SO_BACKLOG, 100)
-//                .handler(new LoggingHandler(LogLevel.INFO))
-//                .childHandler(new ChannelInitializer<SocketChannel>()
-//                {
-//                    @Override
-//                    public void initChannel(SocketChannel ch) throws Exception
-//                    {
-//                        ChannelPipeline p = ch.pipeline();
-//                        p.addLast(new LoggingHandler(LogLevel.INFO));
-//                        p.addLast(new LocalEchoServerHandler());
-//                    }
-//                });
-//
-//            // Start the server.
-//            ChannelFuture f = b.bind(PORT).sync();
-//
-//            out.println("Server is up!");
-//
-//            // Wait until the server socket is closed.
-//            f.channel().closeFuture().sync();
-//        }
-//        finally
-//        {
-//            // Shut down all event loops to terminate all threads.
-//            bossGroup.shutdownGracefully();
-//            workerGroup.shutdownGracefully();
-//        }
     }
-
-//    static class LocalEchoServerHandler extends ChannelInboundHandlerAdapter
-//    {
-//        @Override
-//        public void channelRead(ChannelHandlerContext ctx, Object msg)
-//        {
-//            out.println("channelRead(" + msg + ")");
-//            ctx.write(msg); // Write back as received
-//        }
-//
-//        @Override
-//        public void channelReadComplete(ChannelHandlerContext ctx)
-//        {
-//            ctx.flush();
-//        }
-//
-//        @Override
-//        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
-//        {
-//            cause.printStackTrace();
-//            ctx.close();
-//        }
-//    }
 
     /**
      * Handler implementation for the echo server.
@@ -133,11 +71,9 @@ public class server
     @Sharable
     static class EchoServerHandler extends ChannelInboundHandlerAdapter
     {
-
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg)
         {
-            out.println("Pong...");
             ctx.write(msg);
         }
 
