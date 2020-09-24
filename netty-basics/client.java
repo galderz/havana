@@ -1,4 +1,4 @@
-//usr/bin/env jbang "$0" "$@" ; exit $?
+///usr/bin/env jbang "$0" "$@" ; exit $?
 //DEPS io.netty:netty-common:4.1.51.Final
 //DEPS io.netty:netty-buffer:4.1.51.Final
 //DEPS io.netty:netty-transport:4.1.51.Final
