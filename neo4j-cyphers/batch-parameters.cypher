@@ -1,0 +1,51 @@
+//     A
+//    / \
+//   B   C
+//  / \   \
+// D   E   F
+
+:param rows => [{_id:0, properties:{name:'A'}}, {_id:1, properties:{name:'B'}}, {_id:2, properties:{name:'C'}}]
+
+:begin
+UNWIND $rows as row
+CREATE (n:`UNIQUE IMPORT LABEL`{`UNIQUE IMPORT ID`: row._id})
+  SET n += row.properties SET n:Tree;
+:commit
+
+:param rows => [{_id:3, properties:{name:'D'}}, {_id:4, properties:{name:'E'}}, {_id:5, properties:{name:'F'}}]
+
+:begin
+UNWIND $rows as row
+CREATE (n:`UNIQUE IMPORT LABEL`{`UNIQUE IMPORT ID`: row._id})
+  SET n += row.properties SET n:Tree;
+:commit
+
+:param rows => [{start: {_id:0}, end: {name:'B'}}, {start: {_id:1}, end: {name:'D'}}]
+
+:begin
+UNWIND $rows as row
+MATCH (start:`UNIQUE IMPORT LABEL`
+               {`UNIQUE IMPORT ID`: row.start._id})
+MATCH (end:Tree {name: row.end.name})
+CREATE (start)-[r:LEFT]->(end);
+:commit
+
+:param rows => [{start: {_id:0}, end: {name:'C'}}, {start: {_id:1}, end: {name:'E'}}]
+
+:begin
+UNWIND $rows as row
+MATCH (start:`UNIQUE IMPORT LABEL`
+               {`UNIQUE IMPORT ID`: row.start._id})
+MATCH (end:Tree {name: row.end.name})
+CREATE (start)-[r:RIGHT]->(end);
+:commit
+
+:param rows => [{start: {_id:2}, end: {name:'F'}}]
+
+:begin
+UNWIND $rows as row
+MATCH (start:`UNIQUE IMPORT LABEL`
+               {`UNIQUE IMPORT ID`: row.start._id})
+MATCH (end:Tree {name: row.end.name})
+CREATE (start)-[r:RIGHT]->(end);
+:commit
