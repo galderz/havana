@@ -136,31 +136,19 @@ public class UniCategoryTraceLogger
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE, ElementType.FIELD})
-    public @interface Substitute {
+    public @interface Substitute
+    {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public @interface Fold {
+    public @interface Fold
+    {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.FIELD})
-    public @interface Alias {
-    }
-
-    public static final class Assert
+    public @interface Alias
     {
-        public static void check()
-        {
-            boolean enabled = false;
-            assert enabled = true;
-            if (!enabled)
-                throw new AssertionError("assert not enabled");
-        }
-
-        private Assert()
-        {
-        }
     }
 }
