@@ -2,6 +2,7 @@ package org.example.gizmo;
 
 import io.quarkus.gizmo.AnnotationCreator;
 import io.quarkus.gizmo.BranchResult;
+import io.quarkus.gizmo.BytecodeCreator;
 import io.quarkus.gizmo.ClassCreator;
 import io.quarkus.gizmo.MethodCreator;
 import io.quarkus.gizmo.MethodDescriptor;
@@ -13,7 +14,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-public class TransformLogger
+public class UniCategoryTraceLogger
 {
     public static void main(String[] args) throws Exception
     {
@@ -22,29 +23,52 @@ public class TransformLogger
         assert new ConsoleLogger().isTraceEnabled();
         generateTraceLoggingDisabled();
 
-        generateSubstitutedTraceLoggingPerPackage();
+        checkAnnotation();
+        generateNoLogger();
+        generateExactLoggerName1();
+        generateStartsWithLoggerName1();
     }
 
-    private static void generateSubstitutedTraceLoggingPerPackage() throws Exception
+    private static void generateNoLogger() throws Exception
+    {
+        TestClassLoader cl = gizmoTraceFilterLogger("blah");
+        BasicLogger myLogger = (BasicLogger) cl.loadClass("com.MyLogger").newInstance();
+        assert !myLogger.isTraceEnabled();
+    }
+
+    private static void generateExactLoggerName1() throws Exception
     {
         TestClassLoader cl = gizmoTraceFilterLogger("mylogger");
+        BasicLogger myLogger = (BasicLogger) cl.loadClass("com.MyLogger").newInstance();
+        assert myLogger.isTraceEnabled();
+
+        cl = gizmoTraceFilterLogger("mylogger.mysublogger");
+        assert "org.jboss.logging.BasicLogger".equals(
+            cl.loadClass("com.MyLogger").getAnnotation(TargetClass.class).className()
+        );
+        myLogger = (BasicLogger) cl.loadClass("com.MyLogger").newInstance();
+        assert myLogger.isTraceEnabled();
+    }
+
+    private static void generateStartsWithLoggerName1() throws Exception
+    {
+        TestClassLoader cl = gizmoTraceFilterLogger("mylogger.mysublogger");
         assert "org.jboss.logging.BasicLogger".equals(
             cl.loadClass("com.MyLogger").getAnnotation(TargetClass.class).className()
         );
         BasicLogger myLogger = (BasicLogger) cl.loadClass("com.MyLogger").newInstance();
         assert myLogger.isTraceEnabled();
+    }
 
-        cl = gizmoTraceFilterLogger("blah");
-        assert "org.jboss.logging.BasicLogger".equals(
-            cl.loadClass("com.MyLogger").getAnnotation(TargetClass.class).className()
-        );
-        myLogger = (BasicLogger) cl.loadClass("com.MyLogger").newInstance();
-        assert !myLogger.isTraceEnabled();
+    private static void checkAnnotation() throws Exception
+    {
+        TestClassLoader cl = gizmoTraceFilterLogger("mylogger");
+        assert "org.jboss.logging.BasicLogger".equals(cl.loadClass("com.MyLogger").getAnnotation(TargetClass.class).className());
     }
 
     private static TestClassLoader gizmoTraceFilterLogger(String name)
     {
-        TestClassLoader cl = new TestClassLoader(TransformLogger.class.getClassLoader());
+        TestClassLoader cl = new TestClassLoader(UniCategoryTraceLogger.class.getClassLoader());
         try (ClassCreator creator = ClassCreator.builder().classOutput(cl).className("com.MyLogger").interfaces(BasicLogger.class).build())
         {
             AnnotationCreator annotationCreator = creator.addAnnotation(TargetClass.class);
@@ -64,16 +88,29 @@ public class TransformLogger
                 , method.readInstanceField(nameField.getFieldDescriptor(), method.getThis())
                 , method.load("mylogger")
             );
-            BranchResult branch = method.ifNonZero(equalsResult);
-            branch.trueBranch().returnValue(branch.trueBranch().load(true));
-            branch.falseBranch().returnValue(branch.falseBranch().load(false));
+
+            BranchResult equalsBranch = method.ifTrue(equalsResult);
+            try (BytecodeCreator false1 = equalsBranch.falseBranch())
+            {
+                ResultHandle startsWithResult = false1.invokeVirtualMethod(
+                    MethodDescriptor.ofMethod(String.class, "startsWith", boolean.class, String.class)
+                    , false1.readInstanceField(nameField.getFieldDescriptor(), false1.getThis())
+                    , false1.load("mylogger")
+                );
+
+                BranchResult startsWithBranch = false1.ifTrue(startsWithResult);
+                startsWithBranch.trueBranch().returnValue(startsWithBranch.trueBranch().load(true));
+                startsWithBranch.falseBranch().returnValue(startsWithBranch.falseBranch().load(false));
+            }
+
+            equalsBranch.trueBranch().returnValue(equalsBranch.trueBranch().load(true));
         }
         return cl;
     }
 
     private static void generateTraceLoggingDisabled() throws InstantiationException, IllegalAccessException, ClassNotFoundException
     {
-        TestClassLoader cl = new TestClassLoader(TransformLogger.class.getClassLoader());
+        TestClassLoader cl = new TestClassLoader(UniCategoryTraceLogger.class.getClassLoader());
         try (ClassCreator creator = ClassCreator.builder().classOutput(cl).className("com.MyLogger").interfaces(BasicLogger.class).build())
         {
             MethodCreator method = creator.getMethodCreator("isTraceEnabled", boolean.class);
