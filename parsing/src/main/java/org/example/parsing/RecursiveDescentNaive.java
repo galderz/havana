@@ -1,6 +1,5 @@
 package org.example.parsing;
 
-import javax.print.attribute.standard.RequestingUserName;
 import java.util.List;
 
 import static java.lang.System.out;
@@ -11,7 +10,9 @@ public class RecursiveDescentNaive
 
     public static void main(String[] args)
     {
-        out.println(parse("2*3-4"));
+        // Problem is that there's no operator precedence taken into account.
+        out.println(parse("2*3-4")); // error: prints (2*(3-4)) instead of ((2*3)-4))
+
         out.println(parse("2-3*4"));
         out.println(parse("2-3"));
     }
