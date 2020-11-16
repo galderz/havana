@@ -25,13 +25,40 @@ public class MethodArrayEquality
             , Arrays.toString(publicMethods)
         );
         assert methodArrayEquals(declaredMethods, publicMethods);
+
+        // TODO compare null and empty arrays
+
+        assert methodArrayHashCode(declaredPublicMethods) == methodArrayHashCode(declaredMethods);
+        assert methodArrayHashCode(declaredPublicMethods) == methodArrayHashCode(publicMethods);
+        assert methodArrayHashCode(declaredMethods) == methodArrayHashCode(publicMethods);
+    }
+
+    static int methodArrayHashCode(Method[] a)
+    {
+        if (containsNoObjectMethods(a))
+        {
+            return Arrays.hashCode(a);
+        }
+
+        int result = 1;
+        for (Method method : a)
+        {
+            if (isNoObjectMethod(method))
+            {
+                result = 31 * result + method.hashCode();
+            }
+        }
+
+        return result;
     }
 
     static boolean methodArrayEquals(Method[] a, Method[] a2)
     {
         // Check if contains Object methods
         if (containsNoObjectMethods(a) && containsNoObjectMethods(a2))
+        {
             return Arrays.equals(a, a2);
+        }
 
         for (int i = 0; i < a.length; i++)
         {
