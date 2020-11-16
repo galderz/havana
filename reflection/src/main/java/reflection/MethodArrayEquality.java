@@ -25,16 +25,22 @@ public class MethodArrayEquality
             , Arrays.toString(publicMethods)
         );
         assert methodArrayEquals(declaredMethods, publicMethods);
-
-        // TODO compare null and empty arrays
+        assert methodArrayEquals(new Method[]{}, new Method[]{});
+        assert !methodArrayEquals(publicMethods, new Method[]{});
+        assert !methodArrayEquals(new Method[]{}, publicMethods);
 
         assert methodArrayHashCode(declaredPublicMethods) == methodArrayHashCode(declaredMethods);
         assert methodArrayHashCode(declaredPublicMethods) == methodArrayHashCode(publicMethods);
         assert methodArrayHashCode(declaredMethods) == methodArrayHashCode(publicMethods);
+        assert methodArrayHashCode(new Method[]{}) == methodArrayHashCode(new Method[]{});
+        assert methodArrayHashCode(publicMethods) != methodArrayHashCode(new Method[]{});
     }
 
     static int methodArrayHashCode(Method[] a)
     {
+        if (a.length == 0)
+            return 1;
+
         if (containsNoObjectMethods(a))
         {
             return Arrays.hashCode(a);
@@ -54,6 +60,16 @@ public class MethodArrayEquality
 
     static boolean methodArrayEquals(Method[] a, Method[] a2)
     {
+        if (a.length == 0 && a2.length == 0)
+        {
+            return true;
+        }
+
+        if (a.length == 0 || a2.length == 0)
+        {
+            return false;
+        }
+
         // Check if contains Object methods
         if (containsNoObjectMethods(a) && containsNoObjectMethods(a2))
         {
