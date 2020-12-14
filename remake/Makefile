@@ -1,21 +1,19 @@
 javafiles := $(wildcard *.java)
-targetclassfiles := $(patsubst %.java,target/%.class,$(javafiles))
 classfiles := $(patsubst %.java,%.class,$(javafiles))
 
-run: target/hello.jar
+run: main.jar
 	java -jar $<
 
-target/hello.jar: $(targetclassfiles)
-	cd target \
-		&& jar cvfm hello.jar ../Manifest.txt $(classfiles)
+main.jar: $(classfiles)
+	jar cvfm $@ Manifest.txt $^
 
-target/%.class: %.java
-	@[ -d target ] || mkdir target
-	javac -d target -classpath . $<
+%.class: %.java
+	javac -d . -classpath . $<
 
-compile: $(targetclassfiles)
+compile: $(classfiles)
 
 clean:
-	rm -drf target
+	rm -drf *.class
+	rm -drf *.jar
 
 .PHONY: compile run
