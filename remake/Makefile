@@ -1,4 +1,5 @@
 javafiles := $(wildcard *.java)
+classfiles := $(patsubst %.java,target/%.class,$(javafiles))
 
 target/hello.jar: $(classfiles)
 	jar cvfm target/hello.jar Manifest.txt $^
@@ -9,7 +10,9 @@ target/%.class: %.java
 	@[ -d target ] || mkdir target
 	javac -d target -classpath . $<
 
-classfiles := $(patsubst %.java,target/%.class,$(javafiles))
 compile: $(classfiles)
+
+clean:
+	rm -drf target
 
 .PHONY: javasource compile
