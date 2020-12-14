@@ -2,6 +2,9 @@ javafiles := $(wildcard *.java)
 targetclassfiles := $(patsubst %.java,target/%.class,$(javafiles))
 classfiles := $(patsubst %.java,%.class,$(javafiles))
 
+run: target/hello.jar
+	java -jar $<
+
 target/hello.jar: $(targetclassfiles)
 	cd target \
 		&& jar cvfm hello.jar ../Manifest.txt $(classfiles)
@@ -15,4 +18,4 @@ compile: $(targetclassfiles)
 clean:
 	rm -drf target
 
-.PHONY: compile
+.PHONY: compile run
