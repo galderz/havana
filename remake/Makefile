@@ -26,3 +26,4 @@ main.jar: $(classfiles)
 clean:
 > rm -drf *.class
 > rm -drf *.jar
+.PHONY: clean
