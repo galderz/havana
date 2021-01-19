@@ -169,6 +169,28 @@ public class Conversions
             putchar('\n');
         }
 
+        {
+            putchar('f');
+            putchar('l');
+            putchar('o');
+            putchar('a');
+            putchar('t');
+            putchar('\t');
+
+            float low = Float.MIN_VALUE + 1;
+            float high = Float.MAX_VALUE - 1;
+            putchar(low - low == 0 ? '.' : 'F');
+            putchar(high - high == 0 ? '.' : 'F');
+            putchar(low - (float)((double) low) == 0 ? '.' : 'F');
+            putchar(high - (float)((double) high) == 0 ? '.' : 'F');
+            low = Float.MIN_VALUE;
+            high = Float.MAX_VALUE;
+            putchar(low - low == 0 ? '.' : 'F');
+            putchar(high - high == 0 ? '.' : 'F');
+            putchar(low - (float)((double) low) == 0 ? '.' : 'F');
+            putchar(high - (float)((double) high) == 0 ? '.' : 'F');
+        }
+
         return 0;
     }
 
