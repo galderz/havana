@@ -8,6 +8,13 @@ public class MinMax
         System.out.printf("signed Long.MAX_VALUE = %s | %s%n", Long.MAX_VALUE, signedMaxValue(64));
         System.out.printf("unsigned integer max = %s%n", Long.toUnsignedString(unsignedMaxValue(32)));
         System.out.printf("unsigned long max = %s%n", Long.toUnsignedString(unsignedMaxValue(64)));
+
+        System.out.printf("signed Integer.MIN_VALUE = %s | %s%n", Integer.MIN_VALUE, signedMinValue(32));
+        System.out.printf("signed Long.MIN_VALUE = %s | %s%n", Long.MIN_VALUE, signedMinValue(64));
+    }
+
+    static long signedMinValue(int minBits) {
+        return ~signedMaxValue(minBits);
     }
 
     static long unsignedMaxValue(int minBits) {
