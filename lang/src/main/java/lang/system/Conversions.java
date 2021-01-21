@@ -35,6 +35,14 @@ public class Conversions
         putchar(high - ((byte) high) == Short.MAX_VALUE + 1 ? '.' : 'F');
         putchar(low - ((char) low) == Short.MIN_VALUE << 1 ? '.' : 'F');
         putchar(high - ((char) high) == 0 ? '.' : 'F');
+        low = Short.MIN_VALUE;
+        high = Short.MAX_VALUE;
+        putchar(low - low == 0 ? '.' : 'F');
+        putchar(high - high == 0 ? '.' : 'F');
+        putchar(low - ((byte) low) == Short.MIN_VALUE ? '.' : 'F');
+        putchar(high - ((byte) high) == Short.MAX_VALUE + 1 ? '.' : 'F');
+        putchar(low - ((char) low) == Short.MIN_VALUE << 1 ? '.' : 'F');
+        putchar(high - ((char) high) == 0 ? '.' : 'F');
         putchar('\n');
     }
 
