@@ -6,6 +6,40 @@ public class Conversions
 {
     public static int main()
     {
+        all();
+        return 0;
+    }
+
+    public static void all()
+    {
+        widening();
+        narrowing();
+    }
+
+    private static void narrowing()
+    {
+        putchar('n');
+        putchar('.');
+        putchar('s');
+        putchar('h');
+        putchar('o');
+        putchar('r');
+        putchar('t');
+        putchar('\t');
+
+        short low = Short.MIN_VALUE + 1;
+        short high = Short.MAX_VALUE - 1;
+        putchar(low - low == 0 ? '.' : 'F');
+        putchar(high - high == 0 ? '.' : 'F');
+        putchar(low - ((byte) low) == Short.MIN_VALUE ? '.' : 'F');
+        putchar(high - ((byte) high) == Short.MAX_VALUE + 1 ? '.' : 'F');
+        putchar(low - ((char) low) == Short.MIN_VALUE << 1 ? '.' : 'F');
+        putchar(high - ((char) high) == 0 ? '.' : 'F');
+        putchar('\n');
+    }
+
+    public static void widening()
+    {
         {
             putchar('w');
             putchar('.');
@@ -202,16 +236,16 @@ public class Conversions
             putchar(low - (float)((double) low) == 0 ? '.' : 'F');
             putchar(high - (float)((double) high) == 0 ? '.' : 'F');
 
-            // NaN comparisons
+            // NaN comparisons 1
             // low = Float.NEGATIVE_INFINITY;
             // high = Float.POSITIVE_INFINITY;
             // putchar(low - low != low - low ? '.' : 'F');
             // putchar(high - high != high - high ? '.' : 'F');
             // putchar(low - (float)((double) low) != low - (float)((double) low) ? '.' : 'F');
             // putchar(high - (float)((double) high) != high - (float)((double) high) ? '.' : 'F');
-        }
 
-        return 0;
+            putchar('\n');
+        }
     }
 
     public static void main(String[] args)
