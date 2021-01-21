@@ -189,6 +189,14 @@ public class Conversions
             putchar(high - high == 0 ? '.' : 'F');
             putchar(low - (float)((double) low) == 0 ? '.' : 'F');
             putchar(high - (float)((double) high) == 0 ? '.' : 'F');
+
+            // NYI
+            low = Float.NEGATIVE_INFINITY;
+            high = Float.POSITIVE_INFINITY;
+            putchar(Double.isNaN(low - low) ? '.' : 'F');
+            putchar(Double.isNaN(high - high) ? '.' : 'F');
+            putchar(Double.isNaN(low - (float)((double) low)) ? '.' : 'F');
+            putchar(Double.isNaN(high - (float)((double) high)) ? '.' : 'F');
         }
 
         return 0;
