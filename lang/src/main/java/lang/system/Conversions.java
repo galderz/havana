@@ -7,6 +7,8 @@ public class Conversions
     public static int main()
     {
         {
+            putchar('w');
+            putchar('.');
             putchar('b');
             putchar('y');
             putchar('t');
@@ -45,6 +47,8 @@ public class Conversions
         }
 
         {
+            putchar('w');
+            putchar('.');
             putchar('s');
             putchar('h');
             putchar('o');
@@ -80,6 +84,8 @@ public class Conversions
         }
 
         {
+            putchar('w');
+            putchar('.');
             putchar('c');
             putchar('h');
             putchar('a');
@@ -114,6 +120,8 @@ public class Conversions
         }
 
         {
+            putchar('w');
+            putchar('.');
             putchar('i');
             putchar('n');
             putchar('t');
@@ -144,6 +152,8 @@ public class Conversions
         }
 
         {
+            putchar('w');
+            putchar('.');
             putchar('l');
             putchar('o');
             putchar('n');
@@ -170,6 +180,8 @@ public class Conversions
         }
 
         {
+            putchar('w');
+            putchar('.');
             putchar('f');
             putchar('l');
             putchar('o');
@@ -191,12 +203,12 @@ public class Conversions
             putchar(high - (float)((double) high) == 0 ? '.' : 'F');
 
             // NaN comparisons
-            low = Float.NEGATIVE_INFINITY;
-            high = Float.POSITIVE_INFINITY;
-            putchar(low - low != low - low ? '.' : 'F');
-            putchar(high - high != high - high ? '.' : 'F');
-            putchar(low - (float)((double) low) != low - (float)((double) low) ? '.' : 'F');
-            putchar(high - (float)((double) high) != high - (float)((double) high) ? '.' : 'F');
+            // low = Float.NEGATIVE_INFINITY;
+            // high = Float.POSITIVE_INFINITY;
+            // putchar(low - low != low - low ? '.' : 'F');
+            // putchar(high - high != high - high ? '.' : 'F');
+            // putchar(low - (float)((double) low) != low - (float)((double) low) ? '.' : 'F');
+            // putchar(high - (float)((double) high) != high - (float)((double) high) ? '.' : 'F');
         }
 
         return 0;
