@@ -243,14 +243,12 @@ public class Conversions
             putchar(high - high == 0 ? '.' : 'F');
             putchar(low - (float)((double) low) == 0 ? '.' : 'F');
             putchar(high - (float)((double) high) == 0 ? '.' : 'F');
-
-            // NaN comparisons 1
-            // low = Float.NEGATIVE_INFINITY;
-            // high = Float.POSITIVE_INFINITY;
-            // putchar(low - low != low - low ? '.' : 'F');
-            // putchar(high - high != high - high ? '.' : 'F');
-            // putchar(low - (float)((double) low) != low - (float)((double) low) ? '.' : 'F');
-            // putchar(high - (float)((double) high) != high - (float)((double) high) ? '.' : 'F');
+            low = Float.NEGATIVE_INFINITY;
+            high = Float.POSITIVE_INFINITY;
+            putchar(low - low != low - low ? '.' : 'F');
+            putchar(high - high != high - high ? '.' : 'F');
+            putchar(low - (float)((double) low) != low - (float)((double) low) ? '.' : 'F');
+            putchar(high - (float)((double) high) != high - (float)((double) high) ? '.' : 'F');
 
             putchar('\n');
         }
