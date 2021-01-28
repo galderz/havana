@@ -14,6 +14,7 @@ public class Widening
             putchar('t');
             putchar('e');
             putchar('\t');
+            putchar('\t');
 
             byte low = Byte.MIN_VALUE + 1;
             byte high = Byte.MAX_VALUE - 1;
@@ -55,6 +56,7 @@ public class Widening
             putchar('r');
             putchar('t');
             putchar('\t');
+            putchar('\t');
 
             short low = Short.MIN_VALUE + 1;
             short high = Short.MAX_VALUE - 1;
@@ -90,6 +92,7 @@ public class Widening
             putchar('h');
             putchar('a');
             putchar('r');
+            putchar('\t');
             putchar('\t');
 
             char low = Character.MIN_VALUE + 1;
@@ -127,6 +130,7 @@ public class Widening
             putchar('t');
             putchar(' ');
             putchar('\t');
+            putchar('\t');
 
             int low = Integer.MIN_VALUE + 1;
             int high = Integer.MAX_VALUE - 1;
@@ -159,6 +163,7 @@ public class Widening
             putchar('n');
             putchar('g');
             putchar('\t');
+            putchar('\t');
 
             long low = Long.MIN_VALUE + 1;
             long high = Long.MAX_VALUE - 1;
@@ -188,6 +193,7 @@ public class Widening
             putchar('a');
             putchar('t');
             putchar('\t');
+            putchar('\t');
 
             float low = Float.MIN_VALUE + 1;
             float high = Float.MAX_VALUE - 1;
@@ -203,6 +209,12 @@ public class Widening
             putchar(high - (float)((double) high) == 0 ? '.' : 'F');
             low = Float.NEGATIVE_INFINITY;
             high = Float.POSITIVE_INFINITY;
+            putchar(low - low != low - low ? '.' : 'F');
+            putchar(high - high != high - high ? '.' : 'F');
+            putchar(low - (float)((double) low) != low - (float)((double) low) ? '.' : 'F');
+            putchar(high - (float)((double) high) != high - (float)((double) high) ? '.' : 'F');
+            low = Float.NaN;
+            high = Float.NaN;
             putchar(low - low != low - low ? '.' : 'F');
             putchar(high - high != high - high ? '.' : 'F');
             putchar(low - (float)((double) low) != low - (float)((double) low) ? '.' : 'F');
