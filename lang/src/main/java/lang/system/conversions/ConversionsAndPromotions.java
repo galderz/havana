@@ -1,11 +1,12 @@
 package lang.system.conversions;
 
-public class Conversions
+public class ConversionsAndPromotions
 {
     public static int main()
     {
         Widening.main();
         Narrowing.main();
+        UnaryPromotion.main();
         return 0;
     }
 
