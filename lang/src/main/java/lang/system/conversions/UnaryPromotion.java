@@ -1,7 +1,5 @@
 package lang.system.conversions;
 
-import static java.lang.System.out;
-
 public class UnaryPromotion
 {
     public static void main()
@@ -122,12 +120,13 @@ public class UnaryPromotion
         int ic = c << 4;
         int ci = 4 << c;
         putchar(c == (ic >> 4) ? '.' : 'F');
-        out.println(ci == 4 << 99 ? '.' : 'F');
+        putchar(ci == 4 << 99 ? '.' : 'F');
 
+        putchar('\n');
     }
 
     private static void putchar(char c)
     {
-        out.print(c);
+        System.out.print(c);
     }
 }
