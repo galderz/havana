@@ -10,23 +10,6 @@ public class Negate
         negateFloat();
     }
 
-    private static void negateFloat()
-    {
-        putchar('-');
-        putchar('.');
-        putchar('f');
-        putchar('l');
-        putchar('o');
-        putchar('a');
-        putchar('t');
-        putchar('\t');
-        putchar('\t');
-
-        float f = 10.0f;
-        float ff = -f;
-        putchar(-f == ff ? '.' : 'F');
-    }
-
     private static void negateInt()
     {
         putchar('-');
@@ -45,6 +28,23 @@ public class Negate
         putchar(i - i == -i + i ? '.' : 'F');
 
         putchar('\n');
+    }
+
+    private static void negateFloat()
+    {
+        putchar('-');
+        putchar('.');
+        putchar('f');
+        putchar('l');
+        putchar('o');
+        putchar('a');
+        putchar('t');
+        putchar('\t');
+        putchar('\t');
+
+        float f = 10.0f;
+        float ff = -f;
+        putchar(-f == ff ? '.' : 'F');
     }
 
     private static void putchar(char c)
