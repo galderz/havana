@@ -8,6 +8,7 @@ public class UnaryPromotion
         unaryMinus();
         bitwiseComplement();
         shift();
+        logicalShift();
     }
 
     private static void unaryPlus()
@@ -96,7 +97,6 @@ public class UnaryPromotion
         putchar('.');
         putchar('s');
         putchar('h');
-        putchar('i');
         putchar('f');
         putchar('t');
         putchar('\t');
@@ -121,6 +121,25 @@ public class UnaryPromotion
         int ci = 4 << c;
         putchar(c == (ic >> 4) ? '.' : 'F');
         putchar(ci == 4 << 99 ? '.' : 'F');
+
+        putchar('\n');
+    }
+
+    private static void logicalShift()
+    {
+        putchar('u');
+        putchar('.');
+        putchar('l');
+        putchar('s');
+        putchar('h');
+        putchar('f');
+        putchar('t');
+        putchar('\t');
+        putchar('\t');
+
+        byte b = 0xFFFF_FFFF;
+        int uib = b >>> 4;
+        putchar(uib == 0x0FFF_FFFF ? '.' : 'F');
 
         putchar('\n');
     }
