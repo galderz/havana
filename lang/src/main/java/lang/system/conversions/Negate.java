@@ -45,6 +45,8 @@ public class Negate
         float f = 10.0f;
         float ff = -f;
         putchar(-f == ff ? '.' : 'F');
+
+        putchar('\n');
     }
 
     private static void putchar(char c)

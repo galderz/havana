@@ -8,6 +8,7 @@ public class ConversionsAndPromotions
         Narrowing.main();
         UnaryPromotion.main();
         Negate.main();
+        BinaryPromotion.main();
         return 0;
     }
 
