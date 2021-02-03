@@ -11,16 +11,16 @@ public class DoublesAsHex
     static final int valueLength = 32;
 
     static final String FORMAT = String.format(
-        "| %%-%ds| %%-%ds|%%%ds |%n"
+        "| %%-%ds| %%-%ds| %%-%ds|%n"
         , constantLength
-        , operationLength
         , valueLength
+        , operationLength
     );
     public static final String LINE = String.format(String.format(
-        "+ %%%ds+ %%%ds+%%%ds +"
+        "+ %%%ds+ %%%ds+ %%%ds+"
         , constantLength
-        , operationLength
         , valueLength
+        , operationLength
     ), " ", " ", " ").replace(" ", "-");
 
     public static void main(String[] args)
@@ -46,8 +46,8 @@ public class DoublesAsHex
         System.out.printf(
             FORMAT
             , "Constant"
-            , "Operation"
             , "Value"
+            , "Operation"
         );
         System.out.println(LINE);
     }
@@ -63,8 +63,8 @@ public class DoublesAsHex
         System.out.printf(
             FORMAT
             , msg
-            , op
             , prettyHex(f.apply(d))
+            , op
         );
     }
 
