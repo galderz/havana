@@ -36,6 +36,8 @@ public class DoublesAsHex
         show(-Double.MIN_NORMAL, "-Double.MIN_NORMAL");
         show(Double.MAX_VALUE, "Double.MAX_VALUE");
         show(-Double.MAX_VALUE, "-Double.MAX_VALUE");
+        show(Double.POSITIVE_INFINITY, "Double.POSITIVE_INFINITY");
+        show(-Double.POSITIVE_INFINITY, "-Double.POSITIVE_INFINITY");
         show(Double.longBitsToDouble(0x7ff8000000000100L), "A NaN that's not Double.NaN");
         footer();
     }
