@@ -4,11 +4,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class DoublesAsHex
+public class FloatsAsHex
 {
     static final int constantLength = 32;
     static final int operationLength = 24;
-    static final int valueLength = 32;
+    static final int valueLength = 16;
 
     static final String FORMAT = String.format(
         "| %%-%ds| %%-%ds| %%-%ds|%n"
@@ -26,19 +26,19 @@ public class DoublesAsHex
     public static void main(String[] args)
     {
         header();
-        show(Double.NaN, "Double.NaN");
-        show(-Double.NaN, "-Double.NaN");
-        show(Double.NEGATIVE_INFINITY, "Double.NEGATIVE_INFINITY");
-        show(-Double.NEGATIVE_INFINITY, "-Double.NEGATIVE_INFINITY");
-        show(Double.MIN_VALUE, "Double.MIN_VALUE");
-        show(-Double.MIN_VALUE, "-Double.MIN_VALUE");
-        show(Double.MIN_NORMAL, "Double.MIN_NORMAL");
-        show(-Double.MIN_NORMAL, "-Double.MIN_NORMAL");
-        show(Double.MAX_VALUE, "Double.MAX_VALUE");
-        show(-Double.MAX_VALUE, "-Double.MAX_VALUE");
-        show(Double.POSITIVE_INFINITY, "Double.POSITIVE_INFINITY");
-        show(-Double.POSITIVE_INFINITY, "-Double.POSITIVE_INFINITY");
-        show(Double.longBitsToDouble(0x7FF8_0000_0000_0100L), "A NaN that's not Double.NaN");
+        show(Float.NaN, "Float.NaN");
+        show(-Float.NaN, "-Float.NaN");
+        show(Float.NEGATIVE_INFINITY, "Float.NEGATIVE_INFINITY");
+        show(-Float.NEGATIVE_INFINITY, "-Float.NEGATIVE_INFINITY");
+        show(Float.MIN_VALUE, "Float.MIN_VALUE");
+        show(-Float.MIN_VALUE, "-Float.MIN_VALUE");
+        show(Float.MIN_NORMAL, "Float.MIN_NORMAL");
+        show(-Float.MIN_NORMAL, "-Float.MIN_NORMAL");
+        show(Float.MAX_VALUE, "Float.MAX_VALUE");
+        show(-Float.MAX_VALUE, "-Float.MAX_VALUE");
+        show(Float.POSITIVE_INFINITY, "Float.POSITIVE_INFINITY");
+        show(-Float.POSITIVE_INFINITY, "-Float.POSITIVE_INFINITY");
+        show(Float.intBitsToFloat(0x7FC0_0100), "A NaN that's not Float.NaN");
         footer();
     }
 
@@ -54,18 +54,18 @@ public class DoublesAsHex
         System.out.println(LINE);
     }
 
-    private static void show(double d, String msg)
+    private static void show(float f, String msg)
     {
-        show(d, msg, Double::doubleToLongBits, "doubleToLongBits");
-        show(d, msg, Double::doubleToRawLongBits, "doubleToRawLongBits");
+        show(f, msg, Float::floatToIntBits, "floatToIntBits");
+        show(f, msg, Float::floatToRawIntBits, "floatToRawIntBits");
     }
 
-    private static void show(double d, String msg, Function<Double, Long> f, String op)
+    private static void show(float aFloat, String msg, Function<Float, Integer> f, String op)
     {
         System.out.printf(
             FORMAT
             , msg
-            , prettyHex(f.apply(d))
+            , prettyHex(f.apply(aFloat))
             , op
         );
     }
@@ -75,10 +75,10 @@ public class DoublesAsHex
         System.out.println(LINE);
     }
 
-    static String prettyHex(long l)
+    static String prettyHex(int i)
     {
-        final var hex = Long.toHexString(l).toUpperCase();
-        final var padding = "0".repeat(16 - hex.length());
+        final var hex = Integer.toHexString(i).toUpperCase();
+        final var padding = "0".repeat(8 - hex.length());
         final var paddedHex = padding + hex;
         return Stream
             .of(paddedHex.split("(?<=\\G.{4})"))
