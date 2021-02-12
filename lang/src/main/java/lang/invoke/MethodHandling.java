@@ -104,6 +104,13 @@ public class MethodHandling
             MethodType mt = MethodType.methodType(List.class, Object[].class);
             MethodType mt2 = MethodType.methodType(int.class, Object.class);
         }
+
+        {
+            MethodType mt = MethodType.methodType(long.class, double.class);
+            MethodHandle mh = publicLookup.findStatic(Double.class, "doubleToRawLongBits", mt);
+            System.out.println(mh.toString());
+            assert 9221120237041090560L == (long) mh.invoke(Double.NaN);
+        }
     }
 
     static class Book
