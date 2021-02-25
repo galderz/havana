@@ -1,4 +1,4 @@
-package lang.ieee745;
+package lang.arithmetics;
 
 public class Long_divideUnsigned
 {
