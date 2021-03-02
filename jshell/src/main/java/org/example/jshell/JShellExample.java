@@ -22,5 +22,23 @@ public class JShellExample
             System.out.println("Size of list: " + list.size());
             System.out.println("Value of the expression is : " + list.get(0).value());
         }
+
+        {
+            List<SnippetEvent> list = jshell.eval("1.0 < 2.0");
+            System.out.println("Size of list: " + list.size());
+            System.out.println("Value of the expression is : " + list.get(0).value());
+        }
+
+        {
+            final var input = String.format(
+                "(%s) 1.0 < (%s) 2.0"
+                , float.class
+                , float.class
+            );
+            System.out.println(input);
+            List<SnippetEvent> list = jshell.eval(input);
+            System.out.println("Size of list: " + list.size());
+            System.out.println("Value of the expression is : " + list.get(0).value());
+        }
     }
 }
