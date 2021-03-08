@@ -1,11 +1,9 @@
 package org.example.jqwik;
 
-import net.jqwik.api.Disabled;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 public class ArithmeticTests
@@ -43,6 +41,18 @@ public class ArithmeticTests
         assertThat(
             1 > Integer.compare(a, b)
             , is(a <= b)
+        );
+    }
+
+    /**
+     * IsLe(1, Cmp(a, b)) => IsGt(a, b)
+     */
+    @Property
+    void isLessEqualsOneCmpConvertsToIsGreaterThan(@ForAll int a, @ForAll int b)
+    {
+        assertThat(
+            1 <= Integer.compare(a, b)
+            , is(a > b)
         );
     }
 }
