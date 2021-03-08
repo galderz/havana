@@ -55,4 +55,16 @@ public class ArithmeticTests
             , is(a > b)
         );
     }
+
+    /**
+     * IsLe(Cmp(a, b), -1) -> IsLt(a, b)
+     */
+    @Property
+    void isLessEqualsCmpMinusOneConvertsToIsLessThan(@ForAll int a, @ForAll int b)
+    {
+        assertThat(
+            Integer.compare(a, b) <= -1
+            , is(a < b)
+        );
+    }
 }
