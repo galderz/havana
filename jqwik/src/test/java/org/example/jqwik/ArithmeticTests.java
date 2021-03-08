@@ -10,13 +10,27 @@ import static org.hamcrest.Matchers.is;
 
 public class ArithmeticTests
 {
+    /**
+     * IsLt(Cmp(a, b), 1) -> IsLe(a, b)
+     */
     @Property
-    void isLessThanCmpOneConvertsToLessEquals(@ForAll int a, @ForAll int b)
+    void isLessThanCmpOneConvertsToIsLessEquals(@ForAll int a, @ForAll int b)
     {
-        // IsLt(Cmp(a, b), 1) -> IsLe(a, b)
         assertThat(
             Integer.compare(a, b) < 1
             , is(a <= b)
+        );
+    }
+
+    /**
+     * IsGe(Cmp(a, b), 1) -> IsGt(a, b)
+     */
+    @Property
+    void isGreaterEqualsCmpOneConvertsToIsGreaterThan(@ForAll int a, @ForAll int b)
+    {
+        assertThat(
+            Integer.compare(a, b) >= 1
+            , is(a > b)
         );
     }
 }
