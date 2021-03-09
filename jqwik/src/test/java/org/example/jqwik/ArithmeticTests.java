@@ -103,4 +103,16 @@ public class ArithmeticTests
             , is(a < b)
         );
     }
+
+    /**
+     * Neg(IsLt(Cmp(a, b), c)) => IsGe(Cmp(a, b), c))
+     */
+    @Property
+    void notLessThanConvertsToGreaterEquals(@ForAll int a, @ForAll int b, @ForAll int c)
+    {
+        assertThat(
+            !(Integer.compare(a, b) < c)
+            , is(Integer.compare(a, b) >= c)
+        );
+    }
 }
