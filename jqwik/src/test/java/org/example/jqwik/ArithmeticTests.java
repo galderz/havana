@@ -9,7 +9,7 @@ import static org.hamcrest.Matchers.is;
 public class ArithmeticTests
 {
     /**
-     * IsLt(Cmp(a, b), 1) -> IsLe(a, b)
+     * IsLt(Cmp(a, b), 1)) => IsLe(a, b)
      */
     @Property
     void isLessThanCmpOneConvertsToIsLessEquals(@ForAll int a, @ForAll int b)
@@ -21,7 +21,7 @@ public class ArithmeticTests
     }
 
     /**
-     * IsGe(Cmp(a, b), 1) -> IsGt(a, b)
+     * IsGe(Cmp(a, b), 1)) => IsGt(a, b)
      */
     @Property
     void isGreaterEqualsCmpOneConvertsToIsGreaterThan(@ForAll int a, @ForAll int b)
@@ -57,7 +57,7 @@ public class ArithmeticTests
     }
 
     /**
-     * IsGt(Cmp(a, b), -1) => IsGe(a, b)
+     * IsGt(Cmp(a, b), -1)) => IsGe(a, b)
      */
     @Property
     void isGreaterThanCmpMinusOneConvertsToGreaterEquals(@ForAll int a, @ForAll int b)
@@ -69,7 +69,7 @@ public class ArithmeticTests
     }
 
     /**
-     * IsLe(Cmp(a, b), -1) => IsLt(a, b)
+     * IsLe(Cmp(a, b), -1)) => IsLt(a, b)
      */
     @Property
     void isLessEqualsCmpMinusOneConvertsToLessThan(@ForAll int a, @ForAll int b)
@@ -81,7 +81,7 @@ public class ArithmeticTests
     }
 
     /**
-     * IsLt(-1, Cmp(a, b) -> IsGe(a, b)
+     * IsLt(-1, Cmp(a, b)) => IsGe(a, b)
      */
     @Property
     void isLessThanMinusOneCmpConvertsToGreaterEquals(@ForAll int a, @ForAll int b)
@@ -89,6 +89,18 @@ public class ArithmeticTests
         assertThat(
             -1 < Integer.compare(a, b)
             , is(a >= b)
+        );
+    }
+
+    /**
+     * IsGe(-1, Cmp(a, b)) => IsLt(a, b)
+     */
+    @Property
+    void isGreaterEqualsMinusOneCmpConvertsToLessThan(@ForAll int a, @ForAll int b)
+    {
+        assertThat(
+            -1 >= Integer.compare(a, b)
+            , is(a < b)
         );
     }
 }
