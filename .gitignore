@@ -24,3 +24,5 @@ reports
 # built modules
 mods
 mlib
+# jqwik temp files
+.jqwik-database

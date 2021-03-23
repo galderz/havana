@@ -6,7 +6,7 @@ import net.jqwik.api.Property;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class ArithmeticTests
+public class IntegetCompareTests
 {
     /**
      * IsLt(Cmp(a, b), 1)) => IsLe(a, b)
