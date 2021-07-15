@@ -26,3 +26,5 @@ mods
 mlib
 # jqwik temp files
 .jqwik-database
+# macos files
+.DS_Store
