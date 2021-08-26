@@ -1,0 +1,63 @@
+RULE invoke create
+CLASS Invoked
+METHOD <init>()
+AT RETURN
+IF TRUE
+DO
+  traceln("<init>");
+  link("expected", "expected", java.util.List.of("a", "b", "c", "z"));
+ENDRULE
+
+RULE invoke add
+CLASS Invoked
+METHOD add
+AT RETURN
+IF TRUE
+DO
+  # traceln("add: " + $1.toString());
+  link("items", $1.toString(), $1.toString());
+ENDRULE
+
+RULE invoke end
+CLASS Invoked
+METHOD end
+AT RETURN
+BIND
+  names = linkNames("items");
+IF TRUE
+DO
+  # traceln("link names: " + names);
+  java.util.Collections.sort(names);
+  # traceln("sorted: " + names);
+  # traceln("end: " + names);
+  # assert List.of("").equals(names);
+ENDRULE
+
+RULE invoke end assert true
+CLASS Invoked
+METHOD end
+AT RETURN
+BIND
+  names = linkNames("items");
+  expected = linked("expected", "expected");
+IF
+  names.equals(expected)
+DO
+  traceln("Success");
+  link("success", true);
+ENDRULE
+
+RULE invoke end assert false
+CLASS Invoked
+METHOD end
+AT RETURN
+BIND
+  names = linkNames("items");
+  maybeSuccess = linked("success");
+  success : boolean = maybeSuccess != null ? maybeSuccess : false;
+  expected = linked("expected", "expected");
+IF
+  !success
+DO
+  traceln("Failure: expected " + expected + " but got " + names);
+ENDRULE
