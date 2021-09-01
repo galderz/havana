@@ -14,7 +14,6 @@ METHOD add
 AT RETURN
 IF TRUE
 DO
-  # traceln("add: " + $1.toString());
   link("items", $1.toString(), $1.toString());
 ENDRULE
 
@@ -26,11 +25,7 @@ BIND
   names = linkNames("items");
 IF TRUE
 DO
-  # traceln("link names: " + names);
   java.util.Collections.sort(names);
-  # traceln("sorted: " + names);
-  # traceln("end: " + names);
-  # assert List.of("").equals(names);
 ENDRULE
 
 RULE invoke end assert true
