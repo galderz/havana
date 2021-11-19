@@ -63,8 +63,8 @@ METHOD toString(java.lang.StringBuilder)
 AT RETURN
 BIND
   aNew : org.example.byteman.qbicc.New = $this;
-  sb = new java.lang.StringBuilder();
+  sb = $1;
 IF TRUE
 DO
-  $! = sb.append(("New(" + aNew.type.toString() + ")@" + Integer.toHexString(System.identityHashCode($this))).toCharArray());
+  $! = sb.append("@").append(Integer.toHexString(System.identityHashCode($this)).toCharArray());
 ENDRULE
