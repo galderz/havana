@@ -33,3 +33,7 @@ run: $(jar)
 
 $(jar): $(sources)
 > mvn package
+
+clean:
+> mvn clean
+.PHONY: clean

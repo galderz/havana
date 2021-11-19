@@ -56,3 +56,15 @@ IF
 DO
   traceln("Failure: expected " + expected + " but got " + names);
 ENDRULE
+
+RULE new toString
+CLASS New
+METHOD toString(java.lang.StringBuilder)
+AT RETURN
+BIND
+  aNew : org.example.byteman.qbicc.New = $this;
+  sb = new java.lang.StringBuilder();
+IF TRUE
+DO
+  $! = sb.append(("New(" + aNew.type.toString() + ")@" + Integer.toHexString(System.identityHashCode($this))).toCharArray());
+ENDRULE

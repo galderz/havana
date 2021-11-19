@@ -23,7 +23,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.example.byteman.Invoked</mainClass>
+                            <mainClass>org.example.byteman.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
