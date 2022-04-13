@@ -27,7 +27,7 @@ public class PrettyMap
                 // , new Object[]{expected, actual}
                 , new Object[]{
                     expected.size()
-                    , String.join("\n", expected.entrySet().toArray())
+                    , String.join("\n", expected.entrySet().toArray(new String[expected.size()]))
                     //, Arrays.toString(expected.entrySet().toArray())
                     // , expected.entrySet().stream().map(e -> e.getKey() + " = " + e.getValue()).sorted().collect(Collectors.joining("\n"))
                     , actual.size()
