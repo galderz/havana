@@ -13,7 +13,11 @@ public class RegularExpressions
         final String[] elements = s2.split("\\s+");
         System.out.println(elements[12]);
 
-        System.out.println(Duration.parse("PT" + "2m 38s".replace("m ", "M")));
+        String s3 = "Finished generating 'hibernate-orm-quickstart-1.0.0-SNAPSHOT-runner' in 2m 38s.";
+        final String[] s3split = s3.split("\\s+");
+        System.out.println(s3split[4]);
+        System.out.println(s3split[5].replace(".", ""));
+        System.out.println(Duration.parse("PT" + s3split[4] + s3split[5].replace(".", "")));
     }
 
     static String replaced(String s) {
