@@ -9,6 +9,8 @@ public class ParseDuration
         System.out.println(
             parseDuration("0:42.90")
         );
+
+        System.out.println(Duration.parse("PT45.2s"));
     }
 
     public static Duration parseDuration(String duration)
