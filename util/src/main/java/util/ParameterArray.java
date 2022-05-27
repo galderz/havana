@@ -2,31 +2,15 @@ package util;
 
 public class ParameterArray
 {
-    ParameterValue[] elements;
+    final ParameterValue[] elements;
 
-    public ParameterArray()
+    public ParameterArray(int size)
     {
-        initArray(1 << 2);
-    }
-
-    private void initArray(int initialSize)
-    {
-        this.elements = new ParameterValue[initialSize];
-        for (int i = 0; i < initialSize; i++)
-        {
-            this.elements[i] = null;
-        }
+        this.elements = new ParameterValue[size];
     }
 
     boolean addIfAbsent(ParameterValue elem)
     {
-        if (elem.index >= this.elements.length)
-        {
-            ParameterValue[] tmp = new ParameterValue[this.elements.length << 1];
-            System.arraycopy(this.elements, 0, tmp, 0, this.elements.length);
-            this.elements = tmp;
-        }
-
         if (this.elements[elem.index] != null)
         {
             return false;
@@ -45,7 +29,19 @@ public class ParameterArray
     {
         Assert.check();
 
-        final ParameterArray arr = new ParameterArray();
+        testZeroArray();
+        testNonZeroArray();
+    }
+
+    private static void testZeroArray()
+    {
+        final ParameterArray arr = new ParameterArray(0);
+        assert arr.addIfAbsent(new ParameterValue(0));
+    }
+
+    private static void testNonZeroArray()
+    {
+        final ParameterArray arr = new ParameterArray(3);
         assert null == arr.get(0);
         assert null == arr.get(1);
         assert null == arr.get(2);
@@ -55,18 +51,7 @@ public class ParameterArray
         assert null == arr.get(0);
         assert null != arr.get(1);
         assert null == arr.get(2);
-
-        final ParameterValue p4 = new ParameterValue(4);
-        assert arr.addIfAbsent(p4);
-        assert null == arr.get(0);
-        assert null != arr.get(1);
-        assert null == arr.get(2);
-        assert null == arr.get(2);
-        assert null != arr.get(4);
-
-        assert arr.addIfAbsent(new ParameterValue(8));
-        assert null != arr.get(8);
-        assert !arr.addIfAbsent(new ParameterValue(8));
+        assert !arr.addIfAbsent(p1);
     }
 }
 
