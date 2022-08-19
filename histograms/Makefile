@@ -25,7 +25,7 @@ mvn += JAVA_HOME=$(java_home)
 mvn += /opt/maven/bin/mvn
 
 run: $(jar)
-> $(java) $(jvm_args) -jar $<
+> $(java) $(jvm_args) -jar $< $(PID)
 .PHONY: run
 
 $(jar):
