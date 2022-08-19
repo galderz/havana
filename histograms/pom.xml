@@ -51,7 +51,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.example.OldGen</mainClass>
+                            <mainClass>org.example.Histograms</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
