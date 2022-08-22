@@ -23,12 +23,14 @@ jvm_args += --add-modules
 jvm_args += jdk.hotspot.agent
 mvn += JAVA_HOME=$(java_home)
 mvn += /opt/maven/bin/mvn
+project_sources += $(shell find src/ -type f -name '*.java' | sed 's: :\\ :g')
 
 run: $(jar)
-> $(java) $(jvm_args) -jar $< $(PID)
+> $(java) $(jvm_args) -jar $< Old $(PID) |& tee target/console.old.histogram.log
+l > $(java) $(jvm_args) -jar $< Young $(PID) |& tee target/console.young.histogram.log
 .PHONY: run
 
-$(jar):
+$(jar): $(project_sources)
 > $(mvn) package
 
 clean:

@@ -9,6 +9,8 @@ import sun.jvm.hotspot.oops.Oop;
 import sun.jvm.hotspot.runtime.VM;
 import sun.jvm.hotspot.tools.Tool;
 
+import java.util.Arrays;
+
 /**
  * Hello world!
  */
@@ -23,10 +25,16 @@ public class Histograms extends Tool
 
     public static void main(String[] args)
     {
-        System.out.println("=== Old Gen Histogram ===");
-        new Histograms(MemoryRegion.OLD).execute(args);
-        System.out.println("=== Young Gen (eden) Histogram ===");
-        new Histograms(MemoryRegion.YOUNG).execute(args);
+        final String memoryRegion = args[0];
+        System.out.printf("=== %s Gen Histogram ===%n", memoryRegion);
+        new Histograms(MemoryRegion.valueOf(memoryRegion.toUpperCase())).execute(tail(args));
+    }
+
+    public static <T> T[] tail(T[] array) {
+        if (array.length == 0)
+            throw new IllegalArgumentException("Array cannot be empty");
+
+        return Arrays.copyOfRange(array, 1, array.length);
     }
 
     @Override
