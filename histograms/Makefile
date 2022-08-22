@@ -27,7 +27,7 @@ project_sources += $(shell find src/ -type f -name '*.java' | sed 's: :\\ :g')
 
 run: $(jar)
 > $(java) $(jvm_args) -jar $< Old $(PID) |& tee target/console.old.histogram.log
-l > $(java) $(jvm_args) -jar $< Young $(PID) |& tee target/console.young.histogram.log
+> $(java) $(jvm_args) -jar $< Young $(PID) |& tee target/console.young.histogram.log
 .PHONY: run
 
 $(jar): $(project_sources)
