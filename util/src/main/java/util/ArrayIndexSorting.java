@@ -7,11 +7,12 @@ public class ArrayIndexSorting
 {
     public static void main(String[] args)
     {
-        long[] counters = new long[]{9, 1, 5};
-        String[] names = new String[]{"c", "a", "b"};
+        long[] counters = new long[]{9, 0, 1, 0, 5};
+        String[] names = new String[]{"a", "x", "c", "y", "b"};
 
-        Integer[] sortedIndexes = IntStream.range(0, 3)
+        Integer[] sortedIndexes = IntStream.range(0, counters.length)
             .boxed()
+            .filter(i -> counters[i] > 0)
             .sorted((i, j) -> Long.compare(counters[j], counters[i]))
             .toArray(Integer[]::new);
 
