@@ -13,10 +13,14 @@ public class SamplePriorityQueue
         this.items = new Sample[size];
     }
 
-    public void offer(Sample sample)
+    /**
+     * Inserts the specified Sample into this queue.
+     *
+     * This method does not check if the queue has enough capacity.
+     * It's up to the caller decide how to deal with a full queue.
+     */
+    public void push(Sample sample)
     {
-        // TODO deal with reaching max
-
         assert sample != null;
         assert items[count] == null;
 
@@ -128,9 +132,9 @@ public class SamplePriorityQueue
     private static void testOfferThenPoll()
     {
         SamplePriorityQueue queue = new SamplePriorityQueue(10);
-        queue.offer(new Sample().setSpan(200));
-        queue.offer(new Sample().setSpan(300));
-        queue.offer(new Sample().setSpan(100));
+        queue.push(new Sample().setSpan(200));
+        queue.push(new Sample().setSpan(300));
+        queue.push(new Sample().setSpan(100));
 
         assert 100 == queue.poll().span;
         assert 200 == queue.poll().span;
