@@ -1,14 +1,12 @@
 package util;
 
-import java.util.Objects;
-
-public class JfrOldObjectSamplePriorityQueue
+public class SamplePriorityQueue
 {
     private final Object[][] items;
     private int count;
     private long total;
 
-    public JfrOldObjectSamplePriorityQueue(int size)
+    public SamplePriorityQueue(int size)
     {
         this.items = new Object[size][];
         for (int i = 0; i < this.items.length; i++)

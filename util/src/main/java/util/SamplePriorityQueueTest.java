@@ -2,9 +2,9 @@ package util;
 
 import java.util.Objects;
 
-import static util.JfrOldObjectSamplePriorityQueue.span;
+import static util.SamplePriorityQueue.span;
 
-public class JfrOldObjectSamplePriorityQueueTest
+public class SamplePriorityQueueTest
 {
     public static void main(String[] args)
     {
@@ -15,7 +15,7 @@ public class JfrOldObjectSamplePriorityQueueTest
 
     private static void testOfferThenPoll()
     {
-        JfrOldObjectSamplePriorityQueue queue = new JfrOldObjectSamplePriorityQueue(10);
+        SamplePriorityQueue queue = new SamplePriorityQueue(10);
         queue.push(200);
         queue.push(400);
         queue.push(300);
@@ -32,7 +32,7 @@ public class JfrOldObjectSamplePriorityQueueTest
 
     private static void testIsFull()
     {
-        JfrOldObjectSamplePriorityQueue queue = new JfrOldObjectSamplePriorityQueue(3);
+        SamplePriorityQueue queue = new SamplePriorityQueue(3);
         queue.push(300);
         assert !queue.isFull();
         queue.push(200);
