@@ -133,12 +133,16 @@ public class SamplePriorityQueue
     {
         SamplePriorityQueue queue = new SamplePriorityQueue(10);
         queue.push(new Sample().setSpan(200));
+        queue.push(new Sample().setSpan(400));
         queue.push(new Sample().setSpan(300));
+        queue.push(new Sample().setSpan(500));
         queue.push(new Sample().setSpan(100));
 
         assert 100 == queue.poll().span;
         assert 200 == queue.poll().span;
         assert 300 == queue.poll().span;
+        assert 400 == queue.poll().span;
+        assert 500 == queue.poll().span;
         assert Objects.isNull(queue.poll());
     }
 
