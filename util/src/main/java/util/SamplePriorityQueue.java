@@ -54,6 +54,11 @@ public class SamplePriorityQueue
         return head;
     }
 
+    private boolean isFull()
+    {
+        return count == items.length;
+    }
+
     private void moveDown(int i)
     {
         do
@@ -126,7 +131,7 @@ public class SamplePriorityQueue
     {
         Asserts.needEnabledAsserts();
         testOfferThenPoll();
-        // todo test offering beyond the limit size
+        testIsFull();
     }
 
     private static void testOfferThenPoll()
@@ -144,6 +149,17 @@ public class SamplePriorityQueue
         assert 400 == queue.poll().span;
         assert 500 == queue.poll().span;
         assert Objects.isNull(queue.poll());
+    }
+
+    private static void testIsFull()
+    {
+        SamplePriorityQueue queue = new SamplePriorityQueue(3);
+        queue.push(new Sample().setSpan(300));
+        assert !queue.isFull();
+        queue.push(new Sample().setSpan(200));
+        assert !queue.isFull();
+        queue.push(new Sample().setSpan(100));
+        assert queue.isFull();
     }
 
     private static final class Sample
