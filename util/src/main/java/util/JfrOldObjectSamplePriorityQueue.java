@@ -2,13 +2,13 @@ package util;
 
 import java.util.Objects;
 
-public class SamplePriorityQueue
+public class JfrOldObjectSamplePriorityQueue
 {
     private final Object[][] items;
     private int count;
     private long total;
 
-    public SamplePriorityQueue(int size)
+    public JfrOldObjectSamplePriorityQueue(int size)
     {
         this.items = new Object[size][];
         for (int i = 0; i < this.items.length; i++)
@@ -57,7 +57,7 @@ public class SamplePriorityQueue
         return head;
     }
 
-    private boolean isFull()
+    public boolean isFull()
     {
         return count == items.length;
     }
@@ -138,40 +138,5 @@ public class SamplePriorityQueue
     static Long span(Object[] sample)
     {
         return (Long) sample[0];
-    }
-
-    public static void main(String[] args)
-    {
-        Asserts.needEnabledAsserts();
-        testOfferThenPoll();
-        testIsFull();
-    }
-
-    private static void testOfferThenPoll()
-    {
-        SamplePriorityQueue queue = new SamplePriorityQueue(10);
-        queue.push(200);
-        queue.push(400);
-        queue.push(300);
-        queue.push(500);
-        queue.push(100);
-
-        assert 100 == span(queue.poll());
-        assert 200 == span(queue.poll());
-        assert 300 == span(queue.poll());
-        assert 400 == span(queue.poll());
-        assert 500 == span(queue.poll());
-        assert Objects.isNull(queue.poll());
-    }
-
-    private static void testIsFull()
-    {
-        SamplePriorityQueue queue = new SamplePriorityQueue(3);
-        queue.push(300);
-        assert !queue.isFull();
-        queue.push(200);
-        assert !queue.isFull();
-        queue.push(100);
-        assert queue.isFull();
     }
 }
