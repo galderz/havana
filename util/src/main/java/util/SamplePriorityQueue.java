@@ -2,6 +2,9 @@ package util;
 
 public class SamplePriorityQueue
 {
+    private static final int OBJECT_INDEX = 0;
+    private static final int SPAN_INDEX = 1;
+
     private final Object[][] items;
     private int count;
     private long total;
@@ -21,11 +24,11 @@ public class SamplePriorityQueue
      * This method does not check if the queue has enough capacity.
      * It's up to the caller decide how to deal with a full queue.
      */
-    public void push(long span)
+    public void push(Object object, long span)
     {
         assert span(items[count]) == null;
 
-        setSpan(span, items[count]);
+        set(object, span, items[count]);
         count++;
         moveUp(count - 1);
         total += span;
@@ -128,13 +131,14 @@ public class SamplePriorityQueue
         return (i - 1) / 2;
     }
 
-    private static void setSpan(long span, Object[] sample)
+    private static void set(Object obj, long span, Object[] sample)
     {
-        sample[0] = span;
+        sample[OBJECT_INDEX] = obj;
+        sample[SPAN_INDEX] = span;
     }
 
     static Long span(Object[] sample)
     {
-        return (Long) sample[0];
+        return (Long) sample[SPAN_INDEX];
     }
 }

@@ -16,11 +16,11 @@ public class SamplePriorityQueueTest
     private static void testOfferThenPoll()
     {
         SamplePriorityQueue queue = new SamplePriorityQueue(10);
-        queue.push(200);
-        queue.push(400);
-        queue.push(300);
-        queue.push(500);
-        queue.push(100);
+        queue.push(new Object(), 200);
+        queue.push(new Object(), 400);
+        queue.push(new Object(), 300);
+        queue.push(new Object(), 500);
+        queue.push(new Object(), 100);
 
         assert 100 == span(queue.poll());
         assert 200 == span(queue.poll());
@@ -33,11 +33,11 @@ public class SamplePriorityQueueTest
     private static void testIsFull()
     {
         SamplePriorityQueue queue = new SamplePriorityQueue(3);
-        queue.push(300);
+        queue.push(new Object(), 300);
         assert !queue.isFull();
-        queue.push(200);
+        queue.push(new Object(), 200);
         assert !queue.isFull();
-        queue.push(100);
+        queue.push(new Object(), 100);
         assert queue.isFull();
     }
 }
