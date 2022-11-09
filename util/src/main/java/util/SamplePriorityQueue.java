@@ -1,6 +1,6 @@
 package util;
 
-public class SamplePriorityQueue
+final class SamplePriorityQueue
 {
     private static final int OBJECT_INDEX = 0;
     private static final int SPAN_INDEX = 1;
@@ -9,7 +9,7 @@ public class SamplePriorityQueue
     private int count;
     private long total;
 
-    public SamplePriorityQueue(int size)
+    SamplePriorityQueue(int size)
     {
         this.items = new Object[size][];
         for (int i = 0; i < this.items.length; i++)
@@ -24,7 +24,7 @@ public class SamplePriorityQueue
      * This method does not check if the queue has enough capacity.
      * It's up to the caller decide how to deal with a full queue.
      */
-    public void push(Object object, long span)
+    void push(Object object, long span)
     {
         assert span(items[count]) == null;
 
@@ -40,7 +40,7 @@ public class SamplePriorityQueue
      *
      * @return a Sample or null if empty
      */
-    public Object[] poll()
+    Object[] poll()
     {
         if (count == 0)
         {
@@ -58,9 +58,14 @@ public class SamplePriorityQueue
         return head;
     }
 
-    public boolean isFull()
+    boolean isFull()
     {
         return count == items.length;
+    }
+
+    Long peekSpan()
+    {
+        return count == 0 ? null : span(items[0]);
     }
 
     private void moveDown(int i)

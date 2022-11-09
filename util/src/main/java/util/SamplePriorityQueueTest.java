@@ -11,6 +11,7 @@ public class SamplePriorityQueueTest
         Asserts.needEnabledAsserts();
         testOfferThenPoll();
         testIsFull();
+        testPeekSpan();
     }
 
     private static void testOfferThenPoll()
@@ -39,5 +40,13 @@ public class SamplePriorityQueueTest
         assert !queue.isFull();
         queue.push(new Object(), 100);
         assert queue.isFull();
+    }
+
+    private static void testPeekSpan()
+    {
+        SamplePriorityQueue queue = new SamplePriorityQueue(3);
+        assert null == queue.peekSpan();
+        queue.push(new Object(), 300);
+        assert 300 == queue.peekSpan();
     }
 }
