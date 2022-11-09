@@ -189,13 +189,7 @@ final class SamplePriorityQueue
             return -1;
         }
 
-        public long allocationTimeAt(int index)
-        {
-            final Object[] entry = items[index];
-            return entry == null ? -1 : (long) entry[ALLOCATION_TIME_INDEX];
-        }
-
-        public int prevIndex(int index)
+        int prevIndex(int index)
         {
             final Object[] entry = items[index];
             if (entry == null) {
@@ -212,6 +206,16 @@ final class SamplePriorityQueue
             }
 
             return -1;
+        }
+
+        long allocationTimeAt(int index)
+        {
+            final Object[] entry = items[index];
+            return entry == null ? -1 : (long) entry[ALLOCATION_TIME_INDEX];
+        }
+
+        Object objectAt(int index) {
+            return items[index][OBJECT_INDEX];
         }
     }
 }
