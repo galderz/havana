@@ -17,28 +17,33 @@ public class SamplePriorityQueueTest
     private static void testOfferThenPoll()
     {
         SamplePriorityQueue queue = new SamplePriorityQueue(10);
-        queue.push(new Object(), 200);
-        queue.push(new Object(), 400);
-        queue.push(new Object(), 300);
-        queue.push(new Object(), 500);
-        queue.push(new Object(), 100);
+        queue.push(new Object(), 200, 1);
+        queue.push(new Object(), 400, 2);
+        queue.push(new Object(), 300, 3);
+        queue.push(new Object(), 500, 4);
+        queue.push(new Object(), 100, 5);
 
-        assert 100 == span(queue.poll());
-        assert 200 == span(queue.poll());
-        assert 300 == span(queue.poll());
-        assert 400 == span(queue.poll());
-        assert 500 == span(queue.poll());
-        assert Objects.isNull(queue.poll());
+        assert 100 == queue.peekSpan();
+        queue.poll();
+        assert 200 == queue.peekSpan();
+        queue.poll();
+        assert 300 == queue.peekSpan();
+        queue.poll();
+        assert 400 == queue.peekSpan();
+        queue.poll();
+        assert 500 == queue.peekSpan();
+        queue.poll();
+        assert Objects.isNull(queue.peekSpan());
     }
 
     private static void testIsFull()
     {
         SamplePriorityQueue queue = new SamplePriorityQueue(3);
-        queue.push(new Object(), 300);
+        queue.push(new Object(), 300, 1);
         assert !queue.isFull();
-        queue.push(new Object(), 200);
+        queue.push(new Object(), 200, 2);
         assert !queue.isFull();
-        queue.push(new Object(), 100);
+        queue.push(new Object(), 100,3);
         assert queue.isFull();
     }
 
@@ -46,7 +51,7 @@ public class SamplePriorityQueueTest
     {
         SamplePriorityQueue queue = new SamplePriorityQueue(3);
         assert null == queue.peekSpan();
-        queue.push(new Object(), 300);
+        queue.push(new Object(), 300, 1);
         assert 300 == queue.peekSpan();
     }
 }

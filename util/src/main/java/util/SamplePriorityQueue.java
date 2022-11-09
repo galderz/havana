@@ -4,17 +4,18 @@ final class SamplePriorityQueue
 {
     private static final int OBJECT_INDEX = 0;
     private static final int SPAN_INDEX = 1;
+    private static final int ALLOCATION_TIME_INDEX = 2;
 
     private final Object[][] items;
     private int count;
     private long total;
 
-    SamplePriorityQueue(int size)
+    public SamplePriorityQueue(int size)
     {
         this.items = new Object[size][];
         for (int i = 0; i < this.items.length; i++)
         {
-            this.items[i] = new Object[2];
+            this.items[i] = new Object[3];
         }
     }
 
@@ -24,27 +25,25 @@ final class SamplePriorityQueue
      * This method does not check if the queue has enough capacity.
      * It's up to the caller decide how to deal with a full queue.
      */
-    void push(Object object, long span)
+    void push(Object obj, long span, long allocationTime)
     {
         assert span(items[count]) == null;
 
-        set(object, span, items[count]);
+        set(obj, span, allocationTime, items[count]);
         count++;
         moveUp(count - 1);
         total += span;
     }
 
     /**
-     * Retrieves and removes the head of the queue.
+     * Removes the head of the queue.
      * The head of the queue is the sample with the smallest span.
-     *
-     * @return a Sample or null if empty
      */
-    Object[] poll()
+    void poll()
     {
         if (count == 0)
         {
-            return null;
+            return;
         }
 
         final Object[] head = items[0];
@@ -55,7 +54,6 @@ final class SamplePriorityQueue
         items[count] = null;
         moveDown(0);
         total -= span(head);
-        return head;
     }
 
     boolean isFull()
@@ -136,10 +134,11 @@ final class SamplePriorityQueue
         return (i - 1) / 2;
     }
 
-    private static void set(Object obj, long span, Object[] sample)
+    private static void set(Object obj, long span, long allocationTime, Object[] sample)
     {
         sample[OBJECT_INDEX] = obj;
         sample[SPAN_INDEX] = span;
+        sample[ALLOCATION_TIME_INDEX] = allocationTime;
     }
 
     static Long span(Object[] sample)
