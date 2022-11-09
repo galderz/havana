@@ -5,8 +5,10 @@ final class SamplePriorityQueue
     private static final int OBJECT_INDEX = 0;
     private static final int SPAN_INDEX = 1;
     private static final int ALLOCATION_TIME_INDEX = 2;
+    private static final int PREV_INDEX = 3;
 
     private final Object[][] items;
+    private final SampleList list;
     private int count;
     private long total;
 
@@ -15,8 +17,9 @@ final class SamplePriorityQueue
         this.items = new Object[size][];
         for (int i = 0; i < this.items.length; i++)
         {
-            this.items[i] = new Object[3];
+            this.items[i] = new Object[4];
         }
+        list = new SampleList();
     }
 
     /**
@@ -30,9 +33,11 @@ final class SamplePriorityQueue
         assert span(items[count]) == null;
 
         set(obj, span, allocationTime, items[count]);
+        list.prepend(items[count]);
         count++;
         moveUp(count - 1);
         total += span;
+
     }
 
     /**
@@ -144,5 +149,69 @@ final class SamplePriorityQueue
     static Long span(Object[] sample)
     {
         return (Long) sample[SPAN_INDEX];
+    }
+
+    SampleList asList()
+    {
+        return list;
+    }
+
+    final class SampleList
+    {
+        Object[] head;
+        Object[] tail;
+
+        private void prepend(Object[] sample)
+        {
+            if (head == null)
+            {
+                head = sample;
+                tail = sample;
+                return;
+            }
+
+            Object[] tmp = head;
+            head = sample;
+            tmp[PREV_INDEX] = sample;
+
+        }
+
+        int firstIndex()
+        {
+            // Iterate to locate index of tail.
+            // Avoids the need the keep index in sample.
+            for (int i = 0; i < items.length; i++)
+            {
+                if (tail == items[i])
+                    return i;
+            }
+
+            return -1;
+        }
+
+        public long allocationTimeAt(int index)
+        {
+            final Object[] entry = items[index];
+            return entry == null ? -1 : (long) entry[ALLOCATION_TIME_INDEX];
+        }
+
+        public int prevIndex(int index)
+        {
+            final Object[] entry = items[index];
+            if (entry == null) {
+                return -1;
+            }
+
+            final Object prev = entry[PREV_INDEX];
+            // Iterate to locate index of prev.
+            // Avoids the need the keep index in sample.
+            for (int i = 0; i < items.length; i++)
+            {
+                if (prev == items[i])
+                    return i;
+            }
+
+            return -1;
+        }
     }
 }

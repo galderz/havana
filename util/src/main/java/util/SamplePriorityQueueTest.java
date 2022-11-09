@@ -1,8 +1,8 @@
 package util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-
-import static util.SamplePriorityQueue.span;
 
 public class SamplePriorityQueueTest
 {
@@ -12,6 +12,7 @@ public class SamplePriorityQueueTest
         testOfferThenPoll();
         testIsFull();
         testPeekSpan();
+        testIterateAllocationTimesFIFO();
     }
 
     private static void testOfferThenPoll()
@@ -53,5 +54,26 @@ public class SamplePriorityQueueTest
         assert null == queue.peekSpan();
         queue.push(new Object(), 300, 1);
         assert 300 == queue.peekSpan();
+    }
+
+    private static void testIterateAllocationTimesFIFO()
+    {
+        SamplePriorityQueue queue = new SamplePriorityQueue(10);
+        queue.push(new Object(), 200, 1);
+        queue.push(new Object(), 400, 2);
+        queue.push(new Object(), 300, 3);
+        queue.push(new Object(), 500, 4);
+        queue.push(new Object(), 100, 5);
+
+        List<Long> allocationTimes = new ArrayList<>();
+        final SamplePriorityQueue.SampleList sampleList = queue.asList();
+        int current = sampleList.firstIndex();
+        while (current >= 0)
+        {
+            allocationTimes.add(sampleList.allocationTimeAt(current));
+            current = sampleList.prevIndex(current);
+        }
+
+        assert allocationTimes.equals(List.of(1L, 2L, 3L, 4L, 5L)) : allocationTimes;
     }
 }
