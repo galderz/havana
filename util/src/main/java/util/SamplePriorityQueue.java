@@ -54,9 +54,14 @@ final class SamplePriorityQueue
         final Object[] head = items[0];
         swap(0, count - 1);
         count--;
-        items[count] = null;
+        clearItem(items[count]);
         moveDown(0);
         total -= span(head);
+    }
+
+    private void clearItem(Object[] item)
+    {
+        set(null, 0, 0, 0, 0, 0, item);
     }
 
     boolean isFull()

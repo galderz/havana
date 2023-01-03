@@ -2,7 +2,6 @@ package util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class SamplePriorityQueueTest
 {
@@ -13,15 +12,14 @@ public class SamplePriorityQueueTest
         testIsFull();
         testPeekSpan();
         testIterateAllocationTimesFIFO();
-        testLoadUntilFull();
+        testPushAndIterateBig();
     }
 
-    private static void testLoadUntilFull()
+    private static void testPushAndIterateBig()
     {
-        System.out.println("testLoadUntilFull");
         SamplePriorityQueue queue = new SamplePriorityQueue(256);
 
-        for (int i = 0; i < 300; i++)
+        for (int i = 0; i < 1_000_000; i++)
         {
             int allocated = i;
 
