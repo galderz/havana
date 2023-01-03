@@ -8,7 +8,7 @@ final class SamplePriorityQueue
     private static final int THREAD_ID_INDEX = 3;
     private static final int STACKTRACE_ID_INDEX = 4;
     private static final int USED_AT_GC_INDEX = 5;
-    private static final int PREV_INDEX = 6;
+    private static final int PREVIOUS = 6;
 
     private final Object[][] items;
     private final SampleList list;
@@ -54,6 +54,7 @@ final class SamplePriorityQueue
         final Object[] head = items[0];
         swap(0, count - 1);
         count--;
+        list.remove(items[count]);
         clearItem(items[count]);
         moveDown(0);
         total -= span(head);
@@ -62,6 +63,7 @@ final class SamplePriorityQueue
     private void clearItem(Object[] item)
     {
         set(null, 0, 0, 0, 0, 0, item);
+        item[PREVIOUS] = null;
     }
 
     boolean isFull()
@@ -181,18 +183,42 @@ final class SamplePriorityQueue
 
             Object[] tmp = head;
             head = sample;
-            tmp[PREV_INDEX] = sample;
+            tmp[PREVIOUS] = sample;
+        }
 
+        public void remove(Object[] item)
+        {
+            if (tail == item)
+            {
+                // If item is tail, update tail to be item's prev
+                tail = (Object[]) item[PREVIOUS];
+                return;
+            }
+
+            // Else, find an element (e.g. next) whose previous is item.
+            // Note: Iterate to locate index of next.
+            //       Avoids the need the keep index in sample.
+            Object[] next = null;
+            for (int i = 0; i < items.length; i++)
+            {
+                if (items[i][PREVIOUS] == item) {
+                    next = items[i];
+                }
+            }
+
+            assert next != null;
+
+            // Then set that next's previous to item's previous
+            next[PREVIOUS] = item[PREVIOUS];
         }
 
         int firstIndex()
         {
-            // Iterate to locate index of tail.
-            // Avoids the need the keep index in sample.
+            // Note: Iterate to locate index of tail.
+            //       Avoids the need the keep index in sample.
             for (int i = 0; i < items.length; i++)
             {
                 if (tail == items[i]) {
-                    System.out.println("First index: " + i);
                     return i;
                 }
             }
@@ -207,9 +233,9 @@ final class SamplePriorityQueue
                 return -1;
             }
 
-            final Object prev = entry[PREV_INDEX];
-            // Iterate to locate index of prev.
-            // Avoids the need the keep index in sample.
+            final Object prev = entry[PREVIOUS];
+            // Note: Iterate to locate index of prev.
+            //       Avoids the need the keep index in sample.
             for (int i = 0; i < items.length; i++)
             {
                 if (prev == items[i])
