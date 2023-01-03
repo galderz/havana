@@ -18,6 +18,7 @@ public class Classes
         System.out.println(shortPackageName(ConcurrentHashMap.class));
         System.out.println(shortClassName(ConcurrentHashMap.class));
         System.out.println(shortPackageClass(ConcurrentHashMap.class));
+        System.out.println(Node.class.getName());
     }
 
     private static String shortPackageClass(Class<?> clazz)
@@ -50,4 +51,10 @@ public class Classes
             .collect(Collectors.joining("."));
     }
 
+    static class Node
+    {
+        Node left;
+        Node right;
+        Object value;
+    }
 }
