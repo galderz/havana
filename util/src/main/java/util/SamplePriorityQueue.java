@@ -5,19 +5,22 @@ final class SamplePriorityQueue
     private static final int OBJECT_INDEX = 0;
     private static final int SPAN_INDEX = 1;
     private static final int ALLOCATION_TIME_INDEX = 2;
-    private static final int PREV_INDEX = 3;
+    private static final int THREAD_ID_INDEX = 3;
+    private static final int STACKTRACE_ID_INDEX = 4;
+    private static final int USED_AT_GC_INDEX = 5;
+    private static final int PREV_INDEX = 6;
 
     private final Object[][] items;
     private final SampleList list;
-    private int count;
+    public int count;
     private long total;
 
-    public SamplePriorityQueue(int size)
+    SamplePriorityQueue(int size)
     {
         this.items = new Object[size][];
         for (int i = 0; i < this.items.length; i++)
         {
-            this.items[i] = new Object[4];
+            this.items[i] = new Object[7];
         }
         list = new SampleList();
     }
@@ -28,16 +31,13 @@ final class SamplePriorityQueue
      * This method does not check if the queue has enough capacity.
      * It's up to the caller decide how to deal with a full queue.
      */
-    void push(Object obj, long span, long allocationTime)
+    void push(Object obj, long span, long allocationTime, long threadId, long stackTraceId, long usedAtLastGC)
     {
-        assert span(items[count]) == null;
-
-        set(obj, span, allocationTime, items[count]);
+        set(obj, span, allocationTime, threadId, stackTraceId, usedAtLastGC, items[count]);
         list.prepend(items[count]);
         count++;
         moveUp(count - 1);
         total += span;
-
     }
 
     /**
@@ -52,10 +52,8 @@ final class SamplePriorityQueue
         }
 
         final Object[] head = items[0];
-        assert head != null;
         swap(0, count - 1);
         count--;
-        assert head == items[count];
         items[count] = null;
         moveDown(0);
         total -= span(head);
@@ -66,9 +64,9 @@ final class SamplePriorityQueue
         return count == items.length;
     }
 
-    Long peekSpan()
+    long peekSpan()
     {
-        return count == 0 ? null : span(items[0]);
+        return count == 0 ? -1 : span(items[0]);
     }
 
     private void moveDown(int i)
@@ -139,11 +137,14 @@ final class SamplePriorityQueue
         return (i - 1) / 2;
     }
 
-    private static void set(Object obj, long span, long allocationTime, Object[] sample)
+    private static void set(Object obj, long span, long allocationTime, long threadId, long stackTraceId, long usedAtLastGC, Object[] sample)
     {
         sample[OBJECT_INDEX] = obj;
         sample[SPAN_INDEX] = span;
         sample[ALLOCATION_TIME_INDEX] = allocationTime;
+        sample[THREAD_ID_INDEX] = threadId;
+        sample[STACKTRACE_ID_INDEX] = stackTraceId;
+        sample[USED_AT_GC_INDEX] = usedAtLastGC;
     }
 
     static Long span(Object[] sample)
@@ -160,6 +161,9 @@ final class SamplePriorityQueue
     {
         Object[] head;
         Object[] tail;
+
+        private SampleList() {
+        }
 
         private void prepend(Object[] sample)
         {
@@ -182,8 +186,10 @@ final class SamplePriorityQueue
             // Avoids the need the keep index in sample.
             for (int i = 0; i < items.length; i++)
             {
-                if (tail == items[i])
+                if (tail == items[i]) {
+                    System.out.println("First index: " + i);
                     return i;
+                }
             }
 
             return -1;
@@ -210,12 +216,29 @@ final class SamplePriorityQueue
 
         long allocationTimeAt(int index)
         {
-            final Object[] entry = items[index];
-            return entry == null ? -1 : (long) entry[ALLOCATION_TIME_INDEX];
+            return longAt(index, ALLOCATION_TIME_INDEX);
         }
 
         Object objectAt(int index) {
             return items[index][OBJECT_INDEX];
+        }
+
+        long threadIdAt(int index) {
+            return longAt(index, THREAD_ID_INDEX);
+        }
+
+        long stackTraceIdAt(int index) {
+            return longAt(index, STACKTRACE_ID_INDEX);
+        }
+
+
+        long usedAtLastGCAt(int index) {
+            return longAt(index, USED_AT_GC_INDEX);
+        }
+
+        private long longAt(int index, int fieldIndex) {
+            final Object[] entry = items[index];
+            return entry == null ? -1 : (long) entry[fieldIndex];
         }
     }
 }
