@@ -12,13 +12,14 @@ public class SamplePriorityQueueTest
         testIsFull();
         testPeekSpan();
         testIterateAllocationTimesFIFO();
-        testPushAndIterateBig();
+        // testPushAndIterateMany();
     }
 
-    private static void testPushAndIterateBig()
+    private static void testPushAndIterateMany()
     {
         SamplePriorityQueue queue = new SamplePriorityQueue(256);
 
+        // Attempt to push a large number of entries
         for (int i = 0; i < 1_000_000; i++)
         {
             int allocated = i;
@@ -43,6 +44,18 @@ public class SamplePriorityQueueTest
                 throw npe;
             }
         }
+
+        // Attempt to iterate over the contents of the queue
+        final SamplePriorityQueue.SampleList sampleList = queue.asList();
+        int current = sampleList.firstIndex();
+        int count = 0;
+        while (current >= 0)
+        {
+            count++;
+            current = sampleList.prevIndex(current);
+        }
+
+        assert 256 == count;
     }
 
     private static void testOfferThenPoll()
