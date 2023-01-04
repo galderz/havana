@@ -14,7 +14,8 @@ public class SamplePriorityQueueTest
         testIterateAllocationTimesFIFO();
         testIterateAllocationTimesFIFOSizeMinusOne();
         testIterateAllocationTimesFIFOSize();
-        testIterateAllocationTimesFIFOSizePlusOneOldest();
+        testIterateAllocationTimesFIFOSizePlusOnePopOldest();
+        testIterateAllocationTimesFIFOSizePlusOnePopMiddle();
         // testPushAndIterateMany();
     }
 
@@ -178,7 +179,8 @@ public class SamplePriorityQueueTest
         assert allocationTimes.equals(List.of(0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L)) : allocationTimes;
     }
 
-    private static void testIterateAllocationTimesFIFOSizePlusOneOldest()
+    // Pop oldest because that's the one with the lowest span
+    private static void testIterateAllocationTimesFIFOSizePlusOnePopOldest()
     {
         final int size = 8;
         SamplePriorityQueue queue = new SamplePriorityQueue(size);
@@ -207,6 +209,38 @@ public class SamplePriorityQueueTest
         }
 
         assert allocationTimes.equals(List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L)) : allocationTimes;
+    }
+
+    // Pop middle because that is the one with the lowest span
+    private static void testIterateAllocationTimesFIFOSizePlusOnePopMiddle()
+    {
+        final int size = 8;
+        SamplePriorityQueue queue = new SamplePriorityQueue(size);
+
+        for (int i = 0; i < size + 1; i++)
+        {
+            int allocationTime = i;
+            int span = i == (size / 2) ? 100 : 200;
+            if (queue.isFull()) {
+                if (queue.peekSpan() > span) {
+                    return;
+                }
+                queue.poll();
+            }
+
+            queue.push(new Object(), span, allocationTime, 0, 0, 0);
+        }
+
+        List<Long> allocationTimes = new ArrayList<>();
+        final SamplePriorityQueue.SampleList sampleList = queue.asList();
+        int current = sampleList.firstIndex();
+        while (current >= 0)
+        {
+            allocationTimes.add(sampleList.allocationTimeAt(current));
+            current = sampleList.prevIndex(current);
+        }
+
+        assert allocationTimes.equals(List.of(0L, 1L, 2L, 3L, 5L, 6L, 7L, 8L)) : allocationTimes;
     }
 
     // TODO test when the element removed is not the oldest

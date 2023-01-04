@@ -195,7 +195,7 @@ final class SamplePriorityQueue
                 return;
             }
 
-            // Else, find an element (e.g. next) whose previous is item.
+            // Else, find an element whose previous is item; iow, find item's next element.
             // Note: Iterate to locate index of next.
             //       Avoids the need the keep index in sample.
             Object[] next = null;
@@ -203,6 +203,7 @@ final class SamplePriorityQueue
             {
                 if (items[i][PREVIOUS] == item) {
                     next = items[i];
+                    break;
                 }
             }
 
