@@ -211,6 +211,12 @@ final class SamplePriorityQueue
 
             // Then set that next's previous to item's previous
             next[PREVIOUS] = item[PREVIOUS];
+
+            // If the element removed is head, update it to item's next.
+            if (head == item)
+            {
+                head = next;
+            }
         }
 
         int firstIndex()
