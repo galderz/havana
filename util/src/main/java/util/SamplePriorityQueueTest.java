@@ -17,7 +17,7 @@ public class SamplePriorityQueueTest
         testIterateAllocationTimesFIFOSizePlusOnePopOldest();
         testIterateAllocationTimesFIFOSizePlusOnePopMiddle();
         testIterateAllocationTimesFIFOSizePlusOnePopYoungest();
-        // testPushAndIterateMany();
+        testPushAndIterateMany();
     }
 
     private static void testPushAndIterateMany()
