@@ -205,17 +205,7 @@ final class SamplePriorityQueue
             // Else, find an element whose previous is item; iow, find item's next element.
             // Note: Iterate to locate index of next.
             //       Avoids the need the keep index in sample.
-            // todo start with tail to be more efficient
-            SampleEntry next = null;
-            for (int i = 0; i < items.length; i++)
-            {
-                if (items[i].getPrevious() == item)
-                {
-                    next = items[i];
-                    break;
-                }
-            }
-
+            SampleEntry next = findNext(item);
             assert next != null;
 
             // Then set that next's previous to item's previous
@@ -295,6 +285,22 @@ final class SamplePriorityQueue
         {
             final SampleEntry entry = items[index];
             return entry == null ? -1 : entry.getUsedAtGC();
+        }
+
+        private SampleEntry findNext(SampleEntry entry)
+        {
+            SampleEntry current = tail;
+            while (current != null)
+            {
+                if (current.getPrevious() == entry)
+                {
+                    return current;
+                }
+
+                current = current.getPrevious();
+            }
+
+            return null;
         }
     }
 }
