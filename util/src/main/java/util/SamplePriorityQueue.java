@@ -2,13 +2,13 @@ package util;
 
 final class SamplePriorityQueue
 {
-    private static final int OBJECT_INDEX = 0;
-    private static final int SPAN_INDEX = 1;
-    private static final int ALLOCATION_TIME_INDEX = 2;
-    private static final int THREAD_ID_INDEX = 3;
-    private static final int STACKTRACE_ID_INDEX = 4;
-    private static final int USED_AT_GC_INDEX = 5;
-    private static final int PREVIOUS = 6;
+    private static final int OBJECT_SLOT = 0;
+    private static final int SPAN_SLOT = 1;
+    private static final int ALLOCATION_TIME_SLOT = 2;
+    private static final int THREAD_ID_SLOT = 3;
+    private static final int STACKTRACE_ID_SLOT = 4;
+    private static final int USED_AT_GC_SLOT = 5;
+    private static final int PREVIOUS_SLOT = 6;
 
     private final Object[][] items;
     private final SampleList list;
@@ -63,7 +63,7 @@ final class SamplePriorityQueue
     private void clearItem(Object[] item)
     {
         set(null, 0, 0, 0, 0, 0, item);
-        item[PREVIOUS] = null;
+        item[PREVIOUS_SLOT] = null;
     }
 
     boolean isFull()
@@ -78,7 +78,7 @@ final class SamplePriorityQueue
 
     Object peekObject()
     {
-        return count == 0 ? null : items[0][OBJECT_INDEX];
+        return count == 0 ? null : items[0][OBJECT_SLOT];
     }
 
     private void moveDown(int i)
@@ -151,17 +151,17 @@ final class SamplePriorityQueue
 
     private static void set(Object obj, long span, long allocationTime, long threadId, long stackTraceId, long usedAtLastGC, Object[] sample)
     {
-        sample[OBJECT_INDEX] = obj;
-        sample[SPAN_INDEX] = span;
-        sample[ALLOCATION_TIME_INDEX] = allocationTime;
-        sample[THREAD_ID_INDEX] = threadId;
-        sample[STACKTRACE_ID_INDEX] = stackTraceId;
-        sample[USED_AT_GC_INDEX] = usedAtLastGC;
+        sample[OBJECT_SLOT] = obj;
+        sample[SPAN_SLOT] = span;
+        sample[ALLOCATION_TIME_SLOT] = allocationTime;
+        sample[THREAD_ID_SLOT] = threadId;
+        sample[STACKTRACE_ID_SLOT] = stackTraceId;
+        sample[USED_AT_GC_SLOT] = usedAtLastGC;
     }
 
     static Long span(Object[] sample)
     {
-        return (Long) sample[SPAN_INDEX];
+        return (Long) sample[SPAN_SLOT];
     }
 
     SampleList asList()
@@ -188,7 +188,7 @@ final class SamplePriorityQueue
 
             Object[] tmp = head;
             head = sample;
-            tmp[PREVIOUS] = sample;
+            tmp[PREVIOUS_SLOT] = sample;
         }
 
         public void remove(Object[] item)
@@ -196,7 +196,7 @@ final class SamplePriorityQueue
             if (tail == item)
             {
                 // If item is tail, update tail to be item's prev
-                tail = (Object[]) item[PREVIOUS];
+                tail = (Object[]) item[PREVIOUS_SLOT];
                 return;
             }
 
@@ -206,7 +206,7 @@ final class SamplePriorityQueue
             Object[] next = null;
             for (int i = 0; i < items.length; i++)
             {
-                if (items[i][PREVIOUS] == item) {
+                if (items[i][PREVIOUS_SLOT] == item) {
                     next = items[i];
                     break;
                 }
@@ -215,7 +215,7 @@ final class SamplePriorityQueue
             assert next != null;
 
             // Then set that next's previous to item's previous
-            next[PREVIOUS] = item[PREVIOUS];
+            next[PREVIOUS_SLOT] = item[PREVIOUS_SLOT];
 
             // If the element removed is head, update it to item's next.
             if (head == item)
@@ -245,7 +245,7 @@ final class SamplePriorityQueue
                 return -1;
             }
 
-            final Object prev = entry[PREVIOUS];
+            final Object prev = entry[PREVIOUS_SLOT];
             // Note: Iterate to locate index of prev.
             //       Avoids the need the keep index in sample.
             for (int i = 0; i < items.length; i++)
@@ -259,24 +259,24 @@ final class SamplePriorityQueue
 
         long allocationTimeAt(int index)
         {
-            return longAt(index, ALLOCATION_TIME_INDEX);
+            return longAt(index, ALLOCATION_TIME_SLOT);
         }
 
         Object objectAt(int index) {
-            return items[index][OBJECT_INDEX];
+            return items[index][OBJECT_SLOT];
         }
 
         long threadIdAt(int index) {
-            return longAt(index, THREAD_ID_INDEX);
+            return longAt(index, THREAD_ID_SLOT);
         }
 
         long stackTraceIdAt(int index) {
-            return longAt(index, STACKTRACE_ID_INDEX);
+            return longAt(index, STACKTRACE_ID_SLOT);
         }
 
 
         long usedAtLastGCAt(int index) {
-            return longAt(index, USED_AT_GC_INDEX);
+            return longAt(index, USED_AT_GC_SLOT);
         }
 
         private long longAt(int index, int fieldIndex) {
