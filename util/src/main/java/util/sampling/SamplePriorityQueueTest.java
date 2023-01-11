@@ -1,4 +1,6 @@
-package util;
+package util.sampling;
+
+import util.Asserts;
 
 import java.util.ArrayList;
 import java.util.List;
