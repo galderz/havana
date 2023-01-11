@@ -2,39 +2,34 @@ package util.sampling;
 
 final class SamplePriorityQueue
 {
-    private static final int OBJECT_SLOT = 0;
-    private static final int SPAN_SLOT = 1;
-    private static final int ALLOCATION_TIME_SLOT = 2;
-    private static final int THREAD_ID_SLOT = 3;
-    private static final int STACKTRACE_ID_SLOT = 4;
-    private static final int USED_AT_GC_SLOT = 5;
-    private static final int PREVIOUS_SLOT = 6;
-
-    private final Object[][] items;
+    private final SampleEntry[] items;
     private final SampleList list;
-    public int count;
+    private int count;
     private long total;
 
     SamplePriorityQueue(int size)
     {
-        this.items = new Object[size][];
-        for (int i = 0; i < this.items.length; i++)
-        {
-            this.items[i] = new Object[7];
-        }
-        list = new SampleList();
+        this.items = new SampleEntry[size];
+        this.list = new SampleList();
     }
 
     /**
      * Inserts the specified Sample into this queue.
-     *
+     * <p>
      * This method does not check if the queue has enough capacity.
      * It's up to the caller decide how to deal with a full queue.
      */
     void push(Object obj, long span, long allocationTime, long threadId, long stackTraceId, long usedAtLastGC)
     {
-        set(obj, span, allocationTime, threadId, stackTraceId, usedAtLastGC, items[count]);
-        list.prepend(items[count]);
+        final SampleEntry entry = new SampleEntry();
+        entry.setObject(obj);
+        entry.setSpan(span);
+        entry.setAllocationTime(allocationTime);
+        entry.setThreadId(threadId);
+        entry.setStackTraceId(stackTraceId);
+        entry.setUsedAtGC(usedAtLastGC);
+        items[count] = entry;
+        list.prepend(entry);
         count++;
         moveUp(count - 1);
         total += span;
@@ -51,7 +46,7 @@ final class SamplePriorityQueue
             return;
         }
 
-        final Object[] head = items[0];
+        final SampleEntry head = items[0];
         swap(0, count - 1);
         count--;
         list.remove(items[count]);
@@ -60,10 +55,15 @@ final class SamplePriorityQueue
         total -= span(head);
     }
 
-    private void clearItem(Object[] item)
+    private void clearItem(SampleEntry entry)
     {
-        set(null, 0, 0, 0, 0, 0, item);
-        item[PREVIOUS_SLOT] = null;
+        entry.setObject(null);
+        entry.setSpan(0);
+        entry.setAllocationTime(0);
+        entry.setThreadId(0);
+        entry.setStackTraceId(0);
+        entry.setUsedAtGC(0);
+        entry.setPrevious(null);
     }
 
     boolean isFull()
@@ -78,7 +78,7 @@ final class SamplePriorityQueue
 
     Object peekObject()
     {
-        return count == 0 ? null : items[0][OBJECT_SLOT];
+        return count == 0 ? null : items[0].getObject();
     }
 
     private void moveDown(int i)
@@ -116,11 +116,13 @@ final class SamplePriorityQueue
         } while (i >= 0);
     }
 
-    private static int left(int i) {
+    private static int left(int i)
+    {
         return 2 * i + 1;
     }
 
-    private static int right(int i) {
+    private static int right(int i)
+    {
         return 2 * i + 2;
     }
 
@@ -137,11 +139,9 @@ final class SamplePriorityQueue
 
     private void swap(int i, int j)
     {
-        final Object[] tmp = items[i];
+        final SampleEntry tmp = items[i];
         items[i] = items[j];
         items[j] = tmp;
-        // items[i].index = i;
-        // items[j].index = j;
     }
 
     private static int parent(int i)
@@ -149,19 +149,9 @@ final class SamplePriorityQueue
         return (i - 1) / 2;
     }
 
-    private static void set(Object obj, long span, long allocationTime, long threadId, long stackTraceId, long usedAtLastGC, Object[] sample)
+    static Long span(SampleEntry entry)
     {
-        sample[OBJECT_SLOT] = obj;
-        sample[SPAN_SLOT] = span;
-        sample[ALLOCATION_TIME_SLOT] = allocationTime;
-        sample[THREAD_ID_SLOT] = threadId;
-        sample[STACKTRACE_ID_SLOT] = stackTraceId;
-        sample[USED_AT_GC_SLOT] = usedAtLastGC;
-    }
-
-    static Long span(Object[] sample)
-    {
-        return (Long) sample[SPAN_SLOT];
+        return entry.getSpan();
     }
 
     SampleList asList()
@@ -169,44 +159,58 @@ final class SamplePriorityQueue
         return list;
     }
 
+    // The list is linked via previous entry.
+    // An item's previous is the item that was added after to the queue after the item itself.
+    // This makes it easy to follow the queue in FIFO order.
+    // Starting with the element added first and following previous links to find elements added after.
     final class SampleList
     {
-        Object[] head;
-        Object[] tail;
+        // Points to the youngest entry added to the list.
+        // This would be last FIFO iterated element.
+        // Prepending merely updates this pointer.
+        SampleEntry head;
 
-        private SampleList() {
+        // Points to the oldest entry added to the list.
+        // This would be the first FIFO iterated element.
+        // Only gets updated when an entry is removed.
+        SampleEntry tail;
+
+        private SampleList()
+        {
         }
 
-        private void prepend(Object[] sample)
+        private void prepend(SampleEntry entry)
         {
             if (head == null)
             {
-                head = sample;
-                tail = sample;
+                head = entry;
+                tail = entry;
                 return;
             }
 
-            Object[] tmp = head;
-            head = sample;
-            tmp[PREVIOUS_SLOT] = sample;
+            SampleEntry tmp = head;
+            head = entry;
+            tmp.setPrevious(entry);
         }
 
-        public void remove(Object[] item)
+        public void remove(SampleEntry item)
         {
             if (tail == item)
             {
                 // If item is tail, update tail to be item's prev
-                tail = (Object[]) item[PREVIOUS_SLOT];
+                tail = item.getPrevious();
                 return;
             }
 
             // Else, find an element whose previous is item; iow, find item's next element.
             // Note: Iterate to locate index of next.
             //       Avoids the need the keep index in sample.
-            Object[] next = null;
+            // todo start with tail to be more efficient
+            SampleEntry next = null;
             for (int i = 0; i < items.length; i++)
             {
-                if (items[i][PREVIOUS_SLOT] == item) {
+                if (items[i].getPrevious() == item)
+                {
                     next = items[i];
                     break;
                 }
@@ -215,7 +219,7 @@ final class SamplePriorityQueue
             assert next != null;
 
             // Then set that next's previous to item's previous
-            next[PREVIOUS_SLOT] = item[PREVIOUS_SLOT];
+            next.setPrevious(item.getPrevious());
 
             // If the element removed is head, update it to item's next.
             if (head == item)
@@ -230,7 +234,8 @@ final class SamplePriorityQueue
             //       Avoids the need the keep index in sample.
             for (int i = 0; i < items.length; i++)
             {
-                if (tail == items[i]) {
+                if (tail == items[i])
+                {
                     return i;
                 }
             }
@@ -240,12 +245,18 @@ final class SamplePriorityQueue
 
         int prevIndex(int index)
         {
-            final Object[] entry = items[index];
-            if (entry == null) {
+            final SampleEntry entry = items[index];
+            if (entry == null)
+            {
                 return -1;
             }
 
-            final Object prev = entry[PREVIOUS_SLOT];
+            final SampleEntry prev = entry.getPrevious();
+            if (prev == null)
+            {
+                return -1;
+            }
+
             // Note: Iterate to locate index of prev.
             //       Avoids the need the keep index in sample.
             for (int i = 0; i < items.length; i++)
@@ -259,29 +270,31 @@ final class SamplePriorityQueue
 
         long allocationTimeAt(int index)
         {
-            return longAt(index, ALLOCATION_TIME_SLOT);
+            final SampleEntry entry = items[index];
+            return entry == null ? -1 : entry.getAllocationTime();
         }
 
-        Object objectAt(int index) {
-            return items[index][OBJECT_SLOT];
+        Object objectAt(int index)
+        {
+            return items[index].getObject();
         }
 
-        long threadIdAt(int index) {
-            return longAt(index, THREAD_ID_SLOT);
+        long threadIdAt(int index)
+        {
+            final SampleEntry entry = items[index];
+            return entry == null ? -1 : entry.getThreadId();
         }
 
-        long stackTraceIdAt(int index) {
-            return longAt(index, STACKTRACE_ID_SLOT);
+        long stackTraceIdAt(int index)
+        {
+            final SampleEntry entry = items[index];
+            return entry == null ? -1 : entry.getStackTraceId();
         }
 
-
-        long usedAtLastGCAt(int index) {
-            return longAt(index, USED_AT_GC_SLOT);
-        }
-
-        private long longAt(int index, int fieldIndex) {
-            final Object[] entry = items[index];
-            return entry == null ? -1 : (long) entry[fieldIndex];
+        long usedAtLastGCAt(int index)
+        {
+            final SampleEntry entry = items[index];
+            return entry == null ? -1 : entry.getUsedAtGC();
         }
     }
 }
