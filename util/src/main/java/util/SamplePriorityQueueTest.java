@@ -10,7 +10,7 @@ public class SamplePriorityQueueTest
         Asserts.needEnabledAsserts();
         testOfferThenPoll();
         testIsFull();
-        testPeekSpan();
+        testPeek();
         testIterateAllocationTimesFIFO();
         testIterateAllocationTimesFIFOSizeMinusOne();
         testIterateAllocationTimesFIFOSize();
@@ -66,23 +66,29 @@ public class SamplePriorityQueueTest
     private static void testOfferThenPoll()
     {
         SamplePriorityQueue queue = new SamplePriorityQueue(10);
-        queue.push(new Object(), 200, 1, 0, 0, 0);
-        queue.push(new Object(), 400, 2, 0, 0, 0);
-        queue.push(new Object(), 300, 3, 0, 0, 0);
-        queue.push(new Object(), 500, 4, 0, 0, 0);
-        queue.push(new Object(), 100, 5, 0, 0, 0);
+        queue.push("200", 200, 1, 0, 0, 0);
+        queue.push("400", 400, 2, 0, 0, 0);
+        queue.push("300", 300, 3, 0, 0, 0);
+        queue.push("500", 500, 4, 0, 0, 0);
+        queue.push("100", 100, 5, 0, 0, 0);
 
         assert 100 == queue.peekSpan();
+        assert "100" == queue.peekObject();
         queue.poll();
         assert 200 == queue.peekSpan();
+        assert "200" == queue.peekObject();
         queue.poll();
         assert 300 == queue.peekSpan();
+        assert "300" == queue.peekObject();
         queue.poll();
         assert 400 == queue.peekSpan();
+        assert "400" == queue.peekObject();
         queue.poll();
         assert 500 == queue.peekSpan();
+        assert "500" == queue.peekObject();
         queue.poll();
         assert -1 == queue.peekSpan();
+        assert null == queue.peekObject();
     }
 
     private static void testIsFull()
@@ -96,33 +102,38 @@ public class SamplePriorityQueueTest
         assert queue.isFull();
     }
 
-    private static void testPeekSpan()
+    private static void testPeek()
     {
         SamplePriorityQueue queue = new SamplePriorityQueue(3);
         assert -1 == queue.peekSpan();
-        queue.push(new Object(), 300, 1, 0, 0, 0);
+        assert null == queue.peekObject();
+        queue.push("300", 300, 1, 0, 0, 0);
         assert 300 == queue.peekSpan();
+        assert "300" == queue.peekObject();
     }
 
     private static void testIterateAllocationTimesFIFO()
     {
         SamplePriorityQueue queue = new SamplePriorityQueue(10);
-        queue.push(new Object(), 200, 1, 0, 0, 0);
-        queue.push(new Object(), 400, 2, 0, 0, 0);
-        queue.push(new Object(), 300, 3, 0, 0, 0);
-        queue.push(new Object(), 500, 4, 0, 0, 0);
-        queue.push(new Object(), 100, 5, 0, 0, 0);
+        queue.push("200", 200, 1, 0, 0, 0);
+        queue.push("400", 400, 2, 0, 0, 0);
+        queue.push("300", 300, 3, 0, 0, 0);
+        queue.push("500", 500, 4, 0, 0, 0);
+        queue.push("100", 100, 5, 0, 0, 0);
 
         List<Long> allocationTimes = new ArrayList<>();
+        List<String> objects = new ArrayList<>();
         final SamplePriorityQueue.SampleList sampleList = queue.asList();
         int current = sampleList.firstIndex();
         while (current >= 0)
         {
             allocationTimes.add(sampleList.allocationTimeAt(current));
+            objects.add((String) sampleList.objectAt(current));
             current = sampleList.prevIndex(current);
         }
 
         assert allocationTimes.equals(List.of(1L, 2L, 3L, 4L, 5L)) : allocationTimes;
+        assert objects.equals(List.of("200", "400", "300", "500", "100")) : allocationTimes;
     }
 
     private static void testIterateAllocationTimesFIFOSizeMinusOne()
@@ -134,19 +145,22 @@ public class SamplePriorityQueueTest
         {
             final int allocationTime = i;
             final int span = i * 100;
-            queue.push(new Object(), span, allocationTime, 0, 0, 0);
+            queue.push(String.valueOf(allocationTime), span, allocationTime, 0, 0, 0);
         }
 
         List<Long> allocationTimes = new ArrayList<>();
+        List<String> objects = new ArrayList<>();
         final SamplePriorityQueue.SampleList sampleList = queue.asList();
         int current = sampleList.firstIndex();
         while (current >= 0)
         {
             allocationTimes.add(sampleList.allocationTimeAt(current));
+            objects.add((String) sampleList.objectAt(current));
             current = sampleList.prevIndex(current);
         }
 
         assert allocationTimes.equals(List.of(0L, 1L, 2L, 3L, 4L, 5L, 6L)) : allocationTimes;
+        assert objects.equals(List.of("0", "1", "2", "3", "4", "5", "6")) : objects;
     }
 
     private static void testIterateAllocationTimesFIFOSize()
@@ -165,19 +179,22 @@ public class SamplePriorityQueueTest
                 queue.poll();
             }
 
-            queue.push(new Object(), span, allocationTime, 0, 0, 0);
+            queue.push(String.valueOf(allocationTime), span, allocationTime, 0, 0, 0);
         }
 
         List<Long> allocationTimes = new ArrayList<>();
+        List<String> objects = new ArrayList<>();
         final SamplePriorityQueue.SampleList sampleList = queue.asList();
         int current = sampleList.firstIndex();
         while (current >= 0)
         {
             allocationTimes.add(sampleList.allocationTimeAt(current));
+            objects.add((String) sampleList.objectAt(current));
             current = sampleList.prevIndex(current);
         }
 
         assert allocationTimes.equals(List.of(0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L)) : allocationTimes;
+        assert objects.equals(List.of("0", "1", "2", "3", "4", "5", "6", "7")) : objects;
     }
 
     // Pop oldest because that's the one with the lowest span
@@ -197,19 +214,22 @@ public class SamplePriorityQueueTest
                 queue.poll();
             }
 
-            queue.push(new Object(), span, allocationTime, 0, 0, 0);
+            queue.push(String.valueOf(allocationTime), span, allocationTime, 0, 0, 0);
         }
 
         List<Long> allocationTimes = new ArrayList<>();
+        List<String> objects = new ArrayList<>();
         final SamplePriorityQueue.SampleList sampleList = queue.asList();
         int current = sampleList.firstIndex();
         while (current >= 0)
         {
             allocationTimes.add(sampleList.allocationTimeAt(current));
+            objects.add((String) sampleList.objectAt(current));
             current = sampleList.prevIndex(current);
         }
 
         assert allocationTimes.equals(List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L)) : allocationTimes;
+        assert objects.equals(List.of("1", "2", "3", "4", "5", "6", "7", "8")) : objects;
     }
 
     // Pop middle because that is the one with the lowest span
@@ -229,19 +249,22 @@ public class SamplePriorityQueueTest
                 queue.poll();
             }
 
-            queue.push(new Object(), span, allocationTime, 0, 0, 0);
+            queue.push(String.valueOf(allocationTime), span, allocationTime, 0, 0, 0);
         }
 
         List<Long> allocationTimes = new ArrayList<>();
+        List<String> objects = new ArrayList<>();
         final SamplePriorityQueue.SampleList sampleList = queue.asList();
         int current = sampleList.firstIndex();
         while (current >= 0)
         {
             allocationTimes.add(sampleList.allocationTimeAt(current));
+            objects.add((String) sampleList.objectAt(current));
             current = sampleList.prevIndex(current);
         }
 
         assert allocationTimes.equals(List.of(0L, 1L, 2L, 3L, 5L, 6L, 7L, 8L)) : allocationTimes;
+        assert objects.equals(List.of("0", "1", "2", "3", "5", "6", "7", "8")) : objects;
     }
 
     private static void testIterateAllocationTimesFIFOSizePlusOnePopYoungest()
@@ -260,18 +283,21 @@ public class SamplePriorityQueueTest
                 queue.poll();
             }
 
-            queue.push(new Object(), span, allocationTime, 0, 0, 0);
+            queue.push(String.valueOf(allocationTime), span, allocationTime, 0, 0, 0);
         }
 
         List<Long> allocationTimes = new ArrayList<>();
+        List<String> objects = new ArrayList<>();
         final SamplePriorityQueue.SampleList sampleList = queue.asList();
         int current = sampleList.firstIndex();
         while (current >= 0)
         {
             allocationTimes.add(sampleList.allocationTimeAt(current));
+            objects.add((String) sampleList.objectAt(current));
             current = sampleList.prevIndex(current);
         }
 
         assert allocationTimes.equals(List.of(0L, 1L, 2L, 3L, 4L, 5L, 6L, 8L)) : allocationTimes;
+        assert objects.equals(List.of("0", "1", "2", "3", "4", "5", "6", "8")) : objects;
     }
 }

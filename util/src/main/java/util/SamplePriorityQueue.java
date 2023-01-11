@@ -76,6 +76,11 @@ final class SamplePriorityQueue
         return count == 0 ? -1 : span(items[0]);
     }
 
+    Object peekObject()
+    {
+        return count == 0 ? null : items[0][OBJECT_INDEX];
+    }
+
     private void moveDown(int i)
     {
         do
