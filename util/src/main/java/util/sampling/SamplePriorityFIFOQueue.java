@@ -1,13 +1,13 @@
 package util.sampling;
 
-final class SamplePriorityQueue
+final class SamplePriorityFIFOQueue
 {
     private final SampleEntry[] items;
     private final SampleList list;
     private int count;
     private long total;
 
-    SamplePriorityQueue(int size)
+    SamplePriorityFIFOQueue(int size)
     {
         this.items = new SampleEntry[size];
         this.list = new SampleList();

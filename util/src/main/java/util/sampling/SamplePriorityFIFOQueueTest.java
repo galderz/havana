@@ -5,7 +5,7 @@ import util.Asserts;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SamplePriorityQueueTest
+public class SamplePriorityFIFOQueueTest
 {
     public static void main(String[] args)
     {
@@ -24,7 +24,7 @@ public class SamplePriorityQueueTest
 
     private static void testPushAndIterateMany()
     {
-        SamplePriorityQueue queue = new SamplePriorityQueue(256);
+        SamplePriorityFIFOQueue queue = new SamplePriorityFIFOQueue(256);
 
         // Attempt to push a large number of entries
         for (int i = 0; i < 1_000_000; i++)
@@ -53,7 +53,7 @@ public class SamplePriorityQueueTest
         }
 
         // Attempt to iterate over the contents of the queue
-        final SamplePriorityQueue.SampleList sampleList = queue.asList();
+        final SamplePriorityFIFOQueue.SampleList sampleList = queue.asList();
         int current = sampleList.firstIndex();
         int count = 0;
         while (current >= 0)
@@ -67,7 +67,7 @@ public class SamplePriorityQueueTest
 
     private static void testOfferThenPoll()
     {
-        SamplePriorityQueue queue = new SamplePriorityQueue(10);
+        SamplePriorityFIFOQueue queue = new SamplePriorityFIFOQueue(10);
         queue.push("200", 200, 1, 0, 0, 0);
         queue.push("400", 400, 2, 0, 0, 0);
         queue.push("300", 300, 3, 0, 0, 0);
@@ -95,7 +95,7 @@ public class SamplePriorityQueueTest
 
     private static void testIsFull()
     {
-        SamplePriorityQueue queue = new SamplePriorityQueue(3);
+        SamplePriorityFIFOQueue queue = new SamplePriorityFIFOQueue(3);
         queue.push(new Object(), 300, 1, 0, 0, 0);
         assert !queue.isFull();
         queue.push(new Object(), 200, 2, 0, 0, 0);
@@ -106,7 +106,7 @@ public class SamplePriorityQueueTest
 
     private static void testPeek()
     {
-        SamplePriorityQueue queue = new SamplePriorityQueue(3);
+        SamplePriorityFIFOQueue queue = new SamplePriorityFIFOQueue(3);
         assert -1 == queue.peekSpan();
         assert null == queue.peekObject();
         queue.push("300", 300, 1, 0, 0, 0);
@@ -116,7 +116,7 @@ public class SamplePriorityQueueTest
 
     private static void testIterateAllocationTimesFIFO()
     {
-        SamplePriorityQueue queue = new SamplePriorityQueue(10);
+        SamplePriorityFIFOQueue queue = new SamplePriorityFIFOQueue(10);
         queue.push("200", 200, 1, 0, 0, 0);
         queue.push("400", 400, 2, 0, 0, 0);
         queue.push("300", 300, 3, 0, 0, 0);
@@ -125,7 +125,7 @@ public class SamplePriorityQueueTest
 
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
-        final SamplePriorityQueue.SampleList sampleList = queue.asList();
+        final SamplePriorityFIFOQueue.SampleList sampleList = queue.asList();
         int current = sampleList.firstIndex();
         while (current >= 0)
         {
@@ -141,7 +141,7 @@ public class SamplePriorityQueueTest
     private static void testIterateAllocationTimesFIFOSizeMinusOne()
     {
         final int size = 8;
-        SamplePriorityQueue queue = new SamplePriorityQueue(size);
+        SamplePriorityFIFOQueue queue = new SamplePriorityFIFOQueue(size);
 
         for (int i = 0; i < size - 1; i++)
         {
@@ -152,7 +152,7 @@ public class SamplePriorityQueueTest
 
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
-        final SamplePriorityQueue.SampleList sampleList = queue.asList();
+        final SamplePriorityFIFOQueue.SampleList sampleList = queue.asList();
         int current = sampleList.firstIndex();
         while (current >= 0)
         {
@@ -168,7 +168,7 @@ public class SamplePriorityQueueTest
     private static void testIterateAllocationTimesFIFOSize()
     {
         final int size = 8;
-        SamplePriorityQueue queue = new SamplePriorityQueue(size);
+        SamplePriorityFIFOQueue queue = new SamplePriorityFIFOQueue(size);
 
         for (int i = 0; i < size; i++)
         {
@@ -186,7 +186,7 @@ public class SamplePriorityQueueTest
 
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
-        final SamplePriorityQueue.SampleList sampleList = queue.asList();
+        final SamplePriorityFIFOQueue.SampleList sampleList = queue.asList();
         int current = sampleList.firstIndex();
         while (current >= 0)
         {
@@ -203,7 +203,7 @@ public class SamplePriorityQueueTest
     private static void testIterateAllocationTimesFIFOSizePlusOnePopOldest()
     {
         final int size = 8;
-        SamplePriorityQueue queue = new SamplePriorityQueue(size);
+        SamplePriorityFIFOQueue queue = new SamplePriorityFIFOQueue(size);
 
         for (int i = 0; i < size + 1; i++)
         {
@@ -221,7 +221,7 @@ public class SamplePriorityQueueTest
 
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
-        final SamplePriorityQueue.SampleList sampleList = queue.asList();
+        final SamplePriorityFIFOQueue.SampleList sampleList = queue.asList();
         int current = sampleList.firstIndex();
         while (current >= 0)
         {
@@ -238,7 +238,7 @@ public class SamplePriorityQueueTest
     private static void testIterateAllocationTimesFIFOSizePlusOnePopMiddle()
     {
         final int size = 8;
-        SamplePriorityQueue queue = new SamplePriorityQueue(size);
+        SamplePriorityFIFOQueue queue = new SamplePriorityFIFOQueue(size);
 
         for (int i = 0; i < size + 1; i++)
         {
@@ -256,7 +256,7 @@ public class SamplePriorityQueueTest
 
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
-        final SamplePriorityQueue.SampleList sampleList = queue.asList();
+        final SamplePriorityFIFOQueue.SampleList sampleList = queue.asList();
         int current = sampleList.firstIndex();
         while (current >= 0)
         {
@@ -272,7 +272,7 @@ public class SamplePriorityQueueTest
     private static void testIterateAllocationTimesFIFOSizePlusOnePopYoungest()
     {
         final int size = 8;
-        SamplePriorityQueue queue = new SamplePriorityQueue(size);
+        SamplePriorityFIFOQueue queue = new SamplePriorityFIFOQueue(size);
 
         for (int i = 0; i < size + 1; i++)
         {
@@ -290,7 +290,7 @@ public class SamplePriorityQueueTest
 
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
-        final SamplePriorityQueue.SampleList sampleList = queue.asList();
+        final SamplePriorityFIFOQueue.SampleList sampleList = queue.asList();
         int current = sampleList.firstIndex();
         while (current >= 0)
         {
