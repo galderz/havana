@@ -59,7 +59,6 @@ final class SamplePriorityQueue
         entry.setThreadId(0);
         entry.setStackTraceId(0);
         entry.setUsedAtGC(0);
-        entry.setPrevious(null);
     }
 
     boolean isFull()
