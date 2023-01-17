@@ -264,8 +264,12 @@ public class SamplePriorityWeakRefQueueTest
         List<String> objects = new ArrayList<>();
         for (int i = 0; i < queue.getCapacity(); i++)
         {
-            allocationTimes.add(queue.getAllocationTimeAt(i));
-            objects.add((String) queue.getReferenceAt(i).get());
+            final WeakReference<?> ref = queue.getReferenceAt(i);
+            if (ref != null)
+            {
+                allocationTimes.add(queue.getAllocationTimeAt(i));
+                objects.add((String) ref.get());
+            }
         }
 
         assert allocationTimes.equals(List.of(7L, 0L, 2L, 3L, 1L, 5L, 6L, 8L)) : allocationTimes;
@@ -295,8 +299,12 @@ public class SamplePriorityWeakRefQueueTest
         List<String> objects = new ArrayList<>();
         for (int i = 0; i < queue.getCapacity(); i++)
         {
-            allocationTimes.add(queue.getAllocationTimeAt(i));
-            objects.add((String) queue.getReferenceAt(i).get());
+            final WeakReference<?> ref = queue.getReferenceAt(i);
+            if (ref != null)
+            {
+                allocationTimes.add(queue.getAllocationTimeAt(i));
+                objects.add((String) ref.get());
+            }
         }
 
         assert allocationTimes.equals(List.of(3L, 0L, 2L, 1L, 4L, 5L, 6L, 8L)) : allocationTimes;
