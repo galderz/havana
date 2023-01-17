@@ -30,7 +30,7 @@ public class SamplePriorityWeakRefQueueTest
         // Attempt to push a large number of entries
         for (int i = 0; i < 1_000_000; i++)
         {
-            int allocated = i;
+            long allocated = i;
 
             if (queue.isFull()) {
                 if (queue.peekSpan() > allocated) {
@@ -310,5 +310,4 @@ public class SamplePriorityWeakRefQueueTest
         assert allocationTimes.equals(List.of(3L, 0L, 2L, 1L, 4L, 5L, 6L, 8L)) : allocationTimes;
         assert objects.equals(List.of("3", "0", "2", "1", "4", "5", "6", "8")) : objects;
     }
-
 }

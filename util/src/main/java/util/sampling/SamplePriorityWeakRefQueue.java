@@ -60,7 +60,7 @@ public class SamplePriorityWeakRefQueue
 
     private void clearItem(Object[] item)
     {
-        set(null, 0, 0, 0, 0, 0, 0, item);
+        set(null, 0L, 0, 0, 0, 0, 0, item);
     }
 
     boolean isFull()
@@ -142,7 +142,7 @@ public class SamplePriorityWeakRefQueue
     public void removeAt(int index) {
         final Object[] sample = items[index];
         final long span = span(sample);
-        sample[SPAN_INDEX] = 0;
+        sample[SPAN_INDEX] = 0L;
         moveUp(index);
         sample[SPAN_INDEX] = span;
         poll();
