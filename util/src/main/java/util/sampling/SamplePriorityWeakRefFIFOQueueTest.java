@@ -33,8 +33,10 @@ public class SamplePriorityWeakRefFIFOQueueTest
         {
             int allocated = i;
 
-            if (queue.isFull()) {
-                if (queue.peekSpan() > allocated) {
+            if (queue.isFull())
+            {
+                if (queue.peekSpan() > allocated)
+                {
                     // Sample will not fit, return early
                     return;
                 }
@@ -102,7 +104,7 @@ public class SamplePriorityWeakRefFIFOQueueTest
         assert !queue.isFull();
         queue.push(new WeakReference<>(new Object()), 200, 2, 0, 0, 0, 0);
         assert !queue.isFull();
-        queue.push(new WeakReference<>(new Object()), 100,3, 0, 0, 0, 0);
+        queue.push(new WeakReference<>(new Object()), 100, 3, 0, 0, 0, 0);
         assert queue.isFull();
     }
 
@@ -176,8 +178,10 @@ public class SamplePriorityWeakRefFIFOQueueTest
         {
             int allocationTime = i;
             int span = i * 100;
-            if (queue.isFull()) {
-                if (queue.peekSpan() > span) {
+            if (queue.isFull())
+            {
+                if (queue.peekSpan() > span)
+                {
                     return;
                 }
                 queue.poll();
@@ -211,8 +215,10 @@ public class SamplePriorityWeakRefFIFOQueueTest
         {
             int allocationTime = i;
             int span = i * 100;
-            if (queue.isFull()) {
-                if (queue.peekSpan() > span) {
+            if (queue.isFull())
+            {
+                if (queue.peekSpan() > span)
+                {
                     return;
                 }
                 queue.poll();
@@ -246,8 +252,10 @@ public class SamplePriorityWeakRefFIFOQueueTest
         {
             int allocationTime = i;
             int span = i == (size / 2) ? 100 : 200;
-            if (queue.isFull()) {
-                if (queue.peekSpan() > span) {
+            if (queue.isFull())
+            {
+                if (queue.peekSpan() > span)
+                {
                     return;
                 }
                 queue.poll();
@@ -280,8 +288,10 @@ public class SamplePriorityWeakRefFIFOQueueTest
         {
             int allocationTime = i;
             int span = i == (size - 1) ? 100 : 200;
-            if (queue.isFull()) {
-                if (queue.peekSpan() > span) {
+            if (queue.isFull())
+            {
+                if (queue.peekSpan() > span)
+                {
                     return;
                 }
                 queue.poll();
@@ -302,6 +312,51 @@ public class SamplePriorityWeakRefFIFOQueueTest
         }
 
         assert allocationTimes.equals(List.of(0L, 1L, 2L, 3L, 4L, 5L, 6L, 8L)) : allocationTimes;
+        assert objects.equals(List.of("0", "1", "2", "3", "4", "5", "6", "8")) : objects;
+    }
+
+    private static void testRemoveNonNull()
+    {
+        final int size = 8;
+        SamplePriorityWeakRefFIFOQueue queue = new SamplePriorityWeakRefFIFOQueue(size);
+
+        for (int i = 0; i < size; i++)
+        {
+            int allocationTime = i;
+            long span = i * 100;
+            if (queue.isFull())
+            {
+                if (queue.peekSpan() > span)
+                {
+                    return;
+                }
+                queue.poll();
+            }
+
+            queue.push(new WeakReference<>(String.valueOf(allocationTime)), span, allocationTime, 0, 0, 0, 0);
+        }
+
+        List<String> objects = new ArrayList<>();
+        final SampleList sampleList = queue.list();
+        Object[] current = sampleList.head();
+        int removed = 0;
+        while (current != null)
+        {
+            Object[] next = sampleList.next(current);
+
+            String value = (String) queue.getReference(current).get();
+            if (value != null)
+            {
+                queue.remove(current);
+                removed++;
+                objects.add(value);
+            }
+
+            current = next;
+        }
+
+        assert 8 == removed;
+        assert sampleList.head() == null : sampleList.head();
         assert objects.equals(List.of("0", "1", "2", "3", "4", "5", "6", "8")) : objects;
     }
 }

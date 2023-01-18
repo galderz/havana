@@ -43,6 +43,18 @@ public class SamplePriorityWeakRefFIFOQueue
         total += span;
     }
 
+    private void push(Object[] sample)
+    {
+        final WeakReference<?> ref = getReference(sample);
+        final long span = getSpan(sample);
+        final long allocationTime = getAllocationTime(sample);
+        final long threadId = getThreadId(sample);
+        final long stacktraceId = getStackTraceId(sample);
+        final long usedAtGC = getUsedAtGC(sample);
+        final int arrayLength = getArrayLength(sample);
+        push(ref, span, allocationTime, threadId, stacktraceId, usedAtGC, arrayLength);
+    }
+
     /**
      * Removes the head of the queue.
      * The head of the queue is the sample with the smallest span.
@@ -173,9 +185,9 @@ public class SamplePriorityWeakRefFIFOQueue
         return (WeakReference<?>) sample[REF_SLOT];
     }
 
-    Long getSpan(Object[] sample)
+    long getSpan(Object[] sample)
     {
-        return (Long) sample[SPAN_SLOT];
+        return (long) sample[SPAN_SLOT];
     }
 
     long getAllocationTime(Object[] sample)
@@ -193,7 +205,7 @@ public class SamplePriorityWeakRefFIFOQueue
         return (long) sample[STACKTRACE_ID_SLOT];
     }
 
-    long getUsedAtLastGC(Object[] sample)
+    long getUsedAtGC(Object[] sample)
     {
         return (long) sample[USED_AT_GC_SLOT];
     }
@@ -206,6 +218,41 @@ public class SamplePriorityWeakRefFIFOQueue
     Object[] getPrevious(Object[] entry)
     {
         return (Object[]) entry[PREVIOUS_SLOT];
+    }
+
+    void remove(Object[] sample)
+    {
+        final Object[] prev = getPrevious(sample);
+        if (prev != null)
+        {
+            pop(prev);
+            prev[SPAN_SLOT] = getSpan(prev) + getSpan(sample);
+            push(prev);
+        }
+        pop(sample);
+        list.remove(sample);
+    }
+
+    private void pop(Object[] sample)
+    {
+        final long span = getSpan(sample);
+        sample[SPAN_SLOT] = 0L;
+        moveUp(getIndexOf(sample));
+        sample[SPAN_SLOT] = span;
+        poll();
+    }
+
+    private int getIndexOf(Object[] target)
+    {
+        for (int i = 0; i < items.length; i++)
+        {
+            if (target == items[i])
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     /**
