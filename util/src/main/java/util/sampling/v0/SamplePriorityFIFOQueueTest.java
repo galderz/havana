@@ -1,4 +1,4 @@
-package util.sampling;
+package util.sampling.v0;
 
 import util.Asserts;
 

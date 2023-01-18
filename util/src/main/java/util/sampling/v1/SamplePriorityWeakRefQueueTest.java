@@ -1,13 +1,12 @@
-package util.sampling;
+package util.sampling.v1;
 
 import util.Asserts;
-import util.sampling.SamplePriorityWeakRefFIFOQueue.SampleList;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SamplePriorityWeakRefFIFOQueueTest
+public class SamplePriorityWeakRefQueueTest
 {
     public static void main(String[] args)
     {
@@ -15,28 +14,26 @@ public class SamplePriorityWeakRefFIFOQueueTest
         testOfferThenPoll();
         testIsFull();
         testPeek();
-        testIterateAllocationTimesFIFO();
+        testIterateAllocationTimes();
         testIterateAllocationTimesFIFOSizeMinusOne();
-        testIterateAllocationTimesFIFOSize();
-        testIterateAllocationTimesFIFOSizePlusOnePopOldest();
-        testIterateAllocationTimesFIFOSizePlusOnePopMiddle();
-        testIterateAllocationTimesFIFOSizePlusOnePopYoungest();
+        testIterateAllocationTimesSize();
+        testIterateAllocationTimesSizePlusOnePopOldest();
+        testIterateAllocationTimesSizePlusOnePopMiddle();
+        testIterateAllocationTimesSizePlusOnePopYoungest();
         testPushAndIterateMany();
     }
 
     private static void testPushAndIterateMany()
     {
-        SamplePriorityWeakRefFIFOQueue queue = new SamplePriorityWeakRefFIFOQueue(256);
+        SamplePriorityWeakRefQueue queue = new SamplePriorityWeakRefQueue(256);
 
         // Attempt to push a large number of entries
         for (int i = 0; i < 1_000_000; i++)
         {
-            int allocated = i;
+            long allocated = i;
 
-            if (queue.isFull())
-            {
-                if (queue.peekSpan() > allocated)
-                {
+            if (queue.isFull()) {
+                if (queue.peekSpan() > allocated) {
                     // Sample will not fit, return early
                     return;
                 }
@@ -57,13 +54,14 @@ public class SamplePriorityWeakRefFIFOQueueTest
         }
 
         // Attempt to iterate over the contents of the queue
-        final SampleList sampleList = queue.list();
-        Object[] current = sampleList.head();
         int count = 0;
-        while (current != null)
+        for (int i = 0; i < queue.getCapacity(); i++)
         {
-            count++;
-            current = sampleList.next(current);
+            final WeakReference<?> ref = queue.getReferenceAt(i);
+            if (ref != null)
+            {
+                count++;
+            }
         }
 
         assert 256 == count;
@@ -71,7 +69,7 @@ public class SamplePriorityWeakRefFIFOQueueTest
 
     private static void testOfferThenPoll()
     {
-        SamplePriorityWeakRefFIFOQueue queue = new SamplePriorityWeakRefFIFOQueue(10);
+        SamplePriorityWeakRefQueue queue = new SamplePriorityWeakRefQueue(10);
         queue.push(new WeakReference<>("200"), 200, 1, 0, 0, 0, 0);
         queue.push(new WeakReference<>("400"), 400, 2, 0, 0, 0, 0);
         queue.push(new WeakReference<>("300"), 300, 3, 0, 0, 0, 0);
@@ -99,18 +97,18 @@ public class SamplePriorityWeakRefFIFOQueueTest
 
     private static void testIsFull()
     {
-        SamplePriorityWeakRefFIFOQueue queue = new SamplePriorityWeakRefFIFOQueue(3);
+        SamplePriorityWeakRefQueue queue = new SamplePriorityWeakRefQueue(3);
         queue.push(new WeakReference<>(new Object()), 300, 1, 0, 0, 0, 0);
         assert !queue.isFull();
         queue.push(new WeakReference<>(new Object()), 200, 2, 0, 0, 0, 0);
         assert !queue.isFull();
-        queue.push(new WeakReference<>(new Object()), 100, 3, 0, 0, 0, 0);
+        queue.push(new WeakReference<>(new Object()), 100,3, 0, 0, 0, 0);
         assert queue.isFull();
     }
 
     private static void testPeek()
     {
-        SamplePriorityWeakRefFIFOQueue queue = new SamplePriorityWeakRefFIFOQueue(3);
+        SamplePriorityWeakRefQueue queue = new SamplePriorityWeakRefQueue(3);
         assert -1 == queue.peekSpan();
         assert null == queue.peekObject();
         queue.push(new WeakReference<>("300"), 300, 1, 0, 0, 0, 0);
@@ -118,9 +116,9 @@ public class SamplePriorityWeakRefFIFOQueueTest
         assert "300" == queue.peekObject().get();
     }
 
-    private static void testIterateAllocationTimesFIFO()
+    private static void testIterateAllocationTimes()
     {
-        SamplePriorityWeakRefFIFOQueue queue = new SamplePriorityWeakRefFIFOQueue(10);
+        SamplePriorityWeakRefQueue queue = new SamplePriorityWeakRefQueue(10);
         queue.push(new WeakReference<>("200"), 200, 1, 0, 0, 0, 0);
         queue.push(new WeakReference<>("400"), 400, 2, 0, 0, 0, 0);
         queue.push(new WeakReference<>("300"), 300, 3, 0, 0, 0, 0);
@@ -129,23 +127,24 @@ public class SamplePriorityWeakRefFIFOQueueTest
 
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
-        final SampleList sampleList = queue.list();
-        Object[] current = sampleList.head();
-        while (current != null)
+        for (int i = 0; i < queue.getCapacity(); i++)
         {
-            allocationTimes.add(queue.getAllocationTime(current));
-            objects.add((String) queue.getReference(current).get());
-            current = sampleList.next(current);
+            final WeakReference<?> ref = queue.getReferenceAt(i);
+            if (ref != null)
+            {
+                allocationTimes.add(queue.getAllocationTimeAt(i));
+                objects.add((String) ref.get());
+            }
         }
 
-        assert allocationTimes.equals(List.of(1L, 2L, 3L, 4L, 5L)) : allocationTimes;
-        assert objects.equals(List.of("200", "400", "300", "500", "100")) : allocationTimes;
+        assert allocationTimes.equals(List.of(5L, 1L, 3L, 4L, 2L)) : allocationTimes;
+        assert objects.equals(List.of("100", "200", "300", "500", "400")) : objects;
     }
 
     private static void testIterateAllocationTimesFIFOSizeMinusOne()
     {
         final int size = 8;
-        SamplePriorityWeakRefFIFOQueue queue = new SamplePriorityWeakRefFIFOQueue(size);
+        SamplePriorityWeakRefQueue queue = new SamplePriorityWeakRefQueue(size);
 
         for (int i = 0; i < size - 1; i++)
         {
@@ -156,32 +155,31 @@ public class SamplePriorityWeakRefFIFOQueueTest
 
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
-        final SampleList sampleList = queue.list();
-        Object[] current = sampleList.head();
-        while (current != null)
+        for (int i = 0; i < queue.getCapacity(); i++)
         {
-            allocationTimes.add(queue.getAllocationTime(current));
-            objects.add((String) queue.getReference(current).get());
-            current = sampleList.next(current);
+            final WeakReference<?> ref = queue.getReferenceAt(i);
+            if (ref != null)
+            {
+                allocationTimes.add(queue.getAllocationTimeAt(i));
+                objects.add((String) ref.get());
+            }
         }
 
         assert allocationTimes.equals(List.of(0L, 1L, 2L, 3L, 4L, 5L, 6L)) : allocationTimes;
         assert objects.equals(List.of("0", "1", "2", "3", "4", "5", "6")) : objects;
     }
 
-    private static void testIterateAllocationTimesFIFOSize()
+    private static void testIterateAllocationTimesSize()
     {
         final int size = 8;
-        SamplePriorityWeakRefFIFOQueue queue = new SamplePriorityWeakRefFIFOQueue(size);
+        SamplePriorityWeakRefQueue queue = new SamplePriorityWeakRefQueue(size);
 
         for (int i = 0; i < size; i++)
         {
             int allocationTime = i;
             int span = i * 100;
-            if (queue.isFull())
-            {
-                if (queue.peekSpan() > span)
-                {
+            if (queue.isFull()) {
+                if (queue.peekSpan() > span) {
                     return;
                 }
                 queue.poll();
@@ -192,13 +190,14 @@ public class SamplePriorityWeakRefFIFOQueueTest
 
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
-        final SampleList sampleList = queue.list();
-        Object[] current = sampleList.head();
-        while (current != null)
+        for (int i = 0; i < queue.getCapacity(); i++)
         {
-            allocationTimes.add(queue.getAllocationTime(current));
-            objects.add((String) queue.getReference(current).get());
-            current = sampleList.next(current);
+            final WeakReference<?> ref = queue.getReferenceAt(i);
+            if (ref != null)
+            {
+                allocationTimes.add(queue.getAllocationTimeAt(i));
+                objects.add((String) ref.get());
+            }
         }
 
         assert allocationTimes.equals(List.of(0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L)) : allocationTimes;
@@ -206,19 +205,17 @@ public class SamplePriorityWeakRefFIFOQueueTest
     }
 
     // Pop oldest because that's the one with the lowest span
-    private static void testIterateAllocationTimesFIFOSizePlusOnePopOldest()
+    private static void testIterateAllocationTimesSizePlusOnePopOldest()
     {
         final int size = 8;
-        SamplePriorityWeakRefFIFOQueue queue = new SamplePriorityWeakRefFIFOQueue(size);
+        SamplePriorityWeakRefQueue queue = new SamplePriorityWeakRefQueue(size);
 
         for (int i = 0; i < size + 1; i++)
         {
             int allocationTime = i;
             int span = i * 100;
-            if (queue.isFull())
-            {
-                if (queue.peekSpan() > span)
-                {
+            if (queue.isFull()) {
+                if (queue.peekSpan() > span) {
                     return;
                 }
                 queue.poll();
@@ -229,33 +226,32 @@ public class SamplePriorityWeakRefFIFOQueueTest
 
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
-        final SampleList sampleList = queue.list();
-        Object[] current = sampleList.head();
-        while (current != null)
+        for (int i = 0; i < queue.getCapacity(); i++)
         {
-            allocationTimes.add(queue.getAllocationTime(current));
-            objects.add((String) queue.getReference(current).get());
-            current = sampleList.next(current);
+            final WeakReference<?> ref = queue.getReferenceAt(i);
+            if (ref != null)
+            {
+                allocationTimes.add(queue.getAllocationTimeAt(i));
+                objects.add((String) ref.get());
+            }
         }
 
-        assert allocationTimes.equals(List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L)) : allocationTimes;
-        assert objects.equals(List.of("1", "2", "3", "4", "5", "6", "7", "8")) : objects;
+        assert allocationTimes.equals(List.of(1L, 3L, 2L, 7L, 4L, 5L, 6L, 8L)) : allocationTimes;
+        assert objects.equals(List.of("1", "3", "2", "7", "4", "5", "6", "8")) : objects;
     }
 
     // Pop middle because that is the one with the lowest span
-    private static void testIterateAllocationTimesFIFOSizePlusOnePopMiddle()
+    private static void testIterateAllocationTimesSizePlusOnePopMiddle()
     {
         final int size = 8;
-        SamplePriorityWeakRefFIFOQueue queue = new SamplePriorityWeakRefFIFOQueue(size);
+        SamplePriorityWeakRefQueue queue = new SamplePriorityWeakRefQueue(size);
 
         for (int i = 0; i < size + 1; i++)
         {
             int allocationTime = i;
             int span = i == (size / 2) ? 100 : 200;
-            if (queue.isFull())
-            {
-                if (queue.peekSpan() > span)
-                {
+            if (queue.isFull()) {
+                if (queue.peekSpan() > span) {
                     return;
                 }
                 queue.poll();
@@ -266,32 +262,31 @@ public class SamplePriorityWeakRefFIFOQueueTest
 
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
-        final SampleList sampleList = queue.list();
-        Object[] current = sampleList.head();
-        while (current != null)
+        for (int i = 0; i < queue.getCapacity(); i++)
         {
-            allocationTimes.add(queue.getAllocationTime(current));
-            objects.add((String) queue.getReference(current).get());
-            current = sampleList.next(current);
+            final WeakReference<?> ref = queue.getReferenceAt(i);
+            if (ref != null)
+            {
+                allocationTimes.add(queue.getAllocationTimeAt(i));
+                objects.add((String) ref.get());
+            }
         }
 
-        assert allocationTimes.equals(List.of(0L, 1L, 2L, 3L, 5L, 6L, 7L, 8L)) : allocationTimes;
-        assert objects.equals(List.of("0", "1", "2", "3", "5", "6", "7", "8")) : objects;
+        assert allocationTimes.equals(List.of(7L, 0L, 2L, 3L, 1L, 5L, 6L, 8L)) : allocationTimes;
+        assert objects.equals(List.of("7", "0", "2", "3", "1", "5", "6", "8")) : objects;
     }
 
-    private static void testIterateAllocationTimesFIFOSizePlusOnePopYoungest()
+    private static void testIterateAllocationTimesSizePlusOnePopYoungest()
     {
         final int size = 8;
-        SamplePriorityWeakRefFIFOQueue queue = new SamplePriorityWeakRefFIFOQueue(size);
+        SamplePriorityWeakRefQueue queue = new SamplePriorityWeakRefQueue(size);
 
         for (int i = 0; i < size + 1; i++)
         {
             int allocationTime = i;
             int span = i == (size - 1) ? 100 : 200;
-            if (queue.isFull())
-            {
-                if (queue.peekSpan() > span)
-                {
+            if (queue.isFull()) {
+                if (queue.peekSpan() > span) {
                     return;
                 }
                 queue.poll();
@@ -302,61 +297,17 @@ public class SamplePriorityWeakRefFIFOQueueTest
 
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
-        final SampleList sampleList = queue.list();
-        Object[] current = sampleList.head();
-        while (current != null)
+        for (int i = 0; i < queue.getCapacity(); i++)
         {
-            allocationTimes.add(queue.getAllocationTime(current));
-            objects.add((String) queue.getReference(current).get());
-            current = sampleList.next(current);
-        }
-
-        assert allocationTimes.equals(List.of(0L, 1L, 2L, 3L, 4L, 5L, 6L, 8L)) : allocationTimes;
-        assert objects.equals(List.of("0", "1", "2", "3", "4", "5", "6", "8")) : objects;
-    }
-
-    private static void testRemoveNonNull()
-    {
-        final int size = 8;
-        SamplePriorityWeakRefFIFOQueue queue = new SamplePriorityWeakRefFIFOQueue(size);
-
-        for (int i = 0; i < size; i++)
-        {
-            int allocationTime = i;
-            long span = i * 100;
-            if (queue.isFull())
+            final WeakReference<?> ref = queue.getReferenceAt(i);
+            if (ref != null)
             {
-                if (queue.peekSpan() > span)
-                {
-                    return;
-                }
-                queue.poll();
+                allocationTimes.add(queue.getAllocationTimeAt(i));
+                objects.add((String) ref.get());
             }
-
-            queue.push(new WeakReference<>(String.valueOf(allocationTime)), span, allocationTime, 0, 0, 0, 0);
         }
 
-        List<String> objects = new ArrayList<>();
-        final SampleList sampleList = queue.list();
-        Object[] current = sampleList.head();
-        int removed = 0;
-        while (current != null)
-        {
-            Object[] next = sampleList.next(current);
-
-            String value = (String) queue.getReference(current).get();
-            if (value != null)
-            {
-                queue.remove(current);
-                removed++;
-                objects.add(value);
-            }
-
-            current = next;
-        }
-
-        assert 8 == removed;
-        assert sampleList.head() == null : sampleList.head();
-        assert objects.equals(List.of("0", "1", "2", "3", "4", "5", "6", "8")) : objects;
+        assert allocationTimes.equals(List.of(3L, 0L, 2L, 1L, 4L, 5L, 6L, 8L)) : allocationTimes;
+        assert objects.equals(List.of("3", "0", "2", "1", "4", "5", "6", "8")) : objects;
     }
 }

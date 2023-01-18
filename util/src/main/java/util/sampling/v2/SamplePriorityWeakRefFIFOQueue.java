@@ -1,4 +1,4 @@
-package util.sampling;
+package util.sampling.v2;
 
 import java.lang.ref.WeakReference;
 
