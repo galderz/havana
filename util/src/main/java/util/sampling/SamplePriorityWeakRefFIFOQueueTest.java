@@ -56,9 +56,9 @@ public class SamplePriorityWeakRefFIFOQueueTest
 
         // Attempt to iterate over the contents of the queue
         final SampleList sampleList = queue.list();
-        int current = sampleList.head();
+        Object[] current = sampleList.head();
         int count = 0;
-        while (current >= 0)
+        while (current != null)
         {
             count++;
             current = sampleList.next(current);
@@ -128,11 +128,11 @@ public class SamplePriorityWeakRefFIFOQueueTest
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
         final SampleList sampleList = queue.list();
-        int current = sampleList.head();
-        while (current >= 0)
+        Object[] current = sampleList.head();
+        while (current != null)
         {
-            allocationTimes.add(sampleList.getAllocationTime(current));
-            objects.add((String) sampleList.getReference(current).get());
+            allocationTimes.add(queue.getAllocationTime(current));
+            objects.add((String) queue.getReference(current).get());
             current = sampleList.next(current);
         }
 
@@ -155,11 +155,11 @@ public class SamplePriorityWeakRefFIFOQueueTest
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
         final SampleList sampleList = queue.list();
-        int current = sampleList.head();
-        while (current >= 0)
+        Object[] current = sampleList.head();
+        while (current != null)
         {
-            allocationTimes.add(sampleList.getAllocationTime(current));
-            objects.add((String) sampleList.getReference(current).get());
+            allocationTimes.add(queue.getAllocationTime(current));
+            objects.add((String) queue.getReference(current).get());
             current = sampleList.next(current);
         }
 
@@ -189,11 +189,11 @@ public class SamplePriorityWeakRefFIFOQueueTest
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
         final SampleList sampleList = queue.list();
-        int current = sampleList.head();
-        while (current >= 0)
+        Object[] current = sampleList.head();
+        while (current != null)
         {
-            allocationTimes.add(sampleList.getAllocationTime(current));
-            objects.add((String) sampleList.getReference(current).get());
+            allocationTimes.add(queue.getAllocationTime(current));
+            objects.add((String) queue.getReference(current).get());
             current = sampleList.next(current);
         }
 
@@ -224,11 +224,11 @@ public class SamplePriorityWeakRefFIFOQueueTest
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
         final SampleList sampleList = queue.list();
-        int current = sampleList.head();
-        while (current >= 0)
+        Object[] current = sampleList.head();
+        while (current != null)
         {
-            allocationTimes.add(sampleList.getAllocationTime(current));
-            objects.add((String) sampleList.getReference(current).get());
+            allocationTimes.add(queue.getAllocationTime(current));
+            objects.add((String) queue.getReference(current).get());
             current = sampleList.next(current);
         }
 
@@ -259,11 +259,11 @@ public class SamplePriorityWeakRefFIFOQueueTest
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
         final SampleList sampleList = queue.list();
-        int current = sampleList.head();
-        while (current >= 0)
+        Object[] current = sampleList.head();
+        while (current != null)
         {
-            allocationTimes.add(sampleList.getAllocationTime(current));
-            objects.add((String) sampleList.getReference(current).get());
+            allocationTimes.add(queue.getAllocationTime(current));
+            objects.add((String) queue.getReference(current).get());
             current = sampleList.next(current);
         }
 
@@ -293,11 +293,11 @@ public class SamplePriorityWeakRefFIFOQueueTest
         List<Long> allocationTimes = new ArrayList<>();
         List<String> objects = new ArrayList<>();
         final SampleList sampleList = queue.list();
-        int current = sampleList.head();
-        while (current >= 0)
+        Object[] current = sampleList.head();
+        while (current != null)
         {
-            allocationTimes.add(sampleList.getAllocationTime(current));
-            objects.add((String) sampleList.getReference(current).get());
+            allocationTimes.add(queue.getAllocationTime(current));
+            objects.add((String) queue.getReference(current).get());
             current = sampleList.next(current);
         }
 

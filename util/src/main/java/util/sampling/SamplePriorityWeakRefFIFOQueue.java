@@ -63,16 +63,6 @@ public class SamplePriorityWeakRefFIFOQueue
         total -= getSpan(head);
     }
 
-    private static Long getSpan(Object[] sample)
-    {
-        return (Long) sample[SPAN_SLOT];
-    }
-
-    private static Object[] getPrevious(Object[] entry)
-    {
-        return (Object[]) entry[PREVIOUS_SLOT];
-    }
-
     SampleList list()
     {
         return list;
@@ -162,15 +152,6 @@ public class SamplePriorityWeakRefFIFOQueue
         items[j] = tmp;
     }
 
-//    public void removeAt(int index) {
-//        final Object[] sample = items[index];
-//        final long span = span(sample);
-//        sample[SPAN_SLOT] = 0L;
-//        moveUp(index);
-//        sample[SPAN_SLOT] = span;
-//        poll();
-//    }
-
     private static int parent(int i)
     {
         return (i - 1) / 2;
@@ -185,6 +166,46 @@ public class SamplePriorityWeakRefFIFOQueue
         sample[STACKTRACE_ID_SLOT] = stackTraceId;
         sample[USED_AT_GC_SLOT] = usedAtLastGC;
         sample[ARRAY_LENGTH_SLOT] = length;
+    }
+
+    WeakReference<?> getReference(Object[] sample)
+    {
+        return (WeakReference<?>) sample[REF_SLOT];
+    }
+
+    Long getSpan(Object[] sample)
+    {
+        return (Long) sample[SPAN_SLOT];
+    }
+
+    long getAllocationTime(Object[] sample)
+    {
+        return (long) sample[ALLOCATION_TIME_SLOT];
+    }
+
+    long getThreadId(Object[] sample)
+    {
+        return (long) sample[THREAD_ID_SLOT];
+    }
+
+    long getStackTraceId(Object[] sample)
+    {
+        return (long) sample[STACKTRACE_ID_SLOT];
+    }
+
+    long getUsedAtLastGC(Object[] sample)
+    {
+        return (long) sample[USED_AT_GC_SLOT];
+    }
+
+    int getArrayLength(Object[] sample)
+    {
+        return (int) sample[ARRAY_LENGTH_SLOT];
+    }
+
+    Object[] getPrevious(Object[] entry)
+    {
+        return (Object[]) entry[PREVIOUS_SLOT];
     }
 
     /**
@@ -249,89 +270,14 @@ public class SamplePriorityWeakRefFIFOQueue
             }
         }
 
-        int head()
+        Object[] head()
         {
-            // Iterate to locate index of tail.
-            // instead of having to take up extra space for the index
-            // and keeping it up to date when moving things around.
-            // Queue size is small so this should be quick.
-            for (int i = 0; i < items.length; i++)
-            {
-                if (head == items[i])
-                {
-                    return i;
-                }
-            }
-
-            return -1;
+            return head;
         }
 
-        int next(int index)
+        Object[] next(Object[] current)
         {
-            final Object[] entry = items[index];
-            if (entry == null)
-            {
-                return -1;
-            }
-
-            return getIndexOf(getPrevious(entry));
-        }
-
-        WeakReference<?> getReference(int index)
-        {
-            return (WeakReference<?>) items[index][REF_SLOT];
-        }
-
-        long getAllocationTime(int index)
-        {
-            return longAt(index, ALLOCATION_TIME_SLOT);
-        }
-
-        long getThreadId(int index)
-        {
-            return longAt(index, THREAD_ID_SLOT);
-        }
-
-        long getStackTraceId(int index)
-        {
-            return longAt(index, STACKTRACE_ID_SLOT);
-        }
-
-        long getUsedAtLastGC(int index)
-        {
-            return longAt(index, USED_AT_GC_SLOT);
-        }
-
-        int getArrayLength(int index)
-        {
-            final Object[] entry = items[index];
-            return entry == null ? -1 : (int) entry[ARRAY_LENGTH_SLOT];
-        }
-
-        private static long getSpan(Object[] sample)
-        {
-            // todo can sample be null?
-            return sample == null ? -1 : (long) sample[SPAN_SLOT];
-        }
-
-        private long longAt(int index, int fieldIndex)
-        {
-            final Object[] entry = items[index];
-            // todo can entry be null?
-            return entry == null ? -1 : (long) entry[fieldIndex];
-        }
-
-        private int getIndexOf(Object[] target)
-        {
-            for (int i = 0; i < items.length; i++)
-            {
-                if (target == items[i])
-                {
-                    return i;
-                }
-            }
-
-            return -1;
+            return getPrevious(current);
         }
 
         private Object[] findNext(Object[] target)
