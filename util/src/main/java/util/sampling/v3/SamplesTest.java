@@ -24,6 +24,7 @@ public class SamplesTest
         testPushAndIterateMany();
         testIterateAndRemoveAll();
         testIterateAndRemoveOldest();
+        testIterateAndRemoveYoungest();
     }
 
     private static void testQueueOfferThenPoll()
@@ -272,6 +273,29 @@ public class SamplesTest
         iterate(allocationTimes, objects, sampler);
         assert allocationTimes.equals(List.of(1L, 2L, 3L)) : allocationTimes;
         assert objects.equals(List.of("1", "2", "3")) : objects;
+    }
+
+    private static void testIterateAndRemoveYoungest()
+    {
+        final int size = 4;
+        Sampler sampler = new Sampler(size);
+        for (int i = 0; i < size; i++)
+        {
+            sampler.sample(new WeakReference<>(String.valueOf(i)), 10 + i, i);
+        }
+
+        List<String> removedObjects = new ArrayList<>();
+        int removed = iterateAndRemove(v -> v.equals("3"), removedObjects, sampler);
+
+        assert 1 == removed;
+        assert null != sampler.list.head();
+        assert removedObjects.equals(List.of("3")) : removedObjects;
+
+        List<Long> allocationTimes = new ArrayList<>();
+        List<String> objects = new ArrayList<>();
+        iterate(allocationTimes, objects, sampler);
+        assert allocationTimes.equals(List.of(0L, 1L, 2L)) : allocationTimes;
+        assert objects.equals(List.of("0", "1", "2")) : objects;
     }
 
     // todo test iterate and remove youngest
