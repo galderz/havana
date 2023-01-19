@@ -33,8 +33,8 @@ public class Sampler
 
     private void evictSample(Object[] head)
     {
-        list.remove(head);
         queue.poll();
+        list.remove(head);
         SampleArray.setReference(null, head);
         SampleArray.setSpan(0L, head);
         SampleArray.setAllocationTime(0L, head);
