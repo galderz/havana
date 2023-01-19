@@ -58,6 +58,20 @@ public class SampleQueue
         total -= SampleArray.getSpan(head);
     }
 
+    /**
+     * Removes a sample from the queue.
+     * It moves the sample all the way to the top to become the head,
+     * then it polls it to remove it.
+     */
+    void remove(Object[] sample)
+    {
+        final long span = SampleArray.getSpan(sample);
+        SampleArray.setSpan(0L, sample);
+        moveUp(samples.getIndexOf(sample));
+        SampleArray.setSpan(span, sample);
+        poll();
+    }
+
     private void moveUp(int i)
     {
         int parent = parent(i);
@@ -117,14 +131,5 @@ public class SampleQueue
     private static int right(int i)
     {
         return 2 * i + 2;
-    }
-
-    void remove(Object[] sample)
-    {
-        final long span = SampleArray.getSpan(sample);
-        SampleArray.setSpan(0L, sample);
-        moveUp(samples.getIndexOf(sample));
-        SampleArray.setSpan(span, sample);
-        poll();
     }
 }
