@@ -52,25 +52,25 @@ public class SampleList
         SampleArray.setPrevious(sample, tmp);
     }
 
-    void remove(Object[] item)
+    void remove(Object[] sample)
     {
-        if (head == item)
+        if (head == sample)
         {
             // If item is head, update head to be item's prev
-            head = SampleArray.getPrevious(item);
+            head = SampleArray.getPrevious(sample);
             return;
         }
 
         // Else, find an element whose previous is item; iow, find item's next element.
-        Object[] next = findNext(item);
+        Object[] next = findNext(sample);
 
         assert next != null;
 
         // Then set that next's previous to item's previous
-        SampleArray.setPrevious(SampleArray.getPrevious(item), next);
+        SampleArray.setPrevious(SampleArray.getPrevious(sample), next);
 
         // If the element removed is tail, update it to item's next.
-        if (tail == item)
+        if (tail == sample)
         {
             tail = next;
         }
