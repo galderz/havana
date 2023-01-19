@@ -58,22 +58,22 @@ public class SampleList
         {
             // If item is head, update head to be item's prev
             head = SampleArray.getPrevious(sample);
-            SampleArray.setPrevious(null, sample);
-            return;
         }
-
-        // Else, find an element whose previous is item; iow, find item's next element.
-        Object[] next = findNext(sample);
-
-        assert next != null;
-
-        // Then set that next's previous to item's previous
-        SampleArray.setPrevious(SampleArray.getPrevious(sample), next);
-
-        // If the element removed is tail, update it to item's next.
-        if (tail == sample)
+        else
         {
-            tail = next;
+            // Else, find an element whose previous is item; iow, find item's next element.
+            Object[] next = findNext(sample);
+
+            assert next != null;
+
+            // Then set that next's previous to item's previous
+            SampleArray.setPrevious(SampleArray.getPrevious(sample), next);
+
+            // If the element removed is tail, update it to item's next.
+            if (tail == sample)
+            {
+                tail = next;
+            }
         }
 
         SampleArray.setPrevious(null, sample);
