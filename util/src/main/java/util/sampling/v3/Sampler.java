@@ -42,7 +42,6 @@ public class Sampler
         SampleArray.setStackTraceId(0L, head);
         SampleArray.setUsedAtGC(0L, head);
         SampleArray.setArrayLength(0, head);
-        SampleArray.setPrevious(null, head);
     }
 
     private void storeSample(WeakReference<?> obj, long allocatedSize, long allocatedTime)

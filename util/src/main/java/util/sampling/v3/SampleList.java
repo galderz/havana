@@ -58,6 +58,7 @@ public class SampleList
         {
             // If item is head, update head to be item's prev
             head = SampleArray.getPrevious(sample);
+            SampleArray.setPrevious(null, sample);
             return;
         }
 
@@ -74,6 +75,8 @@ public class SampleList
         {
             tail = next;
         }
+
+        SampleArray.setPrevious(null, sample);
     }
 
     private Object[] findNext(Object[] target)
