@@ -54,7 +54,6 @@ public class SampleQueue
         final Object[] head = peek();
         samples.swap(0, count - 1);
         count--;
-        // clearItem(items[count]);
         moveDown(0);
         total -= SampleArray.getSpan(head);
     }
