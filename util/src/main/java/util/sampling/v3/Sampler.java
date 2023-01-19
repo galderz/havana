@@ -59,4 +59,17 @@ public class Sampler
         queue.push(sample);
         list.prepend(sample);
     }
+
+    void remove(Object[] sample)
+    {
+        final Object[] prev = SampleArray.getPrevious(sample);
+        if (prev != null)
+        {
+            queue.remove(prev);
+            SampleArray.setSpan(SampleArray.getSpan(sample) + SampleArray.getSpan(prev), prev);
+            queue.push(prev);
+        }
+        queue.remove(sample);
+        list.remove(sample);
+    }
 }

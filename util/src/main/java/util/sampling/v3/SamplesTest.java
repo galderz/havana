@@ -21,6 +21,7 @@ public class SamplesTest
         testIterateAllocationTimesFIFOSizePlusOnePopMiddle();
         testIterateAllocationTimesFIFOSizePlusOnePopYoungest();
         testPushAndIterateMany();
+        testIterateRemoteAll();
     }
 
     private static void testQueueOfferThenPoll()
@@ -209,4 +210,35 @@ public class SamplesTest
 
         assert 256 == count;
     }
+
+    private static void testIterateRemoteAll()
+    {
+        final int size = 4;
+        Sampler sampler = new Sampler(size);
+        for (int i = 0; i < size; i++)
+        {
+            sampler.sample(new WeakReference<>(String.valueOf(i)), 10 + i, i);
+        }
+
+        Object[] current = sampler.list.head();
+        int removed = 0;
+        while (current != null)
+        {
+            Object[] next = sampler.list.next(current);
+            final String value = (String) SampleArray.getReference(current).get();
+            if (value != null)
+            {
+                sampler.remove(current);
+                removed++;
+            }
+
+            current = next;
+        }
+
+        assert 4 == removed;
+    }
+
+    // todo test iterate and remove youngest
+    // todo test iterate and remove oldest
+    // todo test iterate and remove middle
 }

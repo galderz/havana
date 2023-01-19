@@ -39,6 +39,19 @@ public class SampleArray
         samples[j] = tmp;
     }
 
+    int getIndexOf(Object[] sample)
+    {
+        for (int i = 0; i < samples.length; i++)
+        {
+            if (sample == samples[i])
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     Object[] getSample(int index)
     {
         return samples[index];

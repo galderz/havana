@@ -119,4 +119,13 @@ public class SampleQueue
     {
         return 2 * i + 2;
     }
+
+    void remove(Object[] sample)
+    {
+        final long span = SampleArray.getSpan(sample);
+        SampleArray.setSpan(0L, sample);
+        moveUp(samples.getIndexOf(sample));
+        SampleArray.setSpan(span, sample);
+        poll();
+    }
 }
