@@ -25,30 +25,30 @@ public class Sampler
                 return;
             }
 
-            evictSample(head);
+            evict(head);
         }
 
-        storeSample(obj, allocatedSize, allocatedTime);
+        store(obj, allocatedSize, allocatedTime);
     }
 
-    private void evictSample(Object[] head)
+    private void evict(Object[] sample)
     {
         queue.poll();
-        list.remove(head);
-        SampleArray.setReference(null, head);
-        SampleArray.setSpan(0L, head);
-        SampleArray.setAllocationTime(0L, head);
-        SampleArray.setThreadId(0L, head);
-        SampleArray.setStackTraceId(0L, head);
-        SampleArray.setUsedAtGC(0L, head);
-        SampleArray.setArrayLength(0, head);
+        list.remove(sample);
+        SampleArray.setReference(null, sample);
+        SampleArray.setSpan(0L, sample);
+        SampleArray.setAllocationTime(0L, sample);
+        SampleArray.setThreadId(0L, sample);
+        SampleArray.setStackTraceId(0L, sample);
+        SampleArray.setUsedAtGC(0L, sample);
+        SampleArray.setArrayLength(0, sample);
     }
 
-    private void storeSample(WeakReference<?> obj, long allocatedSize, long allocatedTime)
+    private void store(WeakReference<?> ref, long allocatedSize, long allocatedTime)
     {
         final int index = queue.getCount();
         final Object[] sample = samples.getSample(index);
-        SampleArray.setReference(obj, sample);
+        SampleArray.setReference(ref, sample);
         SampleArray.setSpan(allocatedSize, sample);
         SampleArray.setAllocationTime(allocatedTime, sample);
         SampleArray.setThreadId(0L, sample);
