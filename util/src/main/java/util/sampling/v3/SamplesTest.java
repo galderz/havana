@@ -23,6 +23,7 @@ public class SamplesTest
         testIterateAllocationTimesFIFOSizePlusOnePopYoungest();
         testPushAndIterateMany();
         testIterateAndRemoveAll();
+        testIterateAndRemoveOldest();
     }
 
     private static void testQueueOfferThenPoll()
@@ -250,7 +251,29 @@ public class SamplesTest
         return removed;
     }
 
+    private static void testIterateAndRemoveOldest()
+    {
+        final int size = 4;
+        Sampler sampler = new Sampler(size);
+        for (int i = 0; i < size; i++)
+        {
+            sampler.sample(new WeakReference<>(String.valueOf(i)), 10 + i, i);
+        }
+
+        List<String> removedObjects = new ArrayList<>();
+        int removed = iterateAndRemove(v -> v.equals("0"), removedObjects, sampler);
+
+        assert 1 == removed;
+        assert null != sampler.list.head();
+        assert removedObjects.equals(List.of("0")) : removedObjects;
+
+        List<Long> allocationTimes = new ArrayList<>();
+        List<String> objects = new ArrayList<>();
+        iterate(allocationTimes, objects, sampler);
+        assert allocationTimes.equals(List.of(1L, 2L, 3L)) : allocationTimes;
+        assert objects.equals(List.of("1", "2", "3")) : objects;
+    }
+
     // todo test iterate and remove youngest
-    // todo test iterate and remove oldest
     // todo test iterate and remove middle
 }
