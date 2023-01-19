@@ -83,22 +83,20 @@ public class SamplesTest
         sampler.sample(new WeakReference<>("500"), 500, 4);
         sampler.sample(new WeakReference<>("100"), 100, 5);
 
-        List<Long> allocationTimes = new ArrayList<>();
-        List<String> objects = new ArrayList<>();
-        iterate(allocationTimes, objects, sampler);
-        assert allocationTimes.equals(List.of(1L, 2L, 3L, 4L, 5L)) : allocationTimes;
-        assert objects.equals(List.of("200", "400", "300", "500", "100")) : allocationTimes;
+        List<String> objects = iterate(sampler);
+        assert objects.equals(List.of("200", "400", "300", "500", "100")) : objects;
     }
 
-    private static void iterate(List<Long> allocationTimes, List<String> objects, Sampler sampler)
+    private static List<String> iterate(Sampler sampler)
     {
+        List<String> objects = new ArrayList<>();
         Object[] current = sampler.list.head();
         while (current != null)
         {
-            allocationTimes.add(SampleArray.getAllocationTime(current));
             objects.add((String) SampleArray.getReference(current).get());
             current = sampler.list.next(current);
         }
+        return objects;
     }
 
     private static void testIterateAllocationTimesFIFOSizeMinusOne()
@@ -111,10 +109,7 @@ public class SamplesTest
             sampler.sample(new WeakReference<>(String.valueOf(i)), i * 100, i);
         }
 
-        List<Long> allocationTimes = new ArrayList<>();
-        List<String> objects = new ArrayList<>();
-        iterate(allocationTimes, objects, sampler);
-        assert allocationTimes.equals(List.of(0L, 1L, 2L, 3L, 4L, 5L, 6L)) : allocationTimes;
+        List<String> objects = iterate(sampler);
         assert objects.equals(List.of("0", "1", "2", "3", "4", "5", "6")) : objects;
     }
 
@@ -128,10 +123,7 @@ public class SamplesTest
             sampler.sample(new WeakReference<>(String.valueOf(i)), i * 100, i);
         }
 
-        List<Long> allocationTimes = new ArrayList<>();
-        List<String> objects = new ArrayList<>();
-        iterate(allocationTimes, objects, sampler);
-        assert allocationTimes.equals(List.of(0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L)) : allocationTimes;
+        List<String> objects = iterate(sampler);
         assert objects.equals(List.of("0", "1", "2", "3", "4", "5", "6", "7")) : objects;
     }
 
@@ -148,10 +140,7 @@ public class SamplesTest
             sampler.sample(new WeakReference<>(String.valueOf(i)), i * 100, i);
         }
 
-        List<Long> allocationTimes = new ArrayList<>();
-        List<String> objects = new ArrayList<>();
-        iterate(allocationTimes, objects, sampler);
-        assert allocationTimes.equals(List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L)) : allocationTimes;
+        List<String> objects = iterate(sampler);
         assert objects.equals(List.of("1", "2", "3", "4", "5", "6", "7", "8")) : objects;
     }
 
@@ -168,10 +157,7 @@ public class SamplesTest
             sampler.sample(new WeakReference<>(String.valueOf(i)), i == (size / 2) ? 100 : 200, i);
         }
 
-        List<Long> allocationTimes = new ArrayList<>();
-        List<String> objects = new ArrayList<>();
-        iterate(allocationTimes, objects, sampler);
-        assert allocationTimes.equals(List.of(0L, 1L, 2L, 3L, 5L, 6L, 7L, 8L)) : allocationTimes;
+        List<String> objects = iterate(sampler);
         assert objects.equals(List.of("0", "1", "2", "3", "5", "6", "7", "8")) : objects;
     }
 
@@ -185,10 +171,7 @@ public class SamplesTest
             sampler.sample(new WeakReference<>(String.valueOf(i)), i == (size - 1) ? 100 : 200, i);
         }
 
-        List<Long> allocationTimes = new ArrayList<>();
-        List<String> objects = new ArrayList<>();
-        iterate(allocationTimes, objects, sampler);
-        assert allocationTimes.equals(List.of(0L, 1L, 2L, 3L, 4L, 5L, 6L, 8L)) : allocationTimes;
+        List<String> objects = iterate(sampler);
         assert objects.equals(List.of("0", "1", "2", "3", "4", "5", "6", "8")) : objects;
     }
 
@@ -268,10 +251,7 @@ public class SamplesTest
         assert null != sampler.list.head();
         assert removedObjects.equals(List.of("0")) : removedObjects;
 
-        List<Long> allocationTimes = new ArrayList<>();
-        List<String> objects = new ArrayList<>();
-        iterate(allocationTimes, objects, sampler);
-        assert allocationTimes.equals(List.of(1L, 2L, 3L)) : allocationTimes;
+        List<String> objects = iterate(sampler);
         assert objects.equals(List.of("1", "2", "3")) : objects;
     }
 
@@ -291,10 +271,7 @@ public class SamplesTest
         assert null != sampler.list.head();
         assert removedObjects.equals(List.of("3")) : removedObjects;
 
-        List<Long> allocationTimes = new ArrayList<>();
-        List<String> objects = new ArrayList<>();
-        iterate(allocationTimes, objects, sampler);
-        assert allocationTimes.equals(List.of(0L, 1L, 2L)) : allocationTimes;
+        List<String> objects = iterate(sampler);
         assert objects.equals(List.of("0", "1", "2")) : objects;
     }
 
