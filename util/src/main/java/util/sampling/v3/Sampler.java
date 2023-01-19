@@ -19,29 +19,22 @@ public class Sampler
     {
         if (queue.isFull())
         {
-            final Object[] head = queue.peek();
-            if (SampleArray.getSpan(head) > allocatedSize)
+            if (SampleArray.getSpan(queue.peek()) > allocatedSize)
             {
                 return;
             }
 
-            evict(head);
+            evict();
         }
 
         store(obj, allocatedSize, allocatedTime);
     }
 
-    private void evict(Object[] sample)
+    private void evict()
     {
-        queue.poll();
-        list.remove(sample);
-        SampleArray.setReference(null, sample);
-        SampleArray.setSpan(0L, sample);
-        SampleArray.setAllocationTime(0L, sample);
-        SampleArray.setThreadId(0L, sample);
-        SampleArray.setStackTraceId(0L, sample);
-        SampleArray.setUsedAtGC(0L, sample);
-        SampleArray.setArrayLength(0, sample);
+        final Object[] head = queue.poll();
+        list.remove(head);
+        samples.clear(head);
     }
 
     private void store(WeakReference<?> ref, long allocatedSize, long allocatedTime)
@@ -70,5 +63,6 @@ public class Sampler
         }
         queue.remove(sample);
         list.remove(sample);
+        samples.clear(sample);
     }
 }

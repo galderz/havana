@@ -154,6 +154,17 @@ public class SampleArray
         return (long) samples[index][SPAN_SLOT];
     }
 
+    public void clear(Object[] sample)
+    {
+        SampleArray.setReference(null, sample);
+        SampleArray.setSpan(0L, sample);
+        SampleArray.setAllocationTime(0L, sample);
+        SampleArray.setThreadId(0L, sample);
+        SampleArray.setStackTraceId(0L, sample);
+        SampleArray.setUsedAtGC(0L, sample);
+        SampleArray.setArrayLength(0, sample);
+    }
+
 //    void setSpan(long value, int index)
 //    {
 //        samples[index][SPAN_SLOT] = value;

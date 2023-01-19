@@ -41,14 +41,14 @@ public class SampleQueue
     }
 
     /**
-     * Removes the head of the queue.
+     * Removes and return the head of the queue.
      * The head of the queue is the sample with the smallest span.
      */
-    void poll()
+    Object[] poll()
     {
         if (count == 0)
         {
-            return;
+            return SampleArray.EMPTY;
         }
 
         final Object[] head = peek();
@@ -56,6 +56,7 @@ public class SampleQueue
         count--;
         moveDown(0);
         total -= SampleArray.getSpan(head);
+        return head;
     }
 
     /**
