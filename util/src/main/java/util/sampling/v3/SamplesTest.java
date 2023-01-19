@@ -52,7 +52,7 @@ public class SamplesTest
         assert 500 == SampleArray.getSpan(sampler.queue.peek());
         assert "500" == SampleArray.getReference(sampler.queue.peek()).get();
         sampler.queue.poll();
-        assert null == sampler.queue.peek();
+        assert null == SampleArray.getReference(sampler.queue.peek());
     }
 
     private static void testQueueIsFull()
@@ -69,7 +69,7 @@ public class SamplesTest
     private static void testQueuePeek()
     {
         Sampler sampler = new Sampler(3);
-        assert null == sampler.queue.peek();
+        assert null == SampleArray.getReference(sampler.queue.peek());
         sampler.sample(new WeakReference<>("300"), 300, 1);
         assert 300 == SampleArray.getSpan(sampler.queue.peek());
         assert "300" == SampleArray.getReference(sampler.queue.peek()).get();

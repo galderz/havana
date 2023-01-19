@@ -37,7 +37,7 @@ public class SampleQueue
 
     Object[] peek()
     {
-        return count == 0 ? null : samples.getSample(0);
+        return count == 0 ? SampleArray.EMPTY : samples.getSample(0);
     }
 
     /**

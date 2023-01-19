@@ -15,6 +15,8 @@ public class SampleArray
     private static final int ARRAY_LENGTH_SLOT = 6;
     private static final int PREVIOUS_SLOT = 7;
 
+    static final Object[] EMPTY = new Object[PREVIOUS_SLOT + 1];
+
     private final Object[][] samples;
 
     // @Platforms(Platform.HOSTED_ONLY.class)
