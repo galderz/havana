@@ -5,6 +5,7 @@ import util.Asserts;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class SamplesTest
 {
@@ -21,7 +22,7 @@ public class SamplesTest
         testIterateAllocationTimesFIFOSizePlusOnePopMiddle();
         testIterateAllocationTimesFIFOSizePlusOnePopYoungest();
         testPushAndIterateMany();
-        testIterateRemoteAll();
+        testIterateAndRemoveAll();
     }
 
     private static void testQueueOfferThenPoll()
@@ -211,7 +212,7 @@ public class SamplesTest
         assert 256 == count;
     }
 
-    private static void testIterateRemoteAll()
+    private static void testIterateAndRemoveAll()
     {
         final int size = 4;
         Sampler sampler = new Sampler(size);
@@ -220,14 +221,25 @@ public class SamplesTest
             sampler.sample(new WeakReference<>(String.valueOf(i)), 10 + i, i);
         }
 
+        List<String> objects = new ArrayList<>();
+        int removed = iterateAndRemove(x -> true, objects, sampler);
+
+        assert 4 == removed;
+        assert null == sampler.list.head();
+        assert objects.equals(List.of("0", "1", "2", "3")) : objects;
+    }
+
+    private static int iterateAndRemove(Predicate<String> shouldRemove, List<String> objects, Sampler sampler)
+    {
         Object[] current = sampler.list.head();
         int removed = 0;
         while (current != null)
         {
             Object[] next = sampler.list.next(current);
             final String value = (String) SampleArray.getReference(current).get();
-            if (value != null)
+            if (shouldRemove.test(value))
             {
+                objects.add(value);
                 sampler.remove(current);
                 removed++;
             }
@@ -235,7 +247,7 @@ public class SamplesTest
             current = next;
         }
 
-        assert 4 == removed;
+        return removed;
     }
 
     // todo test iterate and remove youngest
