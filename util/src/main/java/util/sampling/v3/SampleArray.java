@@ -9,7 +9,7 @@ public class SampleArray
     private static final int ALLOCATION_TIME_SLOT = 2;
     private static final int THREAD_ID_SLOT = 3;
     private static final int STACKTRACE_ID_SLOT = 4;
-    private static final int USED_AT_GC_SLOT = 5;
+    private static final int HEAP_USED_AT_LAST_GC_SLOT = 5;
     private static final int ARRAY_LENGTH_SLOT = 6;
     private static final int PREVIOUS_SLOT = 7;
 
@@ -59,7 +59,7 @@ public class SampleArray
         sample[ALLOCATION_TIME_SLOT] = allocatedTime;
         sample[THREAD_ID_SLOT] = 0;
         sample[STACKTRACE_ID_SLOT] = 0;
-        sample[USED_AT_GC_SLOT] = 0;
+        sample[HEAP_USED_AT_LAST_GC_SLOT] = 0;
         sample[ARRAY_LENGTH_SLOT] = 0;
     }
 
@@ -70,7 +70,7 @@ public class SampleArray
         sample[ALLOCATION_TIME_SLOT] = 0;
         sample[THREAD_ID_SLOT] = 0;
         sample[STACKTRACE_ID_SLOT] = 0;
-        sample[USED_AT_GC_SLOT] = 0;
+        sample[HEAP_USED_AT_LAST_GC_SLOT] = 0;
         sample[ARRAY_LENGTH_SLOT] = 0;
         sample[PREVIOUS_SLOT] = null;
     }
@@ -115,9 +115,9 @@ public class SampleArray
         return (long) sample[STACKTRACE_ID_SLOT];
     }
 
-    static long getUsedAtGC(Object[] sample)
+    static long getHeapUsedAtLastGC(Object[] sample)
     {
-        return (long) sample[USED_AT_GC_SLOT];
+        return (long) sample[HEAP_USED_AT_LAST_GC_SLOT];
     }
 
     static int getArrayLength(Object[] sample)
