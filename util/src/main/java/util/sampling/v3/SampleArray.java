@@ -54,7 +54,7 @@ public class SampleArray
         return -1;
     }
 
-    void set(WeakReference<?> ref, long allocatedSize, long allocatedTime, Object[] sample)
+    static void set(WeakReference<?> ref, long allocatedSize, long allocatedTime, Object[] sample)
     {
         sample[REF_SLOT] = ref;
         sample[SPAN_SLOT] = allocatedSize;
@@ -65,7 +65,7 @@ public class SampleArray
         sample[ARRAY_LENGTH_SLOT] = 0;
     }
 
-    void clear(Object[] sample)
+    static void clear(Object[] sample)
     {
         sample[REF_SLOT] = null;
         sample[SPAN_SLOT] = 0;
@@ -90,6 +90,11 @@ public class SampleArray
     static long getSpan(Object[] sample)
     {
         return (long) sample[SPAN_SLOT];
+    }
+
+    long getSpan(int index)
+    {
+        return (long) samples[index][SPAN_SLOT];
     }
 
     static void setSpan(long value, Object[] sample)
@@ -131,22 +136,17 @@ public class SampleArray
     {
         sample[PREVIOUS_SLOT] = value;
     }
-
 //    WeakReference<?> getReference(int index)
 //    {
 //        return (WeakReference<?>) samples[index][REF_SLOT];
 //    }
 //
 //    void setReference(WeakReference<?> value, int index)
+
 //    {
-
 //        samples[index][REF_SLOT] = value;
-//    }
 
-    long getSpan(int index)
-    {
-        return (long) samples[index][SPAN_SLOT];
-    }
+//    }
 
 //    void setSpan(long value, int index)
 //    {

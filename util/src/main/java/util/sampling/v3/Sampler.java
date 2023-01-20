@@ -34,14 +34,14 @@ public class Sampler
     {
         final Object[] head = queue.poll();
         list.remove(head);
-        samples.clear(head);
+        SampleArray.clear(head);
     }
 
     private void store(WeakReference<?> ref, long allocatedSize, long allocatedTime)
     {
         final int index = queue.getCount();
         final Object[] sample = samples.getSample(index);
-        samples.set(ref, allocatedSize, allocatedTime, sample);
+        SampleArray.set(ref, allocatedSize, allocatedTime, sample);
         queue.push(sample);
         list.prepend(sample);
     }
@@ -57,6 +57,6 @@ public class Sampler
         }
         queue.remove(sample);
         list.remove(sample);
-        samples.clear(sample);
+        SampleArray.clear(sample);
     }
 }
