@@ -74,6 +74,7 @@ public class SampleArray
         sample[STACKTRACE_ID_SLOT] = 0;
         sample[USED_AT_GC_SLOT] = 0;
         sample[ARRAY_LENGTH_SLOT] = 0;
+        sample[PREVIOUS_SLOT] = null;
     }
 
     Object[] getSample(int index)
@@ -130,6 +131,7 @@ public class SampleArray
     {
         sample[PREVIOUS_SLOT] = value;
     }
+
 //    WeakReference<?> getReference(int index)
 //    {
 //        return (WeakReference<?>) samples[index][REF_SLOT];
