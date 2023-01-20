@@ -1,5 +1,8 @@
 package util.sampling.v3;
 
+import static util.sampling.v3.SampleArray.getPrevious;
+import static util.sampling.v3.SampleArray.setPrevious;
+
 /**
  * A singly linked list view of the queue.
  * An item's previous is the item that was added after to the queue after the item itself.
@@ -35,7 +38,7 @@ public class SampleList
 
     Object[] next(Object[] current)
     {
-        return SampleArray.getPrevious(current);
+        return getPrevious(current);
     }
 
     void prepend(Object[] sample)
@@ -49,7 +52,7 @@ public class SampleList
 
         Object[] tmp = tail;
         tail = sample;
-        SampleArray.setPrevious(sample, tmp);
+        setPrevious(sample, tmp);
     }
 
     void remove(Object[] sample)
@@ -57,7 +60,7 @@ public class SampleList
         if (head == sample)
         {
             // If item is head, update head to be item's prev
-            head = SampleArray.getPrevious(sample);
+            head = getPrevious(sample);
             return;
         }
 
@@ -67,7 +70,7 @@ public class SampleList
         assert next != null;
 
         // Then set that next's previous to item's previous
-        SampleArray.setPrevious(SampleArray.getPrevious(sample), next);
+        setPrevious(getPrevious(sample), next);
 
         // If the element removed is tail, update it to item's next.
         if (tail == sample)
@@ -81,12 +84,12 @@ public class SampleList
         Object[] current = head;
         while (current != null)
         {
-            if (SampleArray.getPrevious(current) == target)
+            if (getPrevious(current) == target)
             {
                 return current;
             }
 
-            current = SampleArray.getPrevious(current);
+            current = getPrevious(current);
         }
 
         return null;

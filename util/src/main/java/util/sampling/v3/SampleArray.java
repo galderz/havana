@@ -1,7 +1,5 @@
 package util.sampling.v3;
 
-import util.sampling.v2.SamplePriorityWeakRefFIFOQueue;
-
 import java.lang.ref.WeakReference;
 
 public class SampleArray
@@ -54,7 +52,7 @@ public class SampleArray
         return -1;
     }
 
-    static void set(WeakReference<?> ref, long allocatedSize, long allocatedTime, Object[] sample)
+    static void setSample(WeakReference<?> ref, long allocatedSize, long allocatedTime, Object[] sample)
     {
         sample[REF_SLOT] = ref;
         sample[SPAN_SLOT] = allocatedSize;
@@ -65,7 +63,7 @@ public class SampleArray
         sample[ARRAY_LENGTH_SLOT] = 0;
     }
 
-    static void clear(Object[] sample)
+    static void clearSample(Object[] sample)
     {
         sample[REF_SLOT] = null;
         sample[SPAN_SLOT] = 0;
