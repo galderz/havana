@@ -54,6 +54,28 @@ public class SampleArray
         return -1;
     }
 
+    void set(WeakReference<?> ref, long allocatedSize, long allocatedTime, Object[] sample)
+    {
+        sample[REF_SLOT] = ref;
+        sample[SPAN_SLOT] = allocatedSize;
+        sample[ALLOCATION_TIME_SLOT] = allocatedTime;
+        sample[THREAD_ID_SLOT] = 0;
+        sample[STACKTRACE_ID_SLOT] = 0;
+        sample[USED_AT_GC_SLOT] = 0;
+        sample[ARRAY_LENGTH_SLOT] = 0;
+    }
+
+    void clear(Object[] sample)
+    {
+        sample[REF_SLOT] = null;
+        sample[SPAN_SLOT] = 0;
+        sample[ALLOCATION_TIME_SLOT] = 0;
+        sample[THREAD_ID_SLOT] = 0;
+        sample[STACKTRACE_ID_SLOT] = 0;
+        sample[USED_AT_GC_SLOT] = 0;
+        sample[ARRAY_LENGTH_SLOT] = 0;
+    }
+
     Object[] getSample(int index)
     {
         return samples[index];
@@ -62,11 +84,6 @@ public class SampleArray
     static WeakReference<?> getReference(Object[] sample)
     {
         return (WeakReference<?>) sample[REF_SLOT];
-    }
-
-    static void setReference(WeakReference<?> value, Object[] sample)
-    {
-        sample[REF_SLOT] = value;
     }
 
     static long getSpan(Object[] sample)
@@ -84,19 +101,9 @@ public class SampleArray
         return (long) sample[ALLOCATION_TIME_SLOT];
     }
 
-    static void setAllocationTime(long value, Object[] sample)
-    {
-        sample[ALLOCATION_TIME_SLOT] = value;
-    }
-
     static long getThreadId(Object[] sample)
     {
         return (long) sample[THREAD_ID_SLOT];
-    }
-
-    static void setThreadId(long value, Object[] sample)
-    {
-        sample[THREAD_ID_SLOT] = value;
     }
 
     static long getStackTraceId(Object[] sample)
@@ -104,29 +111,14 @@ public class SampleArray
         return (long) sample[STACKTRACE_ID_SLOT];
     }
 
-    static void setStackTraceId(long value, Object[] sample)
-    {
-        sample[STACKTRACE_ID_SLOT] = value;
-    }
-
     static long getUsedAtGC(Object[] sample)
     {
         return (long) sample[USED_AT_GC_SLOT];
     }
 
-    static void setUsedAtGC(long value, Object[] sample)
-    {
-        sample[USED_AT_GC_SLOT] = value;
-    }
-
     static int getArrayLength(Object[] sample)
     {
         return (int) sample[ARRAY_LENGTH_SLOT];
-    }
-
-    static void setArrayLength(long value, Object[] sample)
-    {
-        sample[ARRAY_LENGTH_SLOT] = value;
     }
 
     static Object[] getPrevious(Object[] entry)
@@ -138,7 +130,6 @@ public class SampleArray
     {
         sample[PREVIOUS_SLOT] = value;
     }
-
 //    WeakReference<?> getReference(int index)
 //    {
 //        return (WeakReference<?>) samples[index][REF_SLOT];
@@ -146,23 +137,13 @@ public class SampleArray
 //
 //    void setReference(WeakReference<?> value, int index)
 //    {
+
 //        samples[index][REF_SLOT] = value;
 //    }
 
     long getSpan(int index)
     {
         return (long) samples[index][SPAN_SLOT];
-    }
-
-    public void clear(Object[] sample)
-    {
-        SampleArray.setReference(null, sample);
-        SampleArray.setSpan(0L, sample);
-        SampleArray.setAllocationTime(0L, sample);
-        SampleArray.setThreadId(0L, sample);
-        SampleArray.setStackTraceId(0L, sample);
-        SampleArray.setUsedAtGC(0L, sample);
-        SampleArray.setArrayLength(0, sample);
     }
 
 //    void setSpan(long value, int index)

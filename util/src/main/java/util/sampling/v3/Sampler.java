@@ -41,13 +41,7 @@ public class Sampler
     {
         final int index = queue.getCount();
         final Object[] sample = samples.getSample(index);
-        SampleArray.setReference(ref, sample);
-        SampleArray.setSpan(allocatedSize, sample);
-        SampleArray.setAllocationTime(allocatedTime, sample);
-        SampleArray.setThreadId(0L, sample);
-        SampleArray.setStackTraceId(0L, sample);
-        SampleArray.setUsedAtGC(0L, sample);
-        SampleArray.setArrayLength(0, sample);
+        samples.set(ref, allocatedSize, allocatedTime, sample);
         queue.push(sample);
         list.prepend(sample);
     }
