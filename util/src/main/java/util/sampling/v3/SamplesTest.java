@@ -26,6 +26,7 @@ public class SamplesTest
         testIterateAndRemoveOldest();
         testIterateAndRemoveYoungest();
         testIterateAndRemoveMiddle();
+        testIterateAndRemoveAndEvict();
     }
 
     private static void testQueueOfferThenPoll()
@@ -294,5 +295,27 @@ public class SamplesTest
 
         List<String> objects = iterate(sampler);
         assert objects.equals(List.of("0", "3")) : objects;
+    }
+
+    private static void testIterateAndRemoveAndEvict()
+    {
+        final int size = 4;
+        Sampler sampler = new Sampler(size);
+        for (int i = 0; i < size; i++)
+        {
+            sampler.sample(new WeakReference<>(String.valueOf(i)), 10 + i, i);
+        }
+
+        List<String> objects = new ArrayList<>();
+        int removed = iterateAndRemove(x -> true, objects, sampler);
+
+        assert 4 == removed;
+        assert null == sampler.list.head();
+        assert objects.equals(List.of("0", "1", "2", "3")) : objects;
+
+        for (int i = 0; i < size * 2; i++)
+        {
+            sampler.sample(new WeakReference<>(String.valueOf(i)), 10 + i, i);
+        }
     }
 }

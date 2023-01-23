@@ -57,6 +57,14 @@ public class SampleList
 
     void remove(Object[] sample)
     {
+        if (head == sample && tail == sample)
+        {
+            // Removing last remaining item, null both pointers
+            head = null;
+            tail = null;
+            return;
+        }
+
         if (head == sample)
         {
             // If item is head, update head to be item's prev
