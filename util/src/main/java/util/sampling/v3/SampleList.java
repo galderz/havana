@@ -13,8 +13,6 @@ import static util.sampling.v3.SampleArray.setPrevious;
  */
 public class SampleList
 {
-    private final SampleArray samples;
-
     // Points to the oldest entry added to the list.
     // This would be the first FIFO iterated element.
     // Only gets updated when an entry is removed.
@@ -26,10 +24,7 @@ public class SampleList
     Object[] tail;
 
     // @Platforms(Platform.HOSTED_ONLY.class)
-    SampleList(SampleArray samples)
-    {
-        this.samples = samples;
-    }
+    SampleList(SampleArray samples) {}
 
     Object[] head()
     {
