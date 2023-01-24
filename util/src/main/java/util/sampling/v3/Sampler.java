@@ -1,7 +1,6 @@
 package util.sampling.v3;
 
 import java.lang.ref.WeakReference;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static util.sampling.v3.SampleArray.clearSample;
 import static util.sampling.v3.SampleArray.getPrevious;
@@ -14,14 +13,14 @@ public class Sampler
     final SampleArray samples;
     final SampleQueue queue;
     final SampleList list;
-    final ReentrantLock lock;
+    final SpinLock lock;
 
     Sampler(int size)
     {
         this.samples = new SampleArray(size);
         this.queue = new SampleQueue(this.samples);
         this.list = new SampleList(this.samples);
-        this.lock = new ReentrantLock();
+        this.lock = new SpinLock();
     }
 
     /**
@@ -61,7 +60,7 @@ public class Sampler
      */
     void remove(Object[] sample)
     {
-        while (!lock.tryLock()) {}
+        lock.lock();
 
         try
         {
