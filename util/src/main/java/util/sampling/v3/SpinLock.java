@@ -4,14 +4,14 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class SpinLock
 {
-    private static final int UNHELD = -1;
+    private static final int NOT_HELD = -1;
 
-    private final AtomicLong lock = new AtomicLong(UNHELD);
+    private final AtomicLong lock = new AtomicLong(NOT_HELD);
 
     public boolean tryLock()
     {
         final long threadId = Thread.currentThread().getId();
-        if (!lock.compareAndSet(UNHELD, threadId))
+        if (!lock.compareAndSet(NOT_HELD, threadId))
         {
             if (threadId == lock.get())
             {
@@ -27,7 +27,7 @@ public class SpinLock
     public void lock()
     {
         final long threadId = Thread.currentThread().getId();
-        while (!lock.compareAndSet(UNHELD, threadId))
+        while (!lock.compareAndSet(NOT_HELD, threadId))
         {
             if (threadId == lock.get())
             {
@@ -39,7 +39,7 @@ public class SpinLock
     public void unlock()
     {
         final long threadId = Thread.currentThread().getId();
-        if (!lock.compareAndSet(threadId, UNHELD))
+        if (!lock.compareAndSet(threadId, NOT_HELD))
         {
             throw new IllegalStateException("Unlock called without holding the lock");
         }
