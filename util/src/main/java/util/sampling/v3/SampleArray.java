@@ -93,8 +93,7 @@ public class SampleArray
 
     long getSpan(int index)
     {
-        final Long span = (Long) samples[index][SPAN_SLOT];
-        return span == null ? 0 : span;
+        return getSpan(samples[index]);
     }
 
     static void setSpan(long value, Object[] sample)
