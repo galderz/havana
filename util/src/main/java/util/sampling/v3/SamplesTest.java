@@ -5,11 +5,13 @@ import util.Asserts;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
 public class SamplesTest
 {
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         Asserts.needEnabledAsserts();
         testQueueOfferThenPoll();
@@ -27,6 +29,7 @@ public class SamplesTest
         testIterateAndRemoveYoungest();
         testIterateAndRemoveMiddle();
         testIterateAndRemoveAndEvict();
+        testMultiThreaded();
     }
 
     private static void testQueueOfferThenPoll()
@@ -316,6 +319,92 @@ public class SamplesTest
         for (int i = 0; i < size * 2; i++)
         {
             sampler.sample(new WeakReference<>(String.valueOf(i)), 10 + i, i);
+        }
+    }
+
+    private static void testMultiThreaded() throws InterruptedException
+    {
+        final AtomicBoolean running = new AtomicBoolean(true);
+
+        final int size = 32;
+        final Sampler sampler = new Sampler(size);
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        final Scavenging scavenging = new Scavenging(sampler, running);
+        scavenging.start();
+
+        final Sampling sampling = new Sampling(sampler, latch);
+        sampling.start();
+
+        latch.countDown();
+
+        sampling.join();
+        running.set(false);
+        scavenging.join();
+    }
+
+    static class Sampling extends Thread
+    {
+        final Sampler sampler;
+        final CountDownLatch latch;
+        int numAttempts = 1_000_000;
+        int numSampled;
+
+        Sampling(Sampler sampler, CountDownLatch latch)
+        {
+            this.sampler = sampler;
+            this.latch = latch;
+        }
+
+        @Override
+        public void run()
+        {
+            try
+            {
+                latch.await();
+            }
+            catch (InterruptedException e)
+            {
+                Thread.currentThread().interrupt();
+            }
+
+            for (int i = 1; i <= numAttempts; i++)
+            {
+                if (sampler.sample(new WeakReference<>(i), 10 + i, System.nanoTime()))
+                {
+                    numSampled++;
+                }
+            }
+        }
+    }
+
+    static class Scavenging extends Thread
+    {
+        final Sampler sampler;
+        final AtomicBoolean running;
+        int numScavenged;
+
+        Scavenging(Sampler sampler, AtomicBoolean running)
+        {
+            this.sampler = sampler;
+            this.running = running;
+        }
+
+        @Override
+        public void run()
+        {
+            while (running.get())
+            {
+                Object[] current = sampler.list.head();
+                while (current != null)
+                {
+                    Object[] next = sampler.list.next(current);
+                    sampler.remove(current);
+                    numScavenged++;
+                    current = next;
+                }
+            }
         }
     }
 }

@@ -57,20 +57,20 @@ public class SampleArray
         sample[REF_SLOT] = ref;
         sample[SPAN_SLOT] = allocatedSize;
         sample[ALLOCATION_TIME_SLOT] = allocatedTime;
-        sample[THREAD_ID_SLOT] = 0;
-        sample[STACKTRACE_ID_SLOT] = 0;
-        sample[HEAP_USED_AT_LAST_GC_SLOT] = 0;
+        sample[THREAD_ID_SLOT] = 0L;
+        sample[STACKTRACE_ID_SLOT] = 0L;
+        sample[HEAP_USED_AT_LAST_GC_SLOT] = 0L;
         sample[ARRAY_LENGTH_SLOT] = 0;
     }
 
     static void clearSample(Object[] sample)
     {
         sample[REF_SLOT] = null;
-        sample[SPAN_SLOT] = 0;
-        sample[ALLOCATION_TIME_SLOT] = 0;
-        sample[THREAD_ID_SLOT] = 0;
-        sample[STACKTRACE_ID_SLOT] = 0;
-        sample[HEAP_USED_AT_LAST_GC_SLOT] = 0;
+        sample[SPAN_SLOT] = 0L;
+        sample[ALLOCATION_TIME_SLOT] = 0L;
+        sample[THREAD_ID_SLOT] = 0L;
+        sample[STACKTRACE_ID_SLOT] = 0L;
+        sample[HEAP_USED_AT_LAST_GC_SLOT] = 0L;
         sample[ARRAY_LENGTH_SLOT] = 0;
         sample[PREVIOUS_SLOT] = null;
     }
@@ -87,12 +87,14 @@ public class SampleArray
 
     static long getSpan(Object[] sample)
     {
-        return (long) sample[SPAN_SLOT];
+        final Long span = (Long) sample[SPAN_SLOT];
+        return span == null ? 0 : span;
     }
 
     long getSpan(int index)
     {
-        return (long) samples[index][SPAN_SLOT];
+        final Long span = (Long) samples[index][SPAN_SLOT];
+        return span == null ? 0 : span;
     }
 
     static void setSpan(long value, Object[] sample)

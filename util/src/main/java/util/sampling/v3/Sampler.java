@@ -1,6 +1,7 @@
 package util.sampling.v3;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static util.sampling.v3.SampleArray.clearSample;
 import static util.sampling.v3.SampleArray.getPrevious;
@@ -13,27 +14,72 @@ public class Sampler
     final SampleArray samples;
     final SampleQueue queue;
     final SampleList list;
+    final ReentrantLock lock;
 
     Sampler(int size)
     {
         this.samples = new SampleArray(size);
         this.queue = new SampleQueue(this.samples);
         this.list = new SampleList(this.samples);
+        this.lock = new ReentrantLock();
     }
 
-    void sample(WeakReference<?> obj, long allocatedSize, long allocatedTime)
+    /**
+     * Protected by lock
+     */
+    boolean sample(WeakReference<?> obj, long allocatedSize, long allocatedTime)
     {
-        if (queue.isFull())
+        final boolean success = lock.tryLock();
+        if (!success)
         {
-            if (getSpan(queue.peek()) > allocatedSize)
-            {
-                return;
-            }
-
-            evict();
+            return false;
         }
 
-        store(obj, allocatedSize, allocatedTime);
+        try
+        {
+            if (queue.isFull())
+            {
+                if (getSpan(queue.peek()) > allocatedSize)
+                {
+                    return false;
+                }
+
+                evict();
+            }
+
+            store(obj, allocatedSize, allocatedTime);
+            return true;
+        }
+        finally
+        {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Protected by lock
+     */
+    void remove(Object[] sample)
+    {
+        while (!lock.tryLock()) {}
+
+        try
+        {
+            final Object[] prev = getPrevious(sample);
+            if (prev != null)
+            {
+                queue.remove(prev);
+                setSpan(getSpan(sample) + getSpan(prev), prev);
+                queue.push(prev);
+            }
+            queue.remove(sample);
+            list.remove(sample);
+            clearSample(sample);
+        }
+        finally
+        {
+            lock.unlock();
+        }
     }
 
     private void evict()
@@ -50,19 +96,5 @@ public class Sampler
         setSample(ref, allocatedSize, allocatedTime, sample);
         queue.push(sample);
         list.prepend(sample);
-    }
-
-    void remove(Object[] sample)
-    {
-        final Object[] prev = getPrevious(sample);
-        if (prev != null)
-        {
-            queue.remove(prev);
-            setSpan(getSpan(sample) + getSpan(prev), prev);
-            queue.push(prev);
-        }
-        queue.remove(sample);
-        list.remove(sample);
-        clearSample(sample);
     }
 }
