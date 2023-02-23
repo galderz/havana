@@ -46,6 +46,10 @@ final class EdgeQueue
         return edges[index][TO_SLOT];
     }
 
+    void clear() {
+        count = 0;
+    }
+
     private void set(Object from, int location, Object to, int index)
     {
         edges[index][FROM_SLOT] = from;

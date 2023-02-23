@@ -13,6 +13,23 @@ public class EdgeQueueTest
         testIsFull();
         testPushBeyondFull();
         testIterate();
+        testClear();
+    }
+
+    private static void testClear()
+    {
+        final int capacity = 4;
+        final EdgeQueue queue = new EdgeQueue(capacity);
+
+        IntStream.range(0, capacity).forEach(i -> queue.push(new Object(), i, new Object()));
+        queue.clear();
+        IntStream.range(0, capacity).forEach(i -> queue.push(new Object(), i + capacity, new Object()));
+        IntStream.range(0, queue.size()).forEach(i ->
+        {
+            assert Objects.nonNull(queue.getFrom(i));
+            assert i + 4 == queue.getLocation(i);
+            assert Objects.nonNull(queue.getTo(i));
+        });
     }
 
     private static void testIterate()
