@@ -3,10 +3,11 @@ package util.edges.v0;
 final class EdgeQueue
 {
     private static final int FROM_SLOT = 0;
-    private static final int LOCATION_SLOT = 1;
-    private static final int TO_SLOT = 2;
+    private static final int TO_SLOT = 1;
 
     private final Object[][] edges;
+    private final Object[] locations;
+
     private int count;
 
     EdgeQueue(int capacity)
@@ -16,6 +17,7 @@ final class EdgeQueue
         {
             this.edges[i] = new Object[TO_SLOT + 1];
         }
+        this.locations = new Object[capacity];
     }
 
     boolean isFull() {
@@ -37,7 +39,7 @@ final class EdgeQueue
     }
 
     int getLocation(int index) {
-        return (int) edges[index][LOCATION_SLOT];
+        return (int) locations[index];
     }
 
     Object getTo(int index) {
@@ -47,7 +49,7 @@ final class EdgeQueue
     private void set(Object from, int location, Object to, int index)
     {
         edges[index][FROM_SLOT] = from;
-        edges[index][LOCATION_SLOT] = location;
         edges[index][TO_SLOT] = to;
+        locations[index] = location;
     }
 }
