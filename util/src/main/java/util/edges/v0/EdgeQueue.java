@@ -1,7 +1,5 @@
 package util.edges.v0;
 
-import util.sampling.v3.SampleArray;
-
 final class EdgeQueue
 {
     private static final int FROM_SLOT = 0;
