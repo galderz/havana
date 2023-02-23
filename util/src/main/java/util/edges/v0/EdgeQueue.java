@@ -28,6 +28,22 @@ final class EdgeQueue
         count++;
     }
 
+    int size() {
+        return count;
+    }
+
+    Object getFrom(int index) {
+        return edges[index][FROM_SLOT];
+    }
+
+    int getLocation(int index) {
+        return (int) edges[index][LOCATION_SLOT];
+    }
+
+    Object getTo(int index) {
+        return edges[index][TO_SLOT];
+    }
+
     private void set(Object from, int location, Object to, int index)
     {
         edges[index][FROM_SLOT] = from;
