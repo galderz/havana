@@ -16,6 +16,11 @@ public class BitMap
     final long lowSize;
     final long lowMask;
 
+    public BitMap()
+    {
+        this(8, 31);
+    }
+
     public BitMap(int objectAlignment, int lowShift)
     {
         this.objectAlignment = objectAlignment;

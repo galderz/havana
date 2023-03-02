@@ -19,7 +19,7 @@ public class BitMapTest
     private static void testHighBits()
     {
         System.out.println("BitMapTest.testHighBits");
-        final BitMap bitMap = new BitMap(8, 31);
+        final BitMap bitMap = new BitMap();
         assert 16384 == bitMap.getHighBits(281479315055456L);
 
         final HexFormat hex = HexFormat.of();
@@ -77,7 +77,7 @@ public class BitMapTest
     private static void testLowBits()
     {
         System.out.println("BitMapTest.testLowBits");
-        final BitMap bitMap = new BitMap(8, 31);
+        final BitMap bitMap = new BitMap();
         assert 542293100 == bitMap.getLowBits(281479315055456L);
     }
 
