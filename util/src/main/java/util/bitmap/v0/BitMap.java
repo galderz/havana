@@ -5,6 +5,31 @@ import java.util.HexFormat;
 
 public class BitMap
 {
+    final int objectAlignment;
+    final int logAlignment;
+    final int lowShift;
+    final long lowSize;
+    final long lowMask;
+
+    public BitMap(int objectAlignment, int lowShift)
+    {
+        this.objectAlignment = objectAlignment;
+        this.logAlignment = log2(objectAlignment);
+        this.lowShift = lowShift;
+        this.lowSize = 1L << lowShift;
+        this.lowMask = lowSize - 1;
+    }
+
+    int getHighBits(long num)
+    {
+        return (int) (num >> (lowShift + logAlignment));
+    }
+
+    int getLowBits(long num)
+    {
+        return (int) ((num >> logAlignment) & lowMask);
+    }
+
     public static void main(String[] args)
     {
         final HexFormat hex = HexFormat.of();
@@ -61,7 +86,8 @@ public class BitMap
         System.out.println(asNumAligned >> lowShift);
     }
 
-    static int log2(int num) {
+    static int log2(int num)
+    {
         return 31 - Integer.numberOfLeadingZeros(num);
     }
 }
