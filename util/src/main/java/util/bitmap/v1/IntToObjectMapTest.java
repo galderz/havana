@@ -2,17 +2,13 @@ package util.bitmap.v1;
 
 import util.Asserts;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.Set;
 import java.util.function.Function;
 
 public class IntToObjectMapTest
@@ -109,31 +105,4 @@ public class IntToObjectMapTest
         }
         return Collections.emptySet();
     }
-
-//    private static Collection<Integer> generateCollisionKeys(int numKeys)
-//    {
-//        final List<Integer> result = new ArrayList<>(numKeys);
-//        final Random r = new Random();
-//        final int key = r.nextInt();
-//        final int targetHash = IntToObjectMap.hash(key);
-//        System.out.println("Target hash: " + targetHash);
-//        int count = 0;
-//        while (count < 1_000_000_000)
-//        {
-//            final int candidate = r.nextInt();
-//            final int hash = IntToObjectMap.hash(candidate);
-//            if (hash == targetHash)
-//            {
-//                System.out.println("Match: " + candidate);
-//                result.add(candidate);
-//                if (result.size() == numKeys)
-//                    return result;
-//            }
-//
-//            count++;
-//        }
-//
-//        System.out.println(result.size());
-//        return Collections.emptyList();
-//    }
 }
