@@ -4,7 +4,7 @@ import util.Asserts;
 
 import java.util.BitSet;
 
-public class IntToBitSetMapTest
+public class IntToObjectMapTest
 {
     public static void main(String[] args)
     {
@@ -15,7 +15,7 @@ public class IntToBitSetMapTest
     private static void testPutGet()
     {
         System.out.println("IntToBitSetMapTest.testPutGet");
-        final IntToBitSetMap map = new IntToBitSetMap();
+        final IntToObjectMap<BitSet> map = new IntToObjectMap<>();
         final int key = 16384;
         final BitSet value = new BitSet(30);
         value.set(542293100);

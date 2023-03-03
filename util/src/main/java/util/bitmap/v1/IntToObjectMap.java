@@ -3,29 +3,29 @@ package util.bitmap.v1;
 import java.util.BitSet;
 import java.util.Objects;
 
-public class IntToBitSetMap
+public class IntToObjectMap<V>
 {
     private final int[] keys;
-    private final BitSet[] values;
+    private final Object[] values;
     private int size;
 
-    IntToBitSetMap()
+    IntToObjectMap()
     {
         this(8);
     }
 
-    IntToBitSetMap(int capacity)
+    IntToObjectMap(int capacity)
     {
         keys = new int[capacity];
         values = new BitSet[capacity];
     }
 
-    BitSet get(int key)
+    V get(int key)
     {
         final int mask = values.length - 1;
         int index = hash(key, mask);
 
-        BitSet value = values[index];
+        Object value = values[index];
         while (Objects.nonNull(value))
         {
             if (keys[index] == key)
@@ -34,15 +34,15 @@ public class IntToBitSetMap
             index = ++index & mask;
         }
 
-        return value;
+        return (V) value;
     }
 
-    void put(int key, BitSet value)
+    void put(int key, V value)
     {
         final int mask = values.length - 1;
         int index = hash(key, mask);
 
-        BitSet prevValue = values[index];
+        Object prevValue = values[index];
         while (Objects.nonNull(prevValue))
         {
             if (keys[index] == key)
