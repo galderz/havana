@@ -32,6 +32,11 @@ public class BitMap
         return Long.signum(number);
     }
 
+    int getHighBits(long number)
+    {
+        return (int) (Math.abs(number) >> (lowBitsCount + logAlignment));
+    }
+
     static int log2(int num)
     {
         return 31 - Integer.numberOfLeadingZeros(num);
