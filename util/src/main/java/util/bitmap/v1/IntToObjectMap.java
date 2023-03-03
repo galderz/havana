@@ -20,6 +20,16 @@ public class IntToObjectMap<V>
         values = new BitSet[capacity];
     }
 
+    int size()
+    {
+        return size;
+    }
+
+    boolean isFull()
+    {
+        return keys.length == size;
+    }
+
     V get(int key)
     {
         final int mask = values.length - 1;

@@ -21,5 +21,7 @@ public class IntToObjectMapTest
         value.set(542293100);
         map.put(key, value);
         assert value.equals(map.get(key));
+        assert 1 == map.size();
+        assert !map.isFull();
     }
 }
