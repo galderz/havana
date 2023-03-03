@@ -2,22 +2,30 @@ package util.bitmap.v1;
 
 import java.util.BitSet;
 import java.util.Objects;
+import java.util.function.Function;
 
 public class IntToObjectMap<V>
 {
     private final int[] keys;
     private final Object[] values;
+    private final Function<Integer, Integer> hashFn;
     private int size;
 
     IntToObjectMap()
     {
-        this(8);
+        this(8, IntToObjectMap::hash);
     }
 
     IntToObjectMap(int capacity)
     {
+        this(capacity, IntToObjectMap::hash);
+    }
+
+    IntToObjectMap(int capacity, Function<Integer, Integer> hashFn)
+    {
         keys = new int[capacity];
         values = new BitSet[capacity];
+        this.hashFn = hashFn;
     }
 
     int size()
@@ -80,8 +88,9 @@ public class IntToObjectMap<V>
         value = (value >>> 16) ^ value;
         return value;
     }
-    private static int hash(int value, int mask)
+
+    private int hash(int value, int mask)
     {
-        return hash(value) & mask;
+        return hashFn.apply(value) & mask;
     }
 }

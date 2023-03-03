@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 
 public class IntToObjectMapTest
 {
@@ -21,6 +22,21 @@ public class IntToObjectMapTest
         Asserts.needEnabledAsserts();
         testPutGet();
         testFullNoCollision();
+        testFullCollision();
+    }
+
+    private static void testFullCollision()
+    {
+        System.out.println("IntToObjectMapTest.testFullCollision");
+        final int capacity = 4;
+        final Function<Integer, Integer> collisionHashFn = x -> 14;
+        final IntToObjectMap<BitSet> map = new IntToObjectMap<>(capacity, collisionHashFn);
+        for (int i = 0; i < capacity; i++)
+        {
+            map.put(i + 1, new BitSet());
+        }
+        assert 4 == map.size();
+        assert map.isFull();
     }
 
     private static void testFullNoCollision()
@@ -69,4 +85,31 @@ public class IntToObjectMapTest
         }
         return Collections.emptySet();
     }
+
+//    private static Collection<Integer> generateCollisionKeys(int numKeys)
+//    {
+//        final List<Integer> result = new ArrayList<>(numKeys);
+//        final Random r = new Random();
+//        final int key = r.nextInt();
+//        final int targetHash = IntToObjectMap.hash(key);
+//        System.out.println("Target hash: " + targetHash);
+//        int count = 0;
+//        while (count < 1_000_000_000)
+//        {
+//            final int candidate = r.nextInt();
+//            final int hash = IntToObjectMap.hash(candidate);
+//            if (hash == targetHash)
+//            {
+//                System.out.println("Match: " + candidate);
+//                result.add(candidate);
+//                if (result.size() == numKeys)
+//                    return result;
+//            }
+//
+//            count++;
+//        }
+//
+//        System.out.println(result.size());
+//        return Collections.emptyList();
+//    }
 }
