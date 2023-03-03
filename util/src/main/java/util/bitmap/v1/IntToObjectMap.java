@@ -84,7 +84,6 @@ public class IntToObjectMap<V>
     }
 
     // From https://stackoverflow.com/questions/664014/what-integer-hash-function-are-good-that-accepts-an-integer-hash-key
-
     static int hash(int value)
     {
         value = ((value >>> 16) ^ value) * 0x45d9f3b;
