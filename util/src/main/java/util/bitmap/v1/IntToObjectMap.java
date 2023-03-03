@@ -71,17 +71,17 @@ public class IntToObjectMap<V>
         values[index] = value;
     }
 
-    int hash(int value, int mask)
-    {
-        return hash(value) & mask;
-    }
-
     // From https://stackoverflow.com/questions/664014/what-integer-hash-function-are-good-that-accepts-an-integer-hash-key
-    int hash(int value)
+
+    static int hash(int value)
     {
         value = ((value >>> 16) ^ value) * 0x45d9f3b;
         value = ((value >>> 16) ^ value) * 0x45d9f3b;
         value = (value >>> 16) ^ value;
         return value;
+    }
+    private static int hash(int value, int mask)
+    {
+        return hash(value) & mask;
     }
 }
