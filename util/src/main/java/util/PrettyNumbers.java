@@ -1,10 +1,11 @@
 package util;
 
+import java.math.BigInteger;
 import java.util.HexFormat;
 
 public class PrettyNumbers
 {
-    static void show(long number)
+    static void showLong(long number)
     {
         final HexFormat hex = HexFormat.of();
         final String asHex = hex.toHexDigits(number);
@@ -13,11 +14,17 @@ public class PrettyNumbers
         System.out.printf("Hex:%n%s%n", asHex);
         System.out.println("Binary:");
         System.out.println(asHex.replaceAll("(.{1})", "    $1"));
-        System.out.printf(" %s", asBinary.replaceAll("(.{4})", "$1 "));
+        System.out.printf(" %s%n", asBinary.replaceAll("(.{4})", "$1 "));
+    }
+
+    static void showHex(String hexNumber)
+    {
+        showLong(new BigInteger(hexNumber, 16).longValue());
     }
 
     public static void main(String[] args)
     {
-        show(281479315055456L);
+        showLong(281479315055456L);
+        showHex("800100010295e360");
     }
 }
