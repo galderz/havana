@@ -23,6 +23,27 @@ public class IntToObjectMapTest
         testPutGet();
         testFullNoCollision();
         testFullCollision();
+        testOverflow();
+    }
+
+    private static void testOverflow()
+    {
+        System.out.println("IntToObjectMapTest.testOverflow");
+        final int capacity = 4;
+        final IntToObjectMap<BitSet> map = new IntToObjectMap<>(capacity);
+        for (int i = 0; i < capacity + 1; i++)
+        {
+            final int key = i + 1;
+            final boolean success = map.put(key, new BitSet());
+            if (i == capacity)
+            {
+                assert !success;
+            }
+            else
+            {
+                assert success;
+            }
+        }
     }
 
     private static void testFullCollision()
@@ -33,7 +54,8 @@ public class IntToObjectMapTest
         final IntToObjectMap<BitSet> map = new IntToObjectMap<>(capacity, collisionHashFn);
         for (int i = 0; i < capacity; i++)
         {
-            map.put(i + 1, new BitSet());
+            final boolean success = map.put(i + 1, new BitSet());
+            assert success;
         }
         assert 4 == map.size();
         assert map.isFull();
@@ -50,7 +72,8 @@ public class IntToObjectMapTest
         for (int i = 0; i < capacity; i++)
         {
             final int key = new Random().nextInt();
-            map.put(key, new BitSet());
+            final boolean success = map.put(key, new BitSet());
+            assert success;
         }
         assert 4 == map.size();
         assert map.isFull();
@@ -63,7 +86,8 @@ public class IntToObjectMapTest
         final int key = 16384;
         final BitSet value = new BitSet(30);
         value.set(542293100);
-        map.put(key, value);
+        final boolean success = map.put(key, value);
+        assert success;
         assert value.equals(map.get(key));
         assert 1 == map.size();
         assert !map.isFull();

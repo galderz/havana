@@ -55,8 +55,11 @@ public class IntToObjectMap<V>
         return (V) value;
     }
 
-    void put(int key, V value)
+    boolean put(int key, V value)
     {
+        if (isFull())
+            return false;
+
         final int mask = values.length - 1;
         int index = hash(key, mask);
 
@@ -77,6 +80,7 @@ public class IntToObjectMap<V>
         }
 
         values[index] = value;
+        return true;
     }
 
     // From https://stackoverflow.com/questions/664014/what-integer-hash-function-are-good-that-accepts-an-integer-hash-key
