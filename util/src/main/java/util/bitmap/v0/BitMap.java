@@ -1,6 +1,7 @@
 package util.bitmap.v0;
 
 import java.math.BigInteger;
+import java.util.BitSet;
 import java.util.HexFormat;
 
 //  0                   1                   2                   3                   4                   5                   6
@@ -15,6 +16,7 @@ public class BitMap
     final int lowShift;
     final long lowSize;
     final long lowMask;
+    final BitSet[] bitSets;
 
     public BitMap()
     {
@@ -28,6 +30,25 @@ public class BitMap
         this.lowShift = lowShift;
         this.lowSize = 1L << lowShift;
         this.lowMask = lowSize - 1;
+        this.bitSets = new BitSet[1 << (64 - this.lowShift - this.logAlignment - 1)];
+        for (int i = 0; i < this.bitSets.length; i++)
+        {
+            this.bitSets[i] = new BitSet(1 << this.lowShift - 1);
+        }
+    }
+
+    void mark(long num)
+    {
+        final int high = getHighBits(num);
+        final int low = getLowBits(num);
+        this.bitSets[high].set(low);
+    }
+
+    boolean isMarked(long num)
+    {
+        final int high = getHighBits(num);
+        final int low = getLowBits(num);
+        return this.bitSets[high].get(low);
     }
 
     int getHighBits(long num)
@@ -94,6 +115,13 @@ public class BitMap
         long highShift = 64 - lowShift - logAlignment;
         System.out.println(highShift);
         System.out.println(asNumAligned >> lowShift);
+
+        System.out.println(1 << 30);
+        System.out.println(1 << 31);
+
+        System.out.println(1 << 3);
+        System.out.println(Integer.toBinaryString(1 << 3));
+        System.out.println(Integer.toBinaryString((1 << 3) - 1));
     }
 
     static int log2(int num)

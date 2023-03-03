@@ -4,7 +4,6 @@ import util.Asserts;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.HexFormat;
 
 public class BitMapTest
@@ -14,6 +13,16 @@ public class BitMapTest
         Asserts.needEnabledAsserts();
         testHighBits();
         testLowBits();
+        testMarkSingle();
+    }
+
+    private static void testMarkSingle()
+    {
+        System.out.println("BitMapTest.testMarkSingle");
+        long num = 281479315055456L;
+        final BitMap bitMap = new BitMap();
+        bitMap.mark(num);
+        assert bitMap.isMarked(num);
     }
 
     private static void testHighBits()
