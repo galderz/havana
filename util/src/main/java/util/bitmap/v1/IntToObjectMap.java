@@ -1,6 +1,5 @@
 package util.bitmap.v1;
 
-import java.util.BitSet;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -24,7 +23,7 @@ public class IntToObjectMap<V>
     IntToObjectMap(int capacity, Function<Integer, Integer> hashFn)
     {
         keys = new int[capacity];
-        values = new BitSet[capacity];
+        values = new Object[capacity];
         this.hashFn = hashFn;
     }
 
