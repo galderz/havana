@@ -25,6 +25,7 @@ public class BitSets
         int count = 0;
         for (int i = bitSet.nextSetBit(0); i >= 0; i = bitSet.nextSetBit(i + 1)) {
             count++;
+            assert bitSet.get(i);
         }
         assert numberOfBits == count;
     }
@@ -42,5 +43,6 @@ public class BitSets
         }
         assert 1 == indexes.size();
         assert index == indexes.get(0);
+        assert bitSet.get(indexes.get(0));
     }
 }
