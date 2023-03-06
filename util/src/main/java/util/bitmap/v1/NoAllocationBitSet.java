@@ -65,6 +65,15 @@ class NoAllocationBitSet
         }
     }
 
+    boolean get(int bitIndex)
+    {
+        assert bitIndex >= 0 : "bit index can't be negative";
+
+        int wordIndex = wordIndex(bitIndex);
+        return (wordIndex < wordsInUse)
+            && ((words[wordIndex] & (1L << bitIndex)) != 0);
+    }
+
     private static int wordIndex(int bitIndex)
     {
         return bitIndex >> ADDRESS_BITS_PER_WORD;
