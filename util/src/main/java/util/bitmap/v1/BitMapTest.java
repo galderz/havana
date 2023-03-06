@@ -2,8 +2,6 @@ package util.bitmap.v1;
 
 import util.Asserts;
 
-import java.util.HexFormat;
-
 public class BitMapTest
 {
     public static void main(String[] args)
@@ -11,6 +9,14 @@ public class BitMapTest
         Asserts.needEnabledAsserts();
         testSign();
         testHighBits();
+        testLowBits();
+    }
+
+    private static void testLowBits()
+    {
+        System.out.println("BitMapTest.testLowBits");
+        final BitMap bitMap = new BitMap();
+        assert 542293100 == bitMap.getLowBits(281479315055456L);
     }
 
     private static void testHighBits()

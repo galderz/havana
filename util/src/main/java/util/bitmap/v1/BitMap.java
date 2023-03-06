@@ -11,20 +11,24 @@ public class BitMap
 {
     final int objectAlignment;
     final int logAlignment;
-    final int highBitsCount;
     final int lowBitsCount;
+    final long lowSize;
+    final long lowMask;
+    final int highBitsShift;
 
     public BitMap()
     {
-        this(8, 30, 30);
+        this(8);
     }
 
-    public BitMap(int objectAlignment, int highBitsCount, int lowBitsCount)
+    public BitMap(int objectAlignment)
     {
         this.objectAlignment = objectAlignment;
         this.logAlignment = log2(objectAlignment);
-        this.highBitsCount = highBitsCount;
-        this.lowBitsCount = lowBitsCount;
+        this.lowBitsCount = 30;
+        this.lowSize = 1L << lowBitsCount;
+        this.lowMask = lowSize - 1;
+        this.highBitsShift = lowBitsCount + logAlignment;
     }
 
     int getSignum(long number)
@@ -32,9 +36,14 @@ public class BitMap
         return Long.signum(number);
     }
 
+    int getLowBits(long num)
+    {
+        return (int) ((num >> logAlignment) & lowMask);
+    }
+
     int getHighBits(long number)
     {
-        return (int) (Math.abs(number) >> (lowBitsCount + logAlignment));
+        return (int) (Math.abs(number) >> (highBitsShift));
     }
 
     static int log2(int num)
