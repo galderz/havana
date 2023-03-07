@@ -5,7 +5,7 @@ import util.Asserts;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NoAllocationBitSetTest
+public class NoAllocFixedBitSetTest
 {
     public static void main(String[] args)
     {
@@ -16,9 +16,9 @@ public class NoAllocationBitSetTest
 
     private static void testSetAll()
     {
-        System.out.println("NoAllocationBitSetTest.testSetAll");
+        System.out.println("NoAllocFixedBitSetTest.testSetAll");
         final int numberOfBits = 1 << 30;
-        final NoAllocationBitSet bitSet = new NoAllocationBitSet(numberOfBits);
+        final NoAllocFixedBitSet bitSet = new NoAllocFixedBitSet(numberOfBits);
         for (int i = 0; i < numberOfBits; i++)
         {
             final boolean success = bitSet.set(i);
@@ -34,8 +34,8 @@ public class NoAllocationBitSetTest
 
     private static void testSetSingle()
     {
-        System.out.println("NoAllocationBitSetTest.testSetSingle");
-        final NoAllocationBitSet bitSet = new NoAllocationBitSet(1 << 30);
+        System.out.println("NoAllocFixedBitSetTest.testSetSingle");
+        final NoAllocFixedBitSet bitSet = new NoAllocFixedBitSet(1 << 30);
         final int index = 32768;
         bitSet.set(index);
         final List<Integer> indexes = new ArrayList<>();

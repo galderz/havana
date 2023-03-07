@@ -3,7 +3,7 @@ package util.bitmap.v1;
 /**
  * A fixed-size, allocation free, bit set.
  */
-class NoAllocationBitSet
+class NoAllocFixedBitSet
 {
     static final int ADDRESS_BITS_PER_WORD = 6;
     static final long WORD_MASK = 0xffffffffffffffffL;
@@ -11,7 +11,7 @@ class NoAllocationBitSet
     final long[] words;
     int wordsInUse = 0;
 
-    NoAllocationBitSet(int numberOfBits)
+    NoAllocFixedBitSet(int numberOfBits)
     {
         words = new long[wordIndex(numberOfBits - 1) + 1];
     }
