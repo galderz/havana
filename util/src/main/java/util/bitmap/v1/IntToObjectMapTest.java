@@ -20,6 +20,17 @@ public class IntToObjectMapTest
         testFullNoCollision();
         testFullCollision();
         testOverflow();
+        testVerySmallCapacity();
+    }
+
+    private static void testVerySmallCapacity()
+    {
+        System.out.println("IntToObjectMapTest.testVerySmallCapacity");
+        final int capacity = 1;
+        final IntToObjectMap<BitSet> map = new IntToObjectMap<>(capacity);
+        final BitSet value = new BitSet();
+        map.put(0, value);
+        assert null == map.get(32768);
     }
 
     private static void testOverflow()

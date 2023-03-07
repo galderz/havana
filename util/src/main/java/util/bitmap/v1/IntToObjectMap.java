@@ -3,8 +3,13 @@ package util.bitmap.v1;
 import java.util.Objects;
 import java.util.function.Function;
 
+/**
+ * Allocation free, fixed size, int to object map.
+ */
 public class IntToObjectMap<V>
 {
+    private static final int MIN_CAPACITY = 4;
+
     private final int[] keys;
     private final Object[] values;
     private final Function<Integer, Integer> hashFn;
@@ -20,8 +25,9 @@ public class IntToObjectMap<V>
         this(capacity, IntToObjectMap::hash);
     }
 
-    IntToObjectMap(int capacity, Function<Integer, Integer> hashFn)
+    IntToObjectMap(int initialCapacity, Function<Integer, Integer> hashFn)
     {
+        int capacity = findNextPositivePowerOfTwo(Math.max(initialCapacity, MIN_CAPACITY));
         keys = new int[capacity];
         values = new Object[capacity];
         this.hashFn = hashFn;
@@ -94,5 +100,9 @@ public class IntToObjectMap<V>
     private int hash(int value, int mask)
     {
         return hashFn.apply(value) & mask;
+    }
+
+    private static int findNextPositivePowerOfTwo(final int value) {
+        return 1 << (32 - Integer.numberOfLeadingZeros(value - 1));
     }
 }
