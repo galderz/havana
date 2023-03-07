@@ -6,7 +6,7 @@ import java.util.function.Function;
 /**
  * Allocation free, fixed size, int to object map.
  */
-public class IntToObjectMap<V>
+public class NoAllocFixedIntToObjectMap<V>
 {
     private static final int MIN_CAPACITY = 4;
 
@@ -15,17 +15,17 @@ public class IntToObjectMap<V>
     private final Function<Integer, Integer> hashFn;
     private int size;
 
-    IntToObjectMap()
+    NoAllocFixedIntToObjectMap()
     {
-        this(8, IntToObjectMap::hash);
+        this(8, NoAllocFixedIntToObjectMap::hash);
     }
 
-    IntToObjectMap(int capacity)
+    NoAllocFixedIntToObjectMap(int capacity)
     {
-        this(capacity, IntToObjectMap::hash);
+        this(capacity, NoAllocFixedIntToObjectMap::hash);
     }
 
-    IntToObjectMap(int initialCapacity, Function<Integer, Integer> hashFn)
+    NoAllocFixedIntToObjectMap(int initialCapacity, Function<Integer, Integer> hashFn)
     {
         int capacity = findNextPositivePowerOfTwo(Math.max(initialCapacity, MIN_CAPACITY));
         keys = new int[capacity];

@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.function.Function;
 
-public class IntToObjectMapTest
+public class NoAllocFixedIntToObjectMapTest
 {
     public static void main(String[] args)
     {
@@ -25,9 +25,9 @@ public class IntToObjectMapTest
 
     private static void testVerySmallCapacity()
     {
-        System.out.println("IntToObjectMapTest.testVerySmallCapacity");
+        System.out.println("NoAllocFixedIntToObjectMapTest.testVerySmallCapacity");
         final int capacity = 1;
-        final IntToObjectMap<BitSet> map = new IntToObjectMap<>(capacity);
+        final NoAllocFixedIntToObjectMap<BitSet> map = new NoAllocFixedIntToObjectMap<>(capacity);
         final BitSet value = new BitSet();
         map.put(0, value);
         assert null == map.get(32768);
@@ -35,9 +35,9 @@ public class IntToObjectMapTest
 
     private static void testOverflow()
     {
-        System.out.println("IntToObjectMapTest.testOverflow");
+        System.out.println("NoAllocFixedIntToObjectMapTest.testOverflow");
         final int capacity = 4;
-        final IntToObjectMap<BitSet> map = new IntToObjectMap<>(capacity);
+        final NoAllocFixedIntToObjectMap<BitSet> map = new NoAllocFixedIntToObjectMap<>(capacity);
         for (int i = 0; i < capacity + 1; i++)
         {
             final int key = i + 1;
@@ -55,10 +55,10 @@ public class IntToObjectMapTest
 
     private static void testFullCollision()
     {
-        System.out.println("IntToObjectMapTest.testFullCollision");
+        System.out.println("NoAllocFixedIntToObjectMapTest.testFullCollision");
         final int capacity = 4;
         final Function<Integer, Integer> collisionHashFn = x -> 14;
-        final IntToObjectMap<BitSet> map = new IntToObjectMap<>(capacity, collisionHashFn);
+        final NoAllocFixedIntToObjectMap<BitSet> map = new NoAllocFixedIntToObjectMap<>(capacity, collisionHashFn);
         for (int i = 0; i < capacity; i++)
         {
             final boolean success = map.put(i + 1, new BitSet());
@@ -70,12 +70,12 @@ public class IntToObjectMapTest
 
     private static void testFullNoCollision()
     {
-        System.out.println("IntToObjectMapTest.testFullNoCollision");
+        System.out.println("NoAllocFixedIntToObjectMapTest.testFullNoCollision");
         final int capacity = 4;
         Collection<Integer> keys = generateNoCollisionKeys(capacity);
         assert keys.size() == 4;
 
-        final IntToObjectMap<BitSet> map = new IntToObjectMap<>(capacity);
+        final NoAllocFixedIntToObjectMap<BitSet> map = new NoAllocFixedIntToObjectMap<>(capacity);
         for (int i = 0; i < capacity; i++)
         {
             final int key = new Random().nextInt();
@@ -88,8 +88,8 @@ public class IntToObjectMapTest
 
     private static void testPutGet()
     {
-        System.out.println("IntToBitSetMapTest.testPutGet");
-        final IntToObjectMap<BitSet> map = new IntToObjectMap<>();
+        System.out.println("NoAllocFixedIntToObjectMapTest.testPutGet");
+        final NoAllocFixedIntToObjectMap<BitSet> map = new NoAllocFixedIntToObjectMap<>();
         final int key = 16384;
         final BitSet value = new BitSet(30);
         value.set(542293100);
@@ -108,7 +108,7 @@ public class IntToObjectMapTest
         while (count < 10_000)
         {
             final int candidate = r.nextInt();
-            final int hash = IntToObjectMap.hash(candidate);
+            final int hash = NoAllocFixedIntToObjectMap.hash(candidate);
             if (Objects.isNull(hashToKeys.putIfAbsent(hash, candidate)) && numKeys == hashToKeys.size())
                 return hashToKeys.values();
 
