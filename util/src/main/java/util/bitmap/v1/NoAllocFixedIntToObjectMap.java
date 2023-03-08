@@ -49,12 +49,13 @@ public class NoAllocFixedIntToObjectMap<V>
         int index = hash(key, mask);
 
         Object value = values[index];
-        while (Objects.nonNull(value))
+        while (value != null)
         {
             if (keys[index] == key)
                 break;
 
             index = ++index & mask;
+            value = values[index];
         }
 
         return (V) value;
@@ -69,7 +70,7 @@ public class NoAllocFixedIntToObjectMap<V>
         int index = hash(key, mask);
 
         Object prevValue = values[index];
-        while (Objects.nonNull(prevValue))
+        while (prevValue != null)
         {
             if (keys[index] == key)
                 break;
