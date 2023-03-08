@@ -5,7 +5,7 @@ import java.util.HexFormat;
 
 public class PrettyNumbers
 {
-    static void showLong(long number)
+    public static void showLong(long number)
     {
         final HexFormat hex = HexFormat.of();
         final String asHex = hex.toHexDigits(number);
@@ -17,7 +17,7 @@ public class PrettyNumbers
         System.out.printf(" %s%n", asBinary.replaceAll("(.{4})", "$1 "));
     }
 
-    static void showHex(String hexNumber)
+    public static void showHex(String hexNumber)
     {
         showLong(new BigInteger(hexNumber, 16).longValue());
     }
