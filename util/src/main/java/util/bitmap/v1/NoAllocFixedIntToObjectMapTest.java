@@ -21,6 +21,19 @@ public class NoAllocFixedIntToObjectMapTest
         testFullCollision();
         testOverflow();
         testVerySmallCapacity();
+        testZeroAndOne();
+    }
+
+    private static void testZeroAndOne()
+    {
+        System.out.println("NoAllocFixedIntToObjectMapTest.testZeroAndOne");
+        final NoAllocFixedIntToObjectMap<BitSet> map = new NoAllocFixedIntToObjectMap<>();
+        final BitSet zeroBitSet = new BitSet();
+        map.put(0, zeroBitSet);
+        assert zeroBitSet == map.get(0);
+        final BitSet oneBitSet = new BitSet();
+        map.put(1, oneBitSet);
+        assert oneBitSet == map.get(1);
     }
 
     private static void testVerySmallCapacity()
