@@ -27,5 +27,7 @@ public class PrettyNumbers
         showLong(281479315055456L);
         showHex("800100010295e360");
         showLong(32768);
+        showHex("000000010295e360");
+        showLong(1 << 14);
     }
 }
