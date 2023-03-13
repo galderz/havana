@@ -21,7 +21,7 @@ public class PathStoreTest
     {
         System.out.println("PathStoreTest.testMultiLinkPath");
         final PathStore store = new PathStore(1);
-        final int depth = 11;
+        final int depth = 4;
         final String leak = "B";
         store.addPathLeaf(0, leak);
         for (int i = 0; i < depth - 1; i++)
@@ -31,6 +31,12 @@ public class PathStoreTest
 
         Map<String, List<Path>> paths = collectPaths(store, List.of(leak));
         assert depth == paths.get(leak).size();
+        assert List.of(
+            new Path("B", "")
+            , new Path("A2", "field2")
+            , new Path("A1", "field1")
+            , new Path("A0", "field0")
+        ).equals(paths.get(leak));
     }
 
     private static void testSingleLinkPath()
