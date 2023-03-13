@@ -17,7 +17,7 @@ final class UnsignedWord
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UnsignedWord that = (UnsignedWord) o;
-        return Objects.equals(fieldName, that.fieldName);
+        return fieldName.equals(that.fieldName);
     }
 
     @Override
