@@ -14,6 +14,23 @@ public class PathStoreTest
     {
         Asserts.needEnabledAsserts();
         testSingleLinkPath();
+        testMultiLinkPath();
+    }
+
+    private static void testMultiLinkPath()
+    {
+        System.out.println("PathStoreTest.testMultiLinkPath");
+        final PathStore store = new PathStore(1);
+        final int depth = 11;
+        final String leak = "B";
+        store.addPathLeaf(0, leak);
+        for (int i = 0; i < depth - 1; i++)
+        {
+            store.addPathElement(0, new UnsignedWord("field" + i), "A" + i, depth - 1 - i);
+        }
+
+        Map<String, List<Path>> paths = collectPaths(store, List.of(leak));
+        assert depth == paths.get(leak).size();
     }
 
     private static void testSingleLinkPath()
@@ -26,7 +43,6 @@ public class PathStoreTest
         store.addPathElement(0, new UnsignedWord("fieldB"), gcRoot, 1);
 
         Map<String, List<Path>> paths = collectPaths(store, List.of(leak));
-
         assert 1 == paths.size();
         assert List.of(
             new Path("B", "")
