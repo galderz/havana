@@ -3,38 +3,61 @@ package util.bitmap.v1;
 final class PathStore
 {
     // [0..99]    leak context
-    // [100]      skip index
-    // [101..200] root context
+    // [100..199] root context
 
-    private static final int LEAK_CONTEXT = 100;
-    private static final int ROOT_CONTEXT = 100;
-    private static final int MAX_REF_CHAIN_DEPTH = LEAK_CONTEXT + ROOT_CONTEXT;
-    private static final int SKIP_INDEX = LEAK_CONTEXT;
+    private static final int DEFAULT_LEAK_CONTEXT = 100;
+    private static final int DEFAULT_ROOT_CONTEXT = 100;
 
     private final Object[][] paths;
     private final UnsignedWord[][] locations;
+    private final int rootContext;
+    private final int leakContext;
+    private final int maxRefChainDepth;
+    private int rootContextIndex;
 
     public PathStore(int capacity)
     {
+        this(capacity, DEFAULT_LEAK_CONTEXT, DEFAULT_ROOT_CONTEXT);
+    }
+
+    public PathStore(int capacity, int leakContext, int rootContext)
+    {
+        this.leakContext = leakContext;
+        this.rootContext = rootContext;
+        this.maxRefChainDepth = leakContext + rootContext;
+        this.rootContextIndex = rootContext;
+
         paths = new Object[capacity][];
         locations = new UnsignedWord[capacity][];
         for (int i = 0; i < paths.length; i++)
         {
-            paths[i] = new Object[MAX_REF_CHAIN_DEPTH + 1];
+            paths[i] = new Object[maxRefChainDepth];
         }
         for (int i = 0; i < locations.length; i++)
         {
-            locations[i] = new UnsignedWord[MAX_REF_CHAIN_DEPTH + 1];
+            locations[i] = new UnsignedWord[maxRefChainDepth];
         }
     }
 
-    void addPathLeaf(int pathIndex, Object leaf)
+    void addPathElement(int elementIndex, UnsignedWord location, Object from, int pathIndex)
     {
-        paths[pathIndex][0] = leaf;
-        locations[pathIndex][0] = new UnsignedWord("");
+        if (elementIndex <= maxRefChainDepth - 1)
+        {
+            set(pathIndex, location, from, elementIndex);
+            if (elementIndex >= leakContext)
+            {
+                rootContextIndex = elementIndex;
+            }
+        }
+        else
+        {
+            int writeElementIndex = leakContext + (elementIndex % rootContext);
+            set(pathIndex, location, from, writeElementIndex);
+            rootContextIndex = writeElementIndex + 1;
+        }
     }
 
-    void addPathElement(int pathIndex, UnsignedWord location, Object from, int elementIndex)
+    private void set(int pathIndex, UnsignedWord location, Object from, int elementIndex)
     {
         paths[pathIndex][elementIndex] = from;
         locations[pathIndex][elementIndex] = location;
@@ -53,11 +76,24 @@ final class PathStore
 
     public Object getElement(int elementIndex, int pathIndex)
     {
-        return paths[pathIndex][elementIndex];
+        if (elementIndex < maxRefChainDepth)
+        {
+            return paths[pathIndex][getReadElementIndex(elementIndex)];
+        }
+        return null;
     }
 
     public UnsignedWord getElementLocation(int elementIndex, int pathIndex)
     {
-        return locations[pathIndex][elementIndex];
+        return locations[pathIndex][getReadElementIndex(elementIndex)];
+    }
+
+    private int getReadElementIndex(int elementIndex)
+    {
+        if (elementIndex >= rootContextIndex)
+        {
+            return leakContext + (elementIndex % rootContext);
+        }
+        return elementIndex;
     }
 }
