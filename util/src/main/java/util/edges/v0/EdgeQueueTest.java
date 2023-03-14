@@ -14,6 +14,19 @@ public class EdgeQueueTest
         testPushBeyondFull();
         testIterate();
         testClear();
+        testFindTo();
+    }
+
+    private static void testFindTo()
+    {
+        System.out.println("EdgeQueueTest.testFindTo");
+        final int capacity = 4;
+        final EdgeQueue queue = new EdgeQueue(capacity);
+        IntStream.range(0, capacity).forEach(i -> queue.push(String.valueOf(i), i, String.valueOf(i)));
+        assert 0 == queue.findTo("0");
+        assert 1 == queue.findTo("1");
+        assert 2 == queue.findTo("2");
+        assert 3 == queue.findTo("3");
     }
 
     private static void testClear()

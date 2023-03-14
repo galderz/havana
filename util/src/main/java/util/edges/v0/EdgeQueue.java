@@ -46,6 +46,18 @@ final class EdgeQueue
         return edges[index][TO_SLOT];
     }
 
+    int findTo(Object target)
+    {
+        for (int i = 0; i < edges.length; i++)
+        {
+            final Object to = getTo(i);
+            if (target.equals(to)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     void clear() {
         count = 0;
     }
