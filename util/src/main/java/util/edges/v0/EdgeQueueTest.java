@@ -31,6 +31,7 @@ public class EdgeQueueTest
 
     private static void testClear()
     {
+        System.out.println("EdgeQueueTest.testClear");
         final int capacity = 4;
         final EdgeQueue queue = new EdgeQueue(capacity);
 
