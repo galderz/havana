@@ -47,6 +47,7 @@ public class PathStoreTest
             , new Path("A12", "field12")
             , new Path("A13", "field13")
         ).equals(pathB) : pathB;
+        assert "A13".equals(store.getRoot(0));
 
         List<Path> pathZ = collectPaths(store, List.of("Z"), 1).get("Z");
         assert 10 == pathZ.size() : pathZ.size();
@@ -62,6 +63,7 @@ public class PathStoreTest
             , new Path("Y11", "field11")
             , new Path("Y12", "field12")
         ).equals(pathZ) : pathZ;
+        assert "Y12".equals(store.getRoot(1));
     }
 
     private static void testRootContextDepthPlusTwo()
