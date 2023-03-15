@@ -23,47 +23,46 @@ public class PathStoreTest
         testLeakContextDepth();
         testLeakContextDepthPlusOne();
         testLongPath();
-//        testMultiLongPaths();
+        testMultiLongPaths();
     }
 
+    private static void testMultiLongPaths()
+    {
+        System.out.println("PathStoreTest.testMultiLongPaths");
+        final PathStore store = new PathStore(2, 5, 5);
+        addPaths(store, 14, "B", 0, "A");
+        addPaths(store, 13, "Z", 1, "Y");
 
-//    private static void testMultiLongPaths()
-//    {
-//        System.out.println("PathStoreTest.testMultiLongPaths");
-//        final PathStore store = new PathStore(2, 5, 5);
-//        addPaths(store, 14, "B", 0, "A");
-//        addPaths(store, 13, "Z", 1, "Y");
-//
-//        List<Path> pathB = collectPaths(store, List.of("B"), 0).get("B");
-//        assert 10 == pathB.size() : pathB.size();
-//        assert List.of(
-//            new Path("B", "")
-//            , new Path("A1", "field1")
-//            , new Path("A2", "field2")
-//            , new Path("A3", "field3")
-//            , new Path("A4", "field4")
-//            , new Path("A15", "field15")
-//            , new Path("A16", "field16")
-//            , new Path("A17", "field17")
-//            , new Path("A18", "field18")
-//            , new Path("A19", "field19")
-//        ).equals(pathB) : pathB;
-//
-//        List<Path> pathZ = collectPaths(store, List.of("Z"), 1).get("Z");
-//        assert 10 == pathZ.size() : pathZ.size();
-//        assert List.of(
-//            new Path("Z", "")
-//            , new Path("Y1", "field1")
-//            , new Path("Y2", "field2")
-//            , new Path("Y3", "field3")
-//            , new Path("Y4", "field4")
-//            , new Path("Y10", "field10")
-//            , new Path("Y11", "field11")
-//            , new Path("Y12", "field12")
-//            , new Path("Y13", "field13")
-//            , new Path("Y14", "field14")
-//        ).equals(pathZ) : pathZ;
-//    }
+        List<Path> pathB = collectPaths(store, List.of("B"), 0).get("B");
+        assert 10 == pathB.size() : pathB.size();
+        assert List.of(
+            new Path("B", "")
+            , new Path("A1", "field1")
+            , new Path("A2", "field2")
+            , new Path("A3", "field3")
+            , new Path("A4", "field4")
+            , new Path("A9", "field9")
+            , new Path("A10", "field10")
+            , new Path("A11", "field11")
+            , new Path("A12", "field12")
+            , new Path("A13", "field13")
+        ).equals(pathB) : pathB;
+
+        List<Path> pathZ = collectPaths(store, List.of("Z"), 1).get("Z");
+        assert 10 == pathZ.size() : pathZ.size();
+        assert List.of(
+            new Path("Z", "")
+            , new Path("Y1", "field1")
+            , new Path("Y2", "field2")
+            , new Path("Y3", "field3")
+            , new Path("Y4", "field4")
+            , new Path("Y8", "field8")
+            , new Path("Y9", "field9")
+            , new Path("Y10", "field10")
+            , new Path("Y11", "field11")
+            , new Path("Y12", "field12")
+        ).equals(pathZ) : pathZ;
+    }
 
     private static void testRootContextDepthPlusTwo()
     {
