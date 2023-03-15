@@ -19,10 +19,10 @@ public class PathStoreTest
         testRootContextDepth();
         testRootContextDepthPlusOne();
         testRootContextDepthPlusTwo();
+        testLeakContextDepthMinusOne();
+        testLeakContextDepth();
+        testLeakContextDepthPlusOne();
 //        testLongPath();
-//        testLeakContextDepthMinusOne();
-//        testLeakContextDepth();
-//        testLeakContextDepthPlusOne();
 //        testMultiLongPaths();
     }
 
@@ -177,6 +177,7 @@ public class PathStoreTest
             , new Path("A4", "field4")
             , new Path("A5", "field5")
         ).equals(path) : path;
+        assert "A5".equals(store.getRoot(0));
     }
 
     private static void testLeakContextDepth()
@@ -195,6 +196,7 @@ public class PathStoreTest
             , new Path("A3", "field3")
             , new Path("A4", "field4")
         ).equals(path) : path;
+        assert "A4".equals(store.getRoot(0));
     }
 
     private static void testLeakContextDepthMinusOne()
@@ -212,6 +214,7 @@ public class PathStoreTest
             , new Path("A2", "field2")
             , new Path("A3", "field3")
         ).equals(path) : path;
+        assert "A3".equals(store.getRoot(0));
     }
 
     private static void testLongPath()
