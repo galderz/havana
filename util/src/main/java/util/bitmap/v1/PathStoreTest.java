@@ -22,7 +22,7 @@ public class PathStoreTest
         testLeakContextDepthMinusOne();
         testLeakContextDepth();
         testLeakContextDepthPlusOne();
-//        testLongPath();
+        testLongPath();
 //        testMultiLongPaths();
     }
 
@@ -222,7 +222,7 @@ public class PathStoreTest
         System.out.println("PathStoreTest.testLongPath");
         final PathStore store = new PathStore(1, 5, 5);
         final String leak = "B";
-        addPaths(store, 20, leak, 0, "A");
+        addPaths(store, 30, leak, 0, "A");
 
         List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 10 == path.size() : path.size();
@@ -232,12 +232,13 @@ public class PathStoreTest
             , new Path("A2", "field2")
             , new Path("A3", "field3")
             , new Path("A4", "field4")
-            , new Path("A15", "field15")
-            , new Path("A16", "field16")
-            , new Path("A17", "field17")
-            , new Path("A18", "field18")
-            , new Path("A19", "field19")
+            , new Path("A25", "field25")
+            , new Path("A26", "field26")
+            , new Path("A27", "field27")
+            , new Path("A28", "field28")
+            , new Path("A29", "field29")
         ).equals(path) : path;
+        assert "A29".equals(store.getRoot(0));
     }
 
     private static void testMultiLinkPath()
