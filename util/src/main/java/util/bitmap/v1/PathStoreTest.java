@@ -18,6 +18,7 @@ public class PathStoreTest
         testRootContextDepthMinusOne();
         testRootContextDepth();
         testRootContextDepthPlusOne();
+        testRootContextDepthPlusTwo();
 //        testLongPath();
 //        testLeakContextDepthMinusOne();
 //        testLeakContextDepth();
@@ -30,8 +31,8 @@ public class PathStoreTest
 //    {
 //        System.out.println("PathStoreTest.testMultiLongPaths");
 //        final PathStore store = new PathStore(2, 5, 5);
-//        addPaths(store, 20, "B", 0, "A");
-//        addPaths(store, 12, "Z", 1, "Y");
+//        addPaths(store, 14, "B", 0, "A");
+//        addPaths(store, 13, "Z", 1, "Y");
 //
 //        List<Path> pathB = collectPaths(store, List.of("B"), 0).get("B");
 //        assert 10 == pathB.size() : pathB.size();
@@ -63,6 +64,30 @@ public class PathStoreTest
 //            , new Path("Y14", "field14")
 //        ).equals(pathZ) : pathZ;
 //    }
+
+    private static void testRootContextDepthPlusTwo()
+    {
+        System.out.println("PathStoreTest.testRootContextDepthPlusTwo");
+        final PathStore store = new PathStore(1, 5, 5);
+        final String leak = "B";
+        addPaths(store, 12, leak, 0, "A");
+
+        List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
+        assert 10 == path.size() : path.size();
+        assert List.of(
+            new Path("B", "")
+            , new Path("A1", "field1")
+            , new Path("A2", "field2")
+            , new Path("A3", "field3")
+            , new Path("A4", "field4")
+            , new Path("A7", "field7")
+            , new Path("A8", "field8")
+            , new Path("A9", "field9")
+            , new Path("A10", "field10")
+            , new Path("A11", "field11")
+        ).equals(path) : path;
+        assert "A11".equals(store.getRoot(0));
+    }
 
     private static void testRootContextDepthPlusOne()
     {
