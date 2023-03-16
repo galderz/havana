@@ -62,23 +62,7 @@ final class PathStore
             : leakContext + (elementIndex % rootContext);
         
         set(pathIndex, location, from, elementWriteIndex);
-        // rootIndexes[pathIndex] = elementWriteIndex;
         rootIndexes[pathIndex] = elementIndex;
-
-//        if (elementIndex <= maxRefChainDepth - 1)
-//        {
-//            set(pathIndex, location, from, elementIndex);
-//            if (elementIndex >= leakContext)
-//            {
-//                rootContextIndex = elementIndex;
-//            }
-//        }
-//        else
-//        {
-//            int writeElementIndex = leakContext + (elementIndex % rootContext);
-//            set(pathIndex, location, from, writeElementIndex);
-//            rootContextIndex = writeElementIndex + 1;
-//        }
     }
 
     private void set(int pathIndex, UnsignedWord location, Object from, int elementIndex)
@@ -114,40 +98,6 @@ final class PathStore
 
     private int getElementReadIndex(int elementIndex, int pathIndex)
     {
-//        if (elementIndex >= leakContext)
-//        {
-//            final int rootIndex = rootIndexes[pathIndex];
-//            return (elementIndex + (rootIndex + 1 % rootContext)) % maxRefChainDepth;
-//        }
-//        return elementIndex;
-
-//        if (elementIndex >= leakContext)
-//        {
-//            return leakContext + ((elementIndex + rootContextIndex) % rootContext);
-//        }
-
-//        final int rootIndex = rootIndexes[pathIndex];
-//        if (elementIndex <= rootIndex)
-//        {
-//            return elementIndex;
-//        }
-
-//        if (elementIndex >= leakContext)
-//        {
-//            final int rootIndex = rootIndexes[pathIndex];
-//            if (elementIndex <= rootIndex)
-//            {
-//                return elementIndex;
-//            }
-//            throw new RuntimeException();
-//        }
-
-//        final int rootIndex = rootIndexes[pathIndex];
-//        if (elementIndex > rootIndex)
-//        {
-//
-//        }
-
         if (elementIndex >= leakContext)
         {
             final int rootIndex = rootIndexes[pathIndex];
@@ -157,17 +107,6 @@ final class PathStore
             }
 
             return leakContext + ((elementIndex + rootIndex + 1) % rootContext);
-
-//            if (elementIndex <= rootIndex)
-//            {
-//                return elementIndex;
-//            }
-//            return leakContext + ((elementIndex + rootIndex) % rootContext);
-
-//            final int relativeRootIndex = (rootIndex + 1) % rootContext;
-//            final int relativeElementIndex = elementIndex % rootContext;
-//            final int elementReadIndex = relativeRootIndex + relativeElementIndex;
-//            return elementReadIndex;
         }
 
         return elementIndex;
