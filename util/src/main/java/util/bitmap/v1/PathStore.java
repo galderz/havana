@@ -82,7 +82,7 @@ final class PathStore
         return -1;
     }
 
-    public Object getElement(int elementIndex, int pathIndex)
+    Object getElement(int elementIndex, int pathIndex)
     {
         if (elementIndex < maxRefChainDepth)
         {
@@ -91,7 +91,7 @@ final class PathStore
         return null;
     }
 
-    public UnsignedWord getElementLocation(int elementIndex, int pathIndex)
+    UnsignedWord getElementLocation(int elementIndex, int pathIndex)
     {
         return locations[pathIndex][getElementReadIndex(elementIndex, pathIndex)];
     }
