@@ -38,7 +38,7 @@ public class EdgeQueueTest
         Object current = leaf;
         Object from;
         int index;
-        while ((index = queue.findTo(current)) != -1 && (from = queue.getFrom(index)) != null)
+        while ((index = queue.findTo(current)) >= 0 && (from = queue.getFrom(index)) != null)
         {
             path.add(from);
             current = from;
