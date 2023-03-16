@@ -298,12 +298,12 @@ public class PathStoreTest
             final int pathIndex = store.getPathIndex(leak);
             assert expectedPathIndex == pathIndex;
 
-            Object next;
+            Object current;
             int elementIndex = 0;
-            while (null != (next = store.getElement(elementIndex, pathIndex)))
+            while (null != (current = store.getElement(elementIndex, pathIndex)))
             {
                 final UnsignedWord location = store.getElementLocation(elementIndex, pathIndex);
-                final Path path = new Path(next, location.fieldName);
+                final Path path = new Path(current, location.fieldName);
                 paths.add(path);
                 elementIndex++;
             }
