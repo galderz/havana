@@ -10,6 +10,8 @@ final class PathStore
     private static final int DEFAULT_LEAK_CONTEXT = 100;
     private static final int DEFAULT_ROOT_CONTEXT = 100;
 
+    static final Object SKIP = new Object();
+
     private final Object[][] paths;
     private final UnsignedWord[][] locations;
     private final int[] rootIndexes;
@@ -82,18 +84,40 @@ final class PathStore
         return -1;
     }
 
+    int getSkipLength(int elementIndex, int pathIndex)
+    {
+        if (isSkip(elementIndex, pathIndex))
+        {
+            return rootIndexes[pathIndex] - maxRefChainDepth;
+        }
+        return 0;
+    }
+
     Object getElement(int elementIndex, int pathIndex)
     {
         if (elementIndex < maxRefChainDepth)
         {
             return paths[pathIndex][getElementReadIndex(elementIndex, pathIndex)];
         }
+        else if (isSkip(elementIndex, pathIndex))
+        {
+            return SKIP;
+        }
         return null;
     }
 
     UnsignedWord getElementLocation(int elementIndex, int pathIndex)
     {
+        if (isSkip(elementIndex, pathIndex))
+        {
+            return new UnsignedWord("");
+        }
         return locations[pathIndex][getElementReadIndex(elementIndex, pathIndex)];
+    }
+
+    private boolean isSkip(int elementIndex, int pathIndex)
+    {
+        return elementIndex == maxRefChainDepth && rootIndexes[pathIndex] >= maxRefChainDepth;
     }
 
     private int getElementReadIndex(int elementIndex, int pathIndex)
