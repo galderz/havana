@@ -36,34 +36,34 @@ public class PathStoreTest
         List<Path> pathB = collectPaths(store, List.of("B"), 0).get("B");
         assert 11 == pathB.size() : pathB.size();
         assert List.of(
-            new Path("B", "", 0)
-            , new Path("A1", "field1", 0)
-            , new Path("A2", "field2", 0)
-            , new Path("A3", "field3", 0)
-            , new Path("A4", "field4", 0)
-            , new Path("A9", "field9", 0)
-            , new Path("A10", "field10", 0)
-            , new Path("A11", "field11", 0)
-            , new Path("A12", "field12", 0)
-            , new Path("A13", "field13", 0)
-            , new Path(PathStore.SKIP, "", 4)
+            new Path("B", "", 0, "A1")
+            , new Path("A1", "field1", 0, "A2")
+            , new Path("A2", "field2", 0, "A3")
+            , new Path("A3", "field3", 0, "A4")
+            , new Path("A4", "field4", 0, PathStore.SKIP)
+            , new Path("A9", "field9", 0, "A10")
+            , new Path("A10", "field10", 0, "A11")
+            , new Path("A11", "field11", 0, "A12")
+            , new Path("A12", "field12", 0, "A13")
+            , new Path("A13", "field13", 0, null)
+            , new Path(PathStore.SKIP, "", 4, "A9")
         ).equals(pathB) : pathB;
         assert "A13".equals(store.getRoot(0));
 
         List<Path> pathZ = collectPaths(store, List.of("Z"), 1).get("Z");
         assert 11 == pathZ.size() : pathZ.size();
         assert List.of(
-            new Path("Z", "", 0)
-            , new Path("Y1", "field1", 0)
-            , new Path("Y2", "field2", 0)
-            , new Path("Y3", "field3", 0)
-            , new Path("Y4", "field4", 0)
-            , new Path("Y8", "field8", 0)
-            , new Path("Y9", "field9", 0)
-            , new Path("Y10", "field10", 0)
-            , new Path("Y11", "field11", 0)
-            , new Path("Y12", "field12", 0)
-            , new Path(PathStore.SKIP, "", 3)
+            new Path("Z", "", 0, "Y1")
+            , new Path("Y1", "field1", 0, "Y2")
+            , new Path("Y2", "field2", 0, "Y3")
+            , new Path("Y3", "field3", 0, "Y4")
+            , new Path("Y4", "field4", 0, PathStore.SKIP)
+            , new Path("Y8", "field8", 0, "Y9")
+            , new Path("Y9", "field9", 0, "Y10")
+            , new Path("Y10", "field10", 0, "Y11")
+            , new Path("Y11", "field11", 0, "Y12")
+            , new Path("Y12", "field12", 0, null)
+            , new Path(PathStore.SKIP, "", 3, "Y8")
         ).equals(pathZ) : pathZ;
         assert "Y12".equals(store.getRoot(1));
     }
@@ -78,17 +78,17 @@ public class PathStoreTest
         List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 11 == path.size() : path.size();
         assert List.of(
-            new Path("B", "", 0)
-            , new Path("A1", "field1", 0)
-            , new Path("A2", "field2", 0)
-            , new Path("A3", "field3", 0)
-            , new Path("A4", "field4", 0)
-            , new Path("A7", "field7", 0)
-            , new Path("A8", "field8", 0)
-            , new Path("A9", "field9", 0)
-            , new Path("A10", "field10", 0)
-            , new Path("A11", "field11", 0)
-            , new Path(PathStore.SKIP, "", 2)
+            new Path("B", "", 0, "A1")
+            , new Path("A1", "field1", 0, "A2")
+            , new Path("A2", "field2", 0, "A3")
+            , new Path("A3", "field3", 0, "A4")
+            , new Path("A4", "field4", 0, PathStore.SKIP)
+            , new Path("A7", "field7", 0, "A8")
+            , new Path("A8", "field8", 0, "A9")
+            , new Path("A9", "field9", 0, "A10")
+            , new Path("A10", "field10", 0, "A11")
+            , new Path("A11", "field11", 0, null)
+            , new Path(PathStore.SKIP, "", 2, "A7")
         ).equals(path) : path;
         assert "A11".equals(store.getRoot(0));
     }
@@ -103,17 +103,17 @@ public class PathStoreTest
         List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 11 == path.size() : path.size();
         assert List.of(
-            new Path("B", "", 0)
-            , new Path("A1", "field1", 0)
-            , new Path("A2", "field2", 0)
-            , new Path("A3", "field3", 0)
-            , new Path("A4", "field4", 0)
-            , new Path("A6", "field6", 0)
-            , new Path("A7", "field7", 0)
-            , new Path("A8", "field8", 0)
-            , new Path("A9", "field9", 0)
-            , new Path("A10", "field10", 0)
-            , new Path(PathStore.SKIP, "", 1)
+            new Path("B", "", 0, "A1")
+            , new Path("A1", "field1", 0, "A2")
+            , new Path("A2", "field2", 0, "A3")
+            , new Path("A3", "field3", 0, "A4")
+            , new Path("A4", "field4", 0, PathStore.SKIP)
+            , new Path("A6", "field6", 0, "A7")
+            , new Path("A7", "field7", 0, "A8")
+            , new Path("A8", "field8", 0, "A9")
+            , new Path("A9", "field9", 0, "A10")
+            , new Path("A10", "field10", 0, null)
+            , new Path(PathStore.SKIP, "", 1, "A6")
         ).equals(path) : path;
         assert "A10".equals(store.getRoot(0));
     }
@@ -128,16 +128,16 @@ public class PathStoreTest
         List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 10 == path.size() : path.size();
         assert List.of(
-            new Path("B", "", 0)
-            , new Path("A1", "field1", 0)
-            , new Path("A2", "field2", 0)
-            , new Path("A3", "field3", 0)
-            , new Path("A4", "field4", 0)
-            , new Path("A5", "field5", 0)
-            , new Path("A6", "field6", 0)
-            , new Path("A7", "field7", 0)
-            , new Path("A8", "field8", 0)
-            , new Path("A9", "field9", 0)
+            new Path("B", "", 0, "A1")
+            , new Path("A1", "field1", 0, "A2")
+            , new Path("A2", "field2", 0, "A3")
+            , new Path("A3", "field3", 0, "A4")
+            , new Path("A4", "field4", 0, "A5")
+            , new Path("A5", "field5", 0, "A6")
+            , new Path("A6", "field6", 0, "A7")
+            , new Path("A7", "field7", 0, "A8")
+            , new Path("A8", "field8", 0, "A9")
+            , new Path("A9", "field9", 0, null)
         ).equals(path) : path;
         assert "A9".equals(store.getRoot(0));
     }
@@ -152,15 +152,15 @@ public class PathStoreTest
         List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 9 == path.size() : path.size();
         assert List.of(
-            new Path("B", "", 0)
-            , new Path("A1", "field1", 0)
-            , new Path("A2", "field2", 0)
-            , new Path("A3", "field3", 0)
-            , new Path("A4", "field4", 0)
-            , new Path("A5", "field5", 0)
-            , new Path("A6", "field6", 0)
-            , new Path("A7", "field7", 0)
-            , new Path("A8", "field8", 0)
+            new Path("B", "", 0, "A1")
+            , new Path("A1", "field1", 0, "A2")
+            , new Path("A2", "field2", 0, "A3")
+            , new Path("A3", "field3", 0, "A4")
+            , new Path("A4", "field4", 0, "A5")
+            , new Path("A5", "field5", 0, "A6")
+            , new Path("A6", "field6", 0, "A7")
+            , new Path("A7", "field7", 0, "A8")
+            , new Path("A8", "field8", 0, null)
         ).equals(path) : path;
         assert "A8".equals(store.getRoot(0));
     }
@@ -175,12 +175,12 @@ public class PathStoreTest
         List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 6 == path.size() : path.size();
         assert List.of(
-            new Path("B", "", 0)
-            , new Path("A1", "field1", 0)
-            , new Path("A2", "field2", 0)
-            , new Path("A3", "field3", 0)
-            , new Path("A4", "field4", 0)
-            , new Path("A5", "field5", 0)
+            new Path("B", "", 0, "A1")
+            , new Path("A1", "field1", 0, "A2")
+            , new Path("A2", "field2", 0, "A3")
+            , new Path("A3", "field3", 0, "A4")
+            , new Path("A4", "field4", 0, "A5")
+            , new Path("A5", "field5", 0, null)
         ).equals(path) : path;
         assert "A5".equals(store.getRoot(0));
     }
@@ -195,11 +195,11 @@ public class PathStoreTest
         List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 5 == path.size() : path.size();
         assert List.of(
-            new Path("B", "", 0)
-            , new Path("A1", "field1", 0)
-            , new Path("A2", "field2", 0)
-            , new Path("A3", "field3", 0)
-            , new Path("A4", "field4", 0)
+            new Path("B", "", 0, "A1")
+            , new Path("A1", "field1", 0, "A2")
+            , new Path("A2", "field2", 0, "A3")
+            , new Path("A3", "field3", 0, "A4")
+            , new Path("A4", "field4", 0, null)
         ).equals(path) : path;
         assert "A4".equals(store.getRoot(0));
     }
@@ -214,10 +214,10 @@ public class PathStoreTest
         List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 4 == path.size() : path.size();
         assert List.of(
-            new Path("B", "", 0)
-            , new Path("A1", "field1", 0)
-            , new Path("A2", "field2", 0)
-            , new Path("A3", "field3", 0)
+            new Path("B", "", 0, "A1")
+            , new Path("A1", "field1", 0, "A2")
+            , new Path("A2", "field2", 0, "A3")
+            , new Path("A3", "field3", 0, null)
         ).equals(path) : path;
         assert "A3".equals(store.getRoot(0));
     }
@@ -232,17 +232,17 @@ public class PathStoreTest
         List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 11 == path.size() : path.size();
         assert List.of(
-            new Path("B", "", 0)
-            , new Path("A1", "field1", 0)
-            , new Path("A2", "field2", 0)
-            , new Path("A3", "field3", 0)
-            , new Path("A4", "field4", 0)
-            , new Path("A25", "field25", 0)
-            , new Path("A26", "field26", 0)
-            , new Path("A27", "field27", 0)
-            , new Path("A28", "field28", 0)
-            , new Path("A29", "field29", 0)
-            , new Path(PathStore.SKIP, "", 20)
+            new Path("B", "", 0, "A1")
+            , new Path("A1", "field1", 0, "A2")
+            , new Path("A2", "field2", 0, "A3")
+            , new Path("A3", "field3", 0, "A4")
+            , new Path("A4", "field4", 0, PathStore.SKIP)
+            , new Path("A25", "field25", 0, "A26")
+            , new Path("A26", "field26", 0, "A27")
+            , new Path("A27", "field27", 0, "A28")
+            , new Path("A28", "field28", 0, "A29")
+            , new Path("A29", "field29", 0, null)
+            , new Path(PathStore.SKIP, "", 20, "A25")
         ).equals(path) : path;
         assert "A29".equals(store.getRoot(0));
     }
@@ -259,10 +259,10 @@ public class PathStoreTest
         final List<Path> path = paths.get(leak);
         assert depth == path.size() : path.size();
         assert List.of(
-            new Path("B", "", 0)
-            , new Path("A1", "field1", 0)
-            , new Path("A2", "field2", 0)
-            , new Path("A3", "field3", 0)
+            new Path("B", "", 0, "A1")
+            , new Path("A1", "field1", 0, "A2")
+            , new Path("A2", "field2", 0, "A3")
+            , new Path("A3", "field3", 0, null)
         ).equals(path) : path;
         assert "A3".equals(store.getRoot(0));
     }
@@ -278,8 +278,8 @@ public class PathStoreTest
         Map<String, List<Path>> paths = collectPaths(store, List.of(leak), 0);
         assert 1 == paths.size();
         assert List.of(
-            new Path("B", "", 0)
-            , new Path("A", "fieldB", 0)
+            new Path("B", "", 0, "A")
+            , new Path("A", "fieldB", 0, null)
         ).equals(paths.get(leak));
         assert "A".equals(store.getRoot(0));
     }
@@ -309,7 +309,8 @@ public class PathStoreTest
             {
                 final int skipLength = store.getSkipLength(elementIndex, pathIndex);
                 final UnsignedWord location = store.getElementLocation(elementIndex, pathIndex);
-                final Path path = new Path(current, location.fieldName, skipLength);
+                final Object parent = store.getElementParent(elementIndex, pathIndex);
+                final Path path = new Path(current, location.fieldName, skipLength, parent);
                 paths.add(path);
                 elementIndex++;
             }
@@ -324,11 +325,13 @@ public class PathStoreTest
         final Object object;
         final String fieldName;
         final int skipLength;
+        final Object parent;
 
-        Path(Object object, String fieldName, int skipLength) {
+        Path(Object object, String fieldName, int skipLength, Object parent) {
             this.object = object;
             this.fieldName = fieldName;
             this.skipLength = skipLength;
+            this.parent = parent;
         }
 
         @Override
@@ -337,21 +340,22 @@ public class PathStoreTest
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Path path = (Path) o;
-            return skipLength == path.skipLength && object.equals(path.object) && fieldName.equals(path.fieldName);
+            return skipLength == path.skipLength && object.equals(path.object) && fieldName.equals(path.fieldName) && Objects.equals(parent, path.parent);
         }
 
         @Override
         public int hashCode()
         {
-            return Objects.hash(object, fieldName, skipLength);
+            return Objects.hash(object, fieldName, skipLength, parent);
         }
 
         @Override
         public String toString()
         {
             return fieldName.isEmpty()
-                ? "%s(%d)".formatted(object.toString(), skipLength)
-                : "%s.%s(%d)".formatted(object, fieldName, skipLength);
+                ? "%s(%d)->%s".formatted(object, skipLength, parent)
+                : "%s.%s(%d)->%s".formatted(object, fieldName, skipLength, parent);
         }
     }
 }
+

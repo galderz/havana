@@ -86,7 +86,7 @@ final class PathStore
 
     int getSkipLength(int elementIndex, int pathIndex)
     {
-        if (isSkip(elementIndex, pathIndex))
+        if (isSkip(elementIndex) && isWrap(pathIndex))
         {
             return rootIndexes[pathIndex] - maxRefChainDepth + 1;
         }
@@ -99,7 +99,7 @@ final class PathStore
         {
             return paths[pathIndex][getElementReadIndex(elementIndex, pathIndex)];
         }
-        else if (isSkip(elementIndex, pathIndex))
+        if (isSkip(elementIndex) && isWrap(pathIndex))
         {
             return SKIP;
         }
@@ -108,16 +108,37 @@ final class PathStore
 
     UnsignedWord getElementLocation(int elementIndex, int pathIndex)
     {
-        if (isSkip(elementIndex, pathIndex))
+        if (isSkip(elementIndex) && isWrap(pathIndex))
         {
             return new UnsignedWord("");
         }
         return locations[pathIndex][getElementReadIndex(elementIndex, pathIndex)];
     }
 
-    private boolean isSkip(int elementIndex, int pathIndex)
+    Object getElementParent(int elementIndex, int pathIndex)
     {
-        return elementIndex == maxRefChainDepth && isWrap(pathIndex);
+        if (isWrap(pathIndex))
+        {
+            if (isLeakContextLast(elementIndex))
+            {
+                return SKIP;
+            }
+            if (isSkip(elementIndex))
+            {
+                return getNextOfRoot(pathIndex);
+            }
+            if (isRoot(elementIndex))
+            {
+                return null;
+            }
+        }
+
+        return getElement(elementIndex + 1, pathIndex);
+    }
+
+    private boolean isSkip(int elementIndex)
+    {
+        return elementIndex == maxRefChainDepth;
     }
 
     private int getElementReadIndex(int elementIndex, int pathIndex)
@@ -138,5 +159,20 @@ final class PathStore
     private boolean isWrap(int pathIndex)
     {
         return rootIndexes[pathIndex] >= maxRefChainDepth;
+    }
+
+    private boolean isLeakContextLast(int elementIndex)
+    {
+        return elementIndex == leakContext - 1;
+    }
+
+    private boolean isRoot(int elementIndex)
+    {
+        return elementIndex == maxRefChainDepth -1;
+    }
+
+    private Object getNextOfRoot(int pathIndex)
+    {
+        return paths[pathIndex][leakContext + ((rootIndexes[pathIndex] + 1) % rootContext)];
     }
 }
