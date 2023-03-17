@@ -337,21 +337,21 @@ public class PathStoreTest
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Path path = (Path) o;
-            return object.equals(path.object) && fieldName.equals(path.fieldName);
+            return skipLength == path.skipLength && object.equals(path.object) && fieldName.equals(path.fieldName);
         }
 
         @Override
         public int hashCode()
         {
-            return Objects.hash(object, fieldName);
+            return Objects.hash(object, fieldName, skipLength);
         }
 
         @Override
         public String toString()
         {
             return fieldName.isEmpty()
-                ? object.toString()
-                : "%s.%s".formatted(object, fieldName);
+                ? "%s(%d)".formatted(object.toString(), skipLength)
+                : "%s.%s(%d)".formatted(object, fieldName, skipLength);
         }
     }
 }

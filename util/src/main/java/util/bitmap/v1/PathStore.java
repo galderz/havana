@@ -88,7 +88,7 @@ final class PathStore
     {
         if (isSkip(elementIndex, pathIndex))
         {
-            return rootIndexes[pathIndex] - maxRefChainDepth;
+            return rootIndexes[pathIndex] - maxRefChainDepth + 1;
         }
         return 0;
     }
