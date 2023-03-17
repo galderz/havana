@@ -300,19 +300,18 @@ public class PathStoreTest
         {
             List<Path> paths = new ArrayList<>();
 
-            final int pathIndex = store.getPathIndex(leak);
-            assert expectedPathIndex == pathIndex;
+            final int path = store.findPath(leak);
+            assert expectedPathIndex == path;
 
             Object current;
-            int elementIndex = 0;
-            while (null != (current = store.getElement(elementIndex, pathIndex)))
+            int position = 0;
+            while (null != (current = store.getElement(position, path)))
             {
-                final int skipLength = store.getSkipLength(elementIndex, pathIndex);
-                final UnsignedWord location = store.getElementLocation(elementIndex, pathIndex);
-                final Object parent = store.getElementParent(elementIndex, pathIndex);
-                final Path path = new Path(current, location.fieldName, skipLength, parent);
-                paths.add(path);
-                elementIndex++;
+                final int skipLength = store.getSkipLength(position, path);
+                final UnsignedWord location = store.getElementLocation(position, path);
+                final Object parent = store.getElementParent(position, path);
+                paths.add(new Path(current, location.fieldName, skipLength, parent));
+                position++;
             }
 
             result.put(leak, paths);
