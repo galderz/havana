@@ -38,7 +38,7 @@ final class PathStore
             locations[i] = new UnsignedWord[maxRefChainDepth];
         }
         rootIndexes = new int[capacity];
-        Arrays.fill(rootIndexes, Integer.MAX_VALUE);
+        Arrays.fill(rootIndexes, -1);
     }
 
     Object getRoot(int pathIndex)
@@ -117,22 +117,26 @@ final class PathStore
 
     private boolean isSkip(int elementIndex, int pathIndex)
     {
-        return elementIndex == maxRefChainDepth && rootIndexes[pathIndex] >= maxRefChainDepth;
+        return elementIndex == maxRefChainDepth && isWrap(pathIndex);
     }
 
     private int getElementReadIndex(int elementIndex, int pathIndex)
     {
-        if (elementIndex >= leakContext)
+        if (isRootContext(elementIndex) && isWrap(pathIndex))
         {
-            final int rootIndex = rootIndexes[pathIndex];
-            if (rootIndex < maxRefChainDepth)
-            {
-                return elementIndex;
-            }
-
-            return leakContext + ((elementIndex + rootIndex + 1) % rootContext);
+            return leakContext + ((elementIndex + rootIndexes[pathIndex] + 1) % rootContext);
         }
 
         return elementIndex;
+    }
+
+    private boolean isRootContext(int elementIndex)
+    {
+        return elementIndex >= leakContext;
+    }
+    
+    private boolean isWrap(int pathIndex)
+    {
+        return rootIndexes[pathIndex] >= maxRefChainDepth;
     }
 }
