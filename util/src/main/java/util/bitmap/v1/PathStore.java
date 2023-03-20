@@ -2,6 +2,9 @@ package util.bitmap.v1;
 
 import java.util.Arrays;
 
+// todo do we need getIndex and getOrdered*Index?
+//      instead of providing an ordered iteration
+//      provide any iteration because the parents will establish the order
 final class PathStore
 {
     // [0..99]    leak context
@@ -80,29 +83,47 @@ final class PathStore
 
     Object getElement(int position, int path)
     {
-        if (position < maxRefChainDepth)
-        {
-            return paths[path][getElementReadIndex(position, path)];
-        }
         if (isSkip(position) && isWrapped(path))
         {
             return SKIP;
         }
+
+        if (position < maxRefChainDepth)
+        {
+            return paths[path][getOrderedIndex(position, path)];
+        }
+
         return null;
     }
 
-    UnsignedWord getElementLocation(int elementIndex, int pathIndex)
+    UnsignedWord getElementLocation(int position, int path)
     {
-        if (isSkip(elementIndex) && isWrapped(pathIndex))
+        if (isSkip(position) && isWrapped(path))
         {
             return new UnsignedWord("");
         }
-        return locations[pathIndex][getElementReadIndex(elementIndex, pathIndex)];
+
+        if (position < maxRefChainDepth)
+        {
+            return locations[path][getOrderedIndex(position, path)];
+        }
+
+        return null;
     }
 
-    Object getElementParent(int position, int pathIndex)
+    private int getOrderedIndex(int position, int path)
     {
-        if (isWrapped(pathIndex))
+        if (isWrapped(path) && isRootContext(position))
+        {
+            return getOrderedWrappedIndex(position, path);
+        }
+
+        return position;
+    }
+
+    Object getElementParent(int position, int path)
+    {
+        if (isWrapped(path))
         {
             if (isLeakContextLast(position))
             {
@@ -110,7 +131,7 @@ final class PathStore
             }
             if (isSkip(position))
             {
-                return getSkipParent(pathIndex);
+                return paths[path][getOrderedWrappedIndex(0, path)];
             }
             if (isRoot(position))
             {
@@ -118,23 +139,12 @@ final class PathStore
             }
         }
 
-        return getElement(position + 1, pathIndex);
+        return getElement(position + 1, path);
     }
 
     private boolean isSkip(int position)
     {
         return position == maxRefChainDepth;
-    }
-
-    // todo can this be simplified further?
-    private int getElementReadIndex(int position, int pathIndex)
-    {
-        if (isRootContext(position) && isWrapped(pathIndex))
-        {
-            return leakContext + ((position + rootPositions[pathIndex] + 1) % rootContext);
-        }
-
-        return position;
     }
 
     private boolean isRootContext(int position)
@@ -157,9 +167,9 @@ final class PathStore
         return position == maxRefChainDepth -1;
     }
 
-    private Object getSkipParent(int path)
+    private int getOrderedWrappedIndex(int offset, int path)
     {
-        return paths[path][leakContext + ((rootPositions[path] + 1) % rootContext)];
+        return leakContext + ((rootPositions[path] + offset + 1) % rootContext);
     }
 
     private int getIndex(int position)
