@@ -2,9 +2,6 @@ package util.bitmap.v1;
 
 import java.util.Arrays;
 
-// todo do we need getIndex and getOrdered*Index?
-//      instead of providing an ordered iteration
-//      provide any iteration because the parents will establish the order
 final class PathStore
 {
     // [0..99]    leak context
@@ -90,7 +87,7 @@ final class PathStore
 
         if (position < maxRefChainDepth)
         {
-            return paths[path][getOrderedIndex(position, path)];
+            return paths[path][getIndex(position)];
         }
 
         return null;
@@ -105,20 +102,10 @@ final class PathStore
 
         if (position < maxRefChainDepth)
         {
-            return locations[path][getOrderedIndex(position, path)];
+            return locations[path][getIndex(position)];
         }
 
         return null;
-    }
-
-    private int getOrderedIndex(int position, int path)
-    {
-        if (isWrapped(path) && isRootContext(position))
-        {
-            return getOrderedWrappedIndex(position, path);
-        }
-
-        return position;
     }
 
     Object getElementParent(int position, int path)
@@ -129,17 +116,20 @@ final class PathStore
             {
                 return SKIP;
             }
-            if (isSkip(position))
-            {
-                return paths[path][getOrderedWrappedIndex(0, path)];
-            }
-            if (isRoot(position))
+            if (isWrappedRoot(position, path))
             {
                 return null;
             }
+            if (isSkip(position))
+            {
+                return paths[path][getIndex(rootPositions[path] + 1)];
+            }
+        } else if (isNonWrappedRoot(position))
+        {
+            return null;
         }
 
-        return getElement(position + 1, path);
+        return paths[path][getIndex(position + 1)];
     }
 
     private boolean isSkip(int position)
@@ -147,11 +137,6 @@ final class PathStore
         return position == maxRefChainDepth;
     }
 
-    private boolean isRootContext(int position)
-    {
-        return position >= leakContext;
-    }
-    
     private boolean isWrapped(int path)
     {
         return rootPositions[path] >= maxRefChainDepth;
@@ -162,14 +147,14 @@ final class PathStore
         return position == leakContext - 1;
     }
 
-    private boolean isRoot(int position)
+    private boolean isWrappedRoot(int position, int path)
     {
-        return position == maxRefChainDepth -1;
+        return position == rootContext + (rootPositions[path] % rootContext);
     }
 
-    private int getOrderedWrappedIndex(int offset, int path)
+    private boolean isNonWrappedRoot(int position)
     {
-        return leakContext + ((rootPositions[path] + offset + 1) % rootContext);
+        return position == maxRefChainDepth - 1;
     }
 
     private int getIndex(int position)

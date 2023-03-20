@@ -4,9 +4,11 @@ import util.Asserts;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class PathStoreTest
 {
@@ -33,9 +35,9 @@ public class PathStoreTest
         addPaths(store, 14, "B", 0, "A");
         addPaths(store, 13, "Z", 1, "Y");
 
-        List<Path> pathB = collectPaths(store, List.of("B"), 0).get("B");
+        Set<Path> pathB = collectPaths(store, List.of("B"), 0).get("B");
         assert 11 == pathB.size() : pathB.size();
-        assert List.of(
+        assert Set.of(
             new Path("B", "", 0, "A1")
             , new Path("A1", "field1", 0, "A2")
             , new Path("A2", "field2", 0, "A3")
@@ -50,9 +52,9 @@ public class PathStoreTest
         ).equals(pathB) : pathB;
         assert "A13".equals(store.getRoot(0));
 
-        List<Path> pathZ = collectPaths(store, List.of("Z"), 1).get("Z");
+        Set<Path> pathZ = collectPaths(store, List.of("Z"), 1).get("Z");
         assert 11 == pathZ.size() : pathZ.size();
-        assert List.of(
+        assert Set.of(
             new Path("Z", "", 0, "Y1")
             , new Path("Y1", "field1", 0, "Y2")
             , new Path("Y2", "field2", 0, "Y3")
@@ -75,9 +77,9 @@ public class PathStoreTest
         final String leak = "B";
         addPaths(store, 12, leak, 0, "A");
 
-        List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
+        Set<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 11 == path.size() : path.size();
-        assert List.of(
+        assert Set.of(
             new Path("B", "", 0, "A1")
             , new Path("A1", "field1", 0, "A2")
             , new Path("A2", "field2", 0, "A3")
@@ -100,9 +102,9 @@ public class PathStoreTest
         final String leak = "B";
         addPaths(store, 11, leak, 0, "A");
 
-        List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
+        Set<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 11 == path.size() : path.size();
-        assert List.of(
+        assert Set.of(
             new Path("B", "", 0, "A1")
             , new Path("A1", "field1", 0, "A2")
             , new Path("A2", "field2", 0, "A3")
@@ -125,9 +127,9 @@ public class PathStoreTest
         final String leak = "B";
         addPaths(store, 10, leak, 0, "A");
 
-        List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
+        Set<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 10 == path.size() : path.size();
-        assert List.of(
+        assert Set.of(
             new Path("B", "", 0, "A1")
             , new Path("A1", "field1", 0, "A2")
             , new Path("A2", "field2", 0, "A3")
@@ -149,9 +151,9 @@ public class PathStoreTest
         final String leak = "B";
         addPaths(store, 9, leak, 0, "A");
 
-        List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
+        Set<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 9 == path.size() : path.size();
-        assert List.of(
+        assert Set.of(
             new Path("B", "", 0, "A1")
             , new Path("A1", "field1", 0, "A2")
             , new Path("A2", "field2", 0, "A3")
@@ -172,9 +174,9 @@ public class PathStoreTest
         final String leak = "B";
         addPaths(store, 6, leak, 0, "A");
 
-        List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
+        Set<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 6 == path.size() : path.size();
-        assert List.of(
+        assert Set.of(
             new Path("B", "", 0, "A1")
             , new Path("A1", "field1", 0, "A2")
             , new Path("A2", "field2", 0, "A3")
@@ -192,9 +194,9 @@ public class PathStoreTest
         final String leak = "B";
         addPaths(store, 5, leak, 0, "A");
 
-        List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
+        Set<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 5 == path.size() : path.size();
-        assert List.of(
+        assert Set.of(
             new Path("B", "", 0, "A1")
             , new Path("A1", "field1", 0, "A2")
             , new Path("A2", "field2", 0, "A3")
@@ -211,9 +213,9 @@ public class PathStoreTest
         final String leak = "B";
         addPaths(store, 4, leak, 0, "A");
 
-        List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
+        Set<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 4 == path.size() : path.size();
-        assert List.of(
+        assert Set.of(
             new Path("B", "", 0, "A1")
             , new Path("A1", "field1", 0, "A2")
             , new Path("A2", "field2", 0, "A3")
@@ -229,9 +231,9 @@ public class PathStoreTest
         final String leak = "B";
         addPaths(store, 30, leak, 0, "A");
 
-        List<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
+        Set<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
         assert 11 == path.size() : path.size();
-        assert List.of(
+        assert Set.of(
             new Path("B", "", 0, "A1")
             , new Path("A1", "field1", 0, "A2")
             , new Path("A2", "field2", 0, "A3")
@@ -255,10 +257,10 @@ public class PathStoreTest
         final String leak = "B";
         addPaths(store, depth, leak, 0, "A");
 
-        Map<String, List<Path>> paths = collectPaths(store, List.of(leak), 0);
-        final List<Path> path = paths.get(leak);
+        Map<String, Set<Path>> paths = collectPaths(store, List.of(leak), 0);
+        final Set<Path> path = paths.get(leak);
         assert depth == path.size() : path.size();
-        assert List.of(
+        assert Set.of(
             new Path("B", "", 0, "A1")
             , new Path("A1", "field1", 0, "A2")
             , new Path("A2", "field2", 0, "A3")
@@ -275,9 +277,9 @@ public class PathStoreTest
         store.addPathElement(0, new UnsignedWord(""), leak, 0);
         store.addPathElement(1, new UnsignedWord("fieldB"), "A", 0);
 
-        Map<String, List<Path>> paths = collectPaths(store, List.of(leak), 0);
+        Map<String, Set<Path>> paths = collectPaths(store, List.of(leak), 0);
         assert 1 == paths.size();
-        assert List.of(
+        assert Set.of(
             new Path("B", "", 0, "A")
             , new Path("A", "fieldB", 0, null)
         ).equals(paths.get(leak));
@@ -293,12 +295,12 @@ public class PathStoreTest
         }
     }
 
-    private static Map<String, List<Path>> collectPaths(PathStore store, List<String> leaks, int expectedPathIndex)
+    private static Map<String, Set<Path>> collectPaths(PathStore store, List<String> leaks, int expectedPathIndex)
     {
-        final Map<String, List<Path>> result = new HashMap<>();
+        final Map<String, Set<Path>> result = new HashMap<>();
         for (String leak : leaks)
         {
-            List<Path> paths = new ArrayList<>();
+            Set<Path> paths = new HashSet<>();
 
             final int path = store.findPath(leak);
             assert expectedPathIndex == path;
