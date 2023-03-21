@@ -10,8 +10,6 @@ final class PathStore
     private static final int DEFAULT_LEAK_CONTEXT = 100;
     private static final int DEFAULT_ROOT_CONTEXT = 100;
 
-    static final Object SKIP = new Object();
-
     private final Object[][] paths;
     private final UnsignedWord[][] locations;
     private final int[] rootPositions;
@@ -71,7 +69,7 @@ final class PathStore
 
     int getSkipLength(int position, int path)
     {
-        if (isSkip(position) && isWrapped(path))
+        if (isWrapped(path) && isLeakContextLast(position))
         {
             return rootPositions[path] - maxRefChainDepth + 1;
         }
@@ -80,11 +78,6 @@ final class PathStore
 
     Object getElement(int position, int path)
     {
-        if (isSkip(position) && isWrapped(path))
-        {
-            return SKIP;
-        }
-
         if (position < maxRefChainDepth)
         {
             return paths[path][getIndex(position)];
@@ -95,11 +88,6 @@ final class PathStore
 
     UnsignedWord getElementLocation(int position, int path)
     {
-        if (isSkip(position) && isWrapped(path))
-        {
-            return new UnsignedWord("");
-        }
-
         if (position < maxRefChainDepth)
         {
             return locations[path][getIndex(position)];
@@ -114,15 +102,11 @@ final class PathStore
         {
             if (isLeakContextLast(position))
             {
-                return SKIP;
+                return paths[path][getIndex(rootPositions[path] + 1)];
             }
             if (isWrappedRoot(position, path))
             {
                 return null;
-            }
-            if (isSkip(position))
-            {
-                return paths[path][getIndex(rootPositions[path] + 1)];
             }
         } else if (isNonWrappedRoot(position))
         {
@@ -130,11 +114,6 @@ final class PathStore
         }
 
         return paths[path][getIndex(position + 1)];
-    }
-
-    private boolean isSkip(int position)
-    {
-        return position == maxRefChainDepth;
     }
 
     private boolean isWrapped(int path)

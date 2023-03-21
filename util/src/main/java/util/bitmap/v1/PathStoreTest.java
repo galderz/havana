@@ -36,36 +36,34 @@ public class PathStoreTest
         addPaths(store, 13, "Z", 1, "Y");
 
         Set<Path> pathB = collectPaths(store, List.of("B"), 0).get("B");
-        assert 11 == pathB.size() : pathB.size();
+        assert 10 == pathB.size() : pathB.size();
         assert Set.of(
             new Path("B", "", 0, "A1")
             , new Path("A1", "field1", 0, "A2")
             , new Path("A2", "field2", 0, "A3")
             , new Path("A3", "field3", 0, "A4")
-            , new Path("A4", "field4", 0, PathStore.SKIP)
+            , new Path("A4", "field4", 4, "A9")
             , new Path("A9", "field9", 0, "A10")
             , new Path("A10", "field10", 0, "A11")
             , new Path("A11", "field11", 0, "A12")
             , new Path("A12", "field12", 0, "A13")
             , new Path("A13", "field13", 0, null)
-            , new Path(PathStore.SKIP, "", 4, "A9")
         ).equals(pathB) : pathB;
         assert "A13".equals(store.getRoot(0));
 
         Set<Path> pathZ = collectPaths(store, List.of("Z"), 1).get("Z");
-        assert 11 == pathZ.size() : pathZ.size();
+        assert 10 == pathZ.size() : pathZ.size();
         assert Set.of(
             new Path("Z", "", 0, "Y1")
             , new Path("Y1", "field1", 0, "Y2")
             , new Path("Y2", "field2", 0, "Y3")
             , new Path("Y3", "field3", 0, "Y4")
-            , new Path("Y4", "field4", 0, PathStore.SKIP)
+            , new Path("Y4", "field4", 3, "Y8")
             , new Path("Y8", "field8", 0, "Y9")
             , new Path("Y9", "field9", 0, "Y10")
             , new Path("Y10", "field10", 0, "Y11")
             , new Path("Y11", "field11", 0, "Y12")
             , new Path("Y12", "field12", 0, null)
-            , new Path(PathStore.SKIP, "", 3, "Y8")
         ).equals(pathZ) : pathZ;
         assert "Y12".equals(store.getRoot(1));
     }
@@ -78,19 +76,18 @@ public class PathStoreTest
         addPaths(store, 12, leak, 0, "A");
 
         Set<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
-        assert 11 == path.size() : path.size();
+        assert 10 == path.size() : path.size();
         assert Set.of(
             new Path("B", "", 0, "A1")
             , new Path("A1", "field1", 0, "A2")
             , new Path("A2", "field2", 0, "A3")
             , new Path("A3", "field3", 0, "A4")
-            , new Path("A4", "field4", 0, PathStore.SKIP)
+            , new Path("A4", "field4", 2, "A7")
             , new Path("A7", "field7", 0, "A8")
             , new Path("A8", "field8", 0, "A9")
             , new Path("A9", "field9", 0, "A10")
             , new Path("A10", "field10", 0, "A11")
             , new Path("A11", "field11", 0, null)
-            , new Path(PathStore.SKIP, "", 2, "A7")
         ).equals(path) : path;
         assert "A11".equals(store.getRoot(0));
     }
@@ -103,19 +100,18 @@ public class PathStoreTest
         addPaths(store, 11, leak, 0, "A");
 
         Set<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
-        assert 11 == path.size() : path.size();
+        assert 10 == path.size() : path.size();
         assert Set.of(
             new Path("B", "", 0, "A1")
             , new Path("A1", "field1", 0, "A2")
             , new Path("A2", "field2", 0, "A3")
             , new Path("A3", "field3", 0, "A4")
-            , new Path("A4", "field4", 0, PathStore.SKIP)
+            , new Path("A4", "field4", 1, "A6")
             , new Path("A6", "field6", 0, "A7")
             , new Path("A7", "field7", 0, "A8")
             , new Path("A8", "field8", 0, "A9")
             , new Path("A9", "field9", 0, "A10")
             , new Path("A10", "field10", 0, null)
-            , new Path(PathStore.SKIP, "", 1, "A6")
         ).equals(path) : path;
         assert "A10".equals(store.getRoot(0));
     }
@@ -232,19 +228,18 @@ public class PathStoreTest
         addPaths(store, 30, leak, 0, "A");
 
         Set<Path> path = collectPaths(store, List.of(leak), 0).get(leak);
-        assert 11 == path.size() : path.size();
+        assert 10 == path.size() : path.size();
         assert Set.of(
             new Path("B", "", 0, "A1")
             , new Path("A1", "field1", 0, "A2")
             , new Path("A2", "field2", 0, "A3")
             , new Path("A3", "field3", 0, "A4")
-            , new Path("A4", "field4", 0, PathStore.SKIP)
+            , new Path("A4", "field4", 20, "A25")
             , new Path("A25", "field25", 0, "A26")
             , new Path("A26", "field26", 0, "A27")
             , new Path("A27", "field27", 0, "A28")
             , new Path("A28", "field28", 0, "A29")
             , new Path("A29", "field29", 0, null)
-            , new Path(PathStore.SKIP, "", 20, "A25")
         ).equals(path) : path;
         assert "A29".equals(store.getRoot(0));
     }
