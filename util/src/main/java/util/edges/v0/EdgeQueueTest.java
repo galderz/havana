@@ -1,6 +1,7 @@
 package util.edges.v0;
 
 import util.Asserts;
+import util.edges.v0.EdgeQueue.Edge;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,27 @@ public class EdgeQueueTest
         testClear();
         testFindTo();
         testLeafToRootPath();
+        testPop();
+    }
+
+    private static void testPop()
+    {
+        System.out.println("EdgeQueueTest.testPop");
+        final int capacity = 4;
+        final EdgeQueue queue = new EdgeQueue(capacity);
+        for (int i = 0; i < capacity; i++)
+        {
+            queue.push(String.valueOf(i), i, String.valueOf(i));
+        }
+
+        final List<Object> path = new ArrayList<>();
+        Edge current;
+        while ((current = queue.pop()) != null)
+        {
+            path.add(current.from);
+        }
+        assert 4 == path.size() : path.size();
+        assert List.of("3", "2", "1", "0").equals(path) : path;
     }
 
     private static void testLeafToRootPath()

@@ -2,22 +2,17 @@ package util.edges.v0;
 
 final class EdgeQueue
 {
-    private static final int FROM_SLOT = 0;
-    private static final int TO_SLOT = 1;
-
-    private final Object[][] edges;
-    private final Object[] locations;
+    private final Edge[]edges;
 
     private int count;
 
     EdgeQueue(int capacity)
     {
-        this.edges = new Object[capacity][];
+        this.edges = new Edge[capacity];
         for (int i = 0; i < this.edges.length; i++)
         {
-            this.edges[i] = new Object[TO_SLOT + 1];
+            this.edges[i] = new Edge();
         }
-        this.locations = new Object[capacity];
     }
 
     boolean isFull() {
@@ -30,20 +25,32 @@ final class EdgeQueue
         count++;
     }
 
+    Edge pop()
+    {
+        if (count == 0)
+        {
+            return null;
+        }
+
+        Edge head = edges[count - 1];
+        count--;
+        return head;
+    }
+
     int size() {
         return count;
     }
 
     Object getFrom(int index) {
-        return edges[index][FROM_SLOT];
+        return edges[index].from;
     }
 
     int getLocation(int index) {
-        return (int) locations[index];
+        return edges[index].location;
     }
 
     Object getTo(int index) {
-        return edges[index][TO_SLOT];
+        return edges[index].to;
     }
 
     int findTo(Object target)
@@ -64,8 +71,15 @@ final class EdgeQueue
 
     private void set(Object from, int location, Object to, int index)
     {
-        edges[index][FROM_SLOT] = from;
-        edges[index][TO_SLOT] = to;
-        locations[index] = location;
+        edges[index].from = from;
+        edges[index].to = to;
+        edges[index].location = location;
+    }
+
+    static class Edge
+    {
+        Object from;
+        Object to;
+        int location;
     }
 }
