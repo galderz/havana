@@ -20,6 +20,37 @@ public class EdgeQueueTest
         testFindTo();
         testLeafToRootPath();
         testPop();
+        testPopThenPush();
+    }
+
+    private static void testPopThenPush()
+    {
+        System.out.println("EdgeQueueTest.testPopThenPush");
+        final int capacity = 4;
+        final EdgeQueue queue = new EdgeQueue(capacity);
+        for (int i = 0; i < capacity; i++)
+        {
+            queue.push(String.valueOf(i), i, String.valueOf(i));
+        }
+
+        while (queue.pop() != null)
+        {
+            // Empty queue
+        }
+
+        for (int i = 0; i < capacity; i++)
+        {
+            queue.push(String.valueOf(i), i, String.valueOf(i));
+        }
+
+        final List<Object> path = new ArrayList<>();
+        Edge current;
+        while ((current = queue.pop()) != null)
+        {
+            path.add(current.from);
+        }
+        assert 4 == path.size() : path.size();
+        assert List.of("3", "2", "1", "0").equals(path) : path;
     }
 
     private static void testPop()
