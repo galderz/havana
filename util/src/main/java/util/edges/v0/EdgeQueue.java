@@ -2,7 +2,7 @@ package util.edges.v0;
 
 final class EdgeQueue
 {
-    private final Edge[]edges;
+    private final Edge[] edges;
 
     private int count;
 
