@@ -180,6 +180,7 @@ public class EdgeQueueTest
             assert success;
         }
         assert 3 == queue.size();
+        assert queue.isFull();
 
         List<Edge> result = new ArrayList<>();
         Edge current;
@@ -188,6 +189,7 @@ public class EdgeQueueTest
             result.add(current);
         }
         assert 0 == queue.size();
+        assert !queue.isFull();
 
         assert 3 == result.size();
         expect(1, 100, 2, result.get(0));

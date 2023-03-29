@@ -67,6 +67,11 @@ public final class EdgeQueue
         edges[index].to = to;
     }
 
+    public boolean isFull()
+    {
+        return size() == edges.length;
+    }
+
     static class Edge
     {
         Object from;
