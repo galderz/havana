@@ -60,16 +60,16 @@ public final class EdgeQueue
         return tail == head;
     }
 
+    public boolean isFull()
+    {
+        return size() == edges.length;
+    }
+
     private void set(Object from, int location, Object to, int index)
     {
         edges[index].from = from;
         edges[index].location = location;
         edges[index].to = to;
-    }
-
-    public boolean isFull()
-    {
-        return size() == edges.length;
     }
 
     static class Edge
