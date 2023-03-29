@@ -12,8 +12,8 @@ public class EdgeQueueTest
     public static void main(String[] args)
     {
         Asserts.needEnabledAsserts();
-        testPushPoll();
-        testPushPollAlternate();
+        testPushPop();
+        testPushPopAlternate();
         testPushBeyond();
         testSizeWrapped();
     }
@@ -28,7 +28,7 @@ public class EdgeQueueTest
             assert success;
         }
         assert 3 == queue.size();
-        final Edge first = queue.poll();
+        final Edge first = queue.pop();
         expect(1, 100, 2, first);
         assert 2 == queue.size();
         queue.push(4, 400, 500);
@@ -54,9 +54,9 @@ public class EdgeQueueTest
         assert 3 == queue.size();
     }
 
-    private static void testPushPollAlternate()
+    private static void testPushPopAlternate()
     {
-        System.out.println("EdgeQueueTest.testPushPollAlternate");
+        System.out.println("EdgeQueueTest.testPushPopAlternate");
         final Map<Integer, Integer> graph = Map.of(1, 10, 2, 20, 3, 30, 10, 40, 20, 50);
 
         final EdgeQueue queue = new EdgeQueue(10);
@@ -69,7 +69,7 @@ public class EdgeQueueTest
 
         List<Edge> result = new ArrayList<>();
         Edge current;
-        while ((current = queue.poll()) != null)
+        while ((current = queue.pop()) != null)
         {
             result.add(current);
             final Integer next = graph.get((Integer) current.to);
@@ -89,9 +89,9 @@ public class EdgeQueueTest
         expect(20, -1, 50, result.get(4));
     }
 
-    private static void testPushPoll()
+    private static void testPushPop()
     {
-        System.out.println("EdgeQueueTest.testPushPoll");
+        System.out.println("EdgeQueueTest.testPushPop");
         final EdgeQueue queue = new EdgeQueue(3);
         for (int i = 1; i <= 3; i++)
         {
@@ -102,7 +102,7 @@ public class EdgeQueueTest
 
         List<Edge> result = new ArrayList<>();
         Edge current;
-        while ((current = queue.poll()) != null)
+        while ((current = queue.pop()) != null)
         {
             result.add(current);
         }

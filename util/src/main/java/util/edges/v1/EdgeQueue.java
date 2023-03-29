@@ -27,7 +27,7 @@ public final class EdgeQueue
         return false;
     }
 
-    public Edge poll()
+    public Edge pop()
     {
         if (head < tail) {
             int pos = (int) (head % edges.length);
