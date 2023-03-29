@@ -42,7 +42,7 @@ public final class EdgeQueue
 
     public int size()
     {
-        return (int)(tail - head);
+        return (int) (tail - head);
     }
 
     private void set(Object from, int location, Object to, int index)
