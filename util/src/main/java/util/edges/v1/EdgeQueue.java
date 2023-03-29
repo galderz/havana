@@ -40,6 +40,11 @@ public final class EdgeQueue
         return null;
     }
 
+    public int size()
+    {
+        return (int)(tail - head);
+    }
+
     private void set(Object from, int location, Object to, int index)
     {
         edges[index].from = from;

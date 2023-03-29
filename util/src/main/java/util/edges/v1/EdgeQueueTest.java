@@ -15,6 +15,24 @@ public class EdgeQueueTest
         testPushPoll();
         testPushPollAlternate();
         testPushBeyond();
+        testSizeWrapped();
+    }
+
+    private static void testSizeWrapped()
+    {
+        System.out.println("EdgeQueueTest.testSizeWrapped");
+        final EdgeQueue queue = new EdgeQueue(3);
+        for (int i = 1; i <= 3; i++)
+        {
+            final boolean success = queue.push(i, i * 100, i + 1);
+            assert success;
+        }
+        assert 3 == queue.size();
+        final Edge first = queue.poll();
+        expect(1, 100, 2, first);
+        assert 2 == queue.size();
+        queue.push(4, 400, 500);
+        assert 3 == queue.size();
     }
 
     private static void testPushBeyond()
@@ -33,6 +51,7 @@ public class EdgeQueueTest
                 assert !success;
             }
         }
+        assert 3 == queue.size();
     }
 
     private static void testPushPollAlternate()
@@ -46,6 +65,7 @@ public class EdgeQueueTest
             final boolean success = queue.push(i, -1, graph.get(i));
             assert success;
         }
+        assert 3 == queue.size();
 
         List<Edge> result = new ArrayList<>();
         Edge current;
@@ -59,6 +79,7 @@ public class EdgeQueueTest
                 assert success;
             }
         }
+        assert 0 == queue.size();
 
         assert 5 == result.size();
         expect(1, -1, 10, result.get(0));
@@ -77,6 +98,7 @@ public class EdgeQueueTest
             final boolean success = queue.push(i, i * 100, i + 1);
             assert success;
         }
+        assert 3 == queue.size();
 
         List<Edge> result = new ArrayList<>();
         Edge current;
@@ -84,6 +106,7 @@ public class EdgeQueueTest
         {
             result.add(current);
         }
+        assert 0 == queue.size();
 
         assert 3 == result.size();
         expect(1, 100, 2, result.get(0));
