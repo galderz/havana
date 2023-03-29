@@ -4,6 +4,7 @@ import util.Asserts;
 import util.edges.v1.EdgeQueue.Edge;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,86 @@ public class EdgeQueueTest
         testPushPopAlternate();
         testPushBeyond();
         testSizeWrapped();
+        testFrontiers();
+    }
+
+    private static void testFrontiers()
+    {
+        System.out.println("EdgeQueueTest.testFrontiers");
+        final Map<Integer, Integer> graph = new HashMap<>();
+        graph.put(1, 10);
+        graph.put(2, 20);
+        graph.put(3, 30);
+        graph.put(4, 40);
+        graph.put(5, 50);
+        graph.put(6, 60);
+        graph.put(7, 70);
+        graph.put(8, 80);
+        graph.put(10, 100);
+        graph.put(20, 200);
+        graph.put(30, 300);
+        graph.put(40, 400);
+        graph.put(100, 1_000);
+        graph.put(200, 2_000);
+        graph.put(1_000, 10_000);
+
+        final EdgeQueue queue = new EdgeQueue(16);
+        for (int i = 1; i <= 8; i++)
+        {
+            final boolean success = queue.push(i, -1, graph.get(i));
+            assert success;
+        }
+
+        final FrontierLevels frontiers = new FrontierLevels();
+        frontiers.next = queue.tail();
+        while (!isComplete(frontiers, queue))
+        {
+            final Edge edge = queue.pop();
+            final Integer next = graph.get(edge.to);
+            if (next != null)
+            {
+                queue.push(edge.to, -1, next);
+            }
+        }
+    }
+
+    private static class FrontierLevels
+    {
+        long current;
+        long next;
+        long prev;
+    }
+
+    private static boolean isComplete(FrontierLevels frontiers, EdgeQueue queue)
+    {
+        if (queue.head() < frontiers.next)
+        {
+            return false;
+        }
+        if (queue.head() > frontiers.next)
+        {
+            return true;
+        }
+        if (queue.isEmpty())
+        {
+            return true;
+        }
+        stepFrontier(frontiers, queue);
+        return false;
+    }
+
+    private static void stepFrontier(FrontierLevels frontiers, EdgeQueue queue)
+    {
+        logCompletedFrontier(frontiers);
+        frontiers.current++;
+        frontiers.prev = frontiers.next;
+        frontiers.next = queue.tail();
+    }
+
+    private static void logCompletedFrontier(FrontierLevels frontiers)
+    {
+        long numberOfEdgesInFrontier = frontiers.next - frontiers.prev;
+        System.out.println("BFS front: " + frontiers.current + " edges: " + numberOfEdgesInFrontier);
     }
 
     private static void testSizeWrapped()

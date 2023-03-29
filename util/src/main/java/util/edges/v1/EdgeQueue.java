@@ -45,6 +45,21 @@ public final class EdgeQueue
         return (int) (tail - head);
     }
 
+    public long tail()
+    {
+        return tail;
+    }
+
+    public long head()
+    {
+        return head;
+    }
+
+    public boolean isEmpty()
+    {
+        return tail == head;
+    }
+
     private void set(Object from, int location, Object to, int index)
     {
         edges[index].from = from;
