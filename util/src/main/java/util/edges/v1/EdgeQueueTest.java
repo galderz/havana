@@ -181,6 +181,7 @@ public class EdgeQueueTest
         }
         assert 3 == queue.size();
         assert queue.isFull();
+        // queue.show(new Log());
 
         List<Edge> result = new ArrayList<>();
         Edge current;

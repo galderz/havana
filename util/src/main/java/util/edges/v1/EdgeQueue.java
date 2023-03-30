@@ -65,6 +65,41 @@ public final class EdgeQueue
         return size() == edges.length;
     }
 
+    public void show(Log log)
+    {
+        long showTail = tail;
+        long showHead = head;
+
+        Edge current;
+        while ((current = peek(showTail, showHead)) != null)
+        {
+            showHead++;
+            show(current.from, log);
+            log.string("->");
+            show(current.to, log);
+            log.newline();
+        }
+    }
+
+    private static void show(Object obj, Log log) {
+        if (obj == null) {
+            log.string("null");
+        } else {
+            log.string(obj.getClass().getName()).string("@").zhex(System.identityHashCode(obj));
+        }
+    }
+
+    private Edge peek(long peekTail, long peekHead)
+    {
+        if (peekHead < peekTail) {
+            int pos = (int) (peekHead % edges.length);
+            Edge e = edges[pos];
+            return e;
+        }
+
+        return null;
+    }
+
     private void set(Object from, int location, Object to, int index)
     {
         edges[index].from = from;
