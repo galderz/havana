@@ -15,11 +15,11 @@ public final class EdgeQueue
         }
     }
 
-    public boolean push(Object from, int location, Object to)
+    public boolean push(Object from, int location, Object to, Edge parent)
     {
         if (tail - head < edges.length) {
             int pos = (int) (tail % edges.length);
-            set(from, location, to, pos);
+            set(from, location, to, parent, pos);
             tail++;
             return true;
         }
@@ -38,6 +38,11 @@ public final class EdgeQueue
         }
 
         return null;
+    }
+
+    public Edge peek()
+    {
+        return edges[(int)(head % edges.length)];
     }
 
     public int size()
@@ -100,11 +105,12 @@ public final class EdgeQueue
         return null;
     }
 
-    private void set(Object from, int location, Object to, int index)
+    private void set(Object from, int location, Object to, Edge parent, int index)
     {
         edges[index].from = from;
         edges[index].location = location;
         edges[index].to = to;
+        edges[index].parent = parent;
     }
 
     static class Edge
@@ -112,5 +118,6 @@ public final class EdgeQueue
         Object from;
         int location;
         Object to;
+        Edge parent;
     }
 }

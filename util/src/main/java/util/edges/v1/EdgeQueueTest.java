@@ -43,21 +43,43 @@ public class EdgeQueueTest
         final EdgeQueue queue = new EdgeQueue(16);
         for (int i = 1; i <= 8; i++)
         {
-            final boolean success = queue.push(i, -1, graph.get(i));
+            final boolean success = queue.push(i, -1, graph.get(i), null);
             assert success;
         }
 
+        List<Edge> result = new ArrayList<>();
         final FrontierLevels frontiers = new FrontierLevels();
         frontiers.next = queue.tail();
         while (!isComplete(frontiers, queue))
         {
             final Edge edge = queue.pop();
+            result.add(edge);
             final Integer next = graph.get(edge.to);
             if (next != null)
             {
-                queue.push(edge.to, -1, next);
+                queue.push(edge.to, -1, next, edge);
             }
+
         }
+        assert 0 == queue.size();
+        assert !queue.isFull();
+
+        assert graph.size() == result.size();
+        expect(1, -1, 10, null, result.get(0));
+        expect(2, -1, 20, null, result.get(1));
+        expect(3, -1, 30, null, result.get(2));
+        expect(4, -1, 40, null, result.get(3));
+        expect(5, -1, 50, null, result.get(4));
+        expect(6, -1, 60, null, result.get(5));
+        expect(7, -1, 70, null, result.get(6));
+        expect(8, -1, 80, null, result.get(7));
+        expect(10, -1, 100, result.get(0), result.get(8));
+        expect(20, -1, 200, result.get(1), result.get(9));
+        expect(30, -1, 300, result.get(2), result.get(10));
+        expect(40, -1, 400, result.get(3), result.get(11));
+        expect(100, -1, 1_000, result.get(8), result.get(12));
+        expect(200, -1, 2_000, result.get(9), result.get(13));
+        expect(1_000, -1, 10_000, result.get(12), result.get(14));
     }
 
     private static class FrontierLevels
@@ -105,14 +127,14 @@ public class EdgeQueueTest
         final EdgeQueue queue = new EdgeQueue(3);
         for (int i = 1; i <= 3; i++)
         {
-            final boolean success = queue.push(i, i * 100, i + 1);
+            final boolean success = queue.push(i, i * 100, i + 1, null);
             assert success;
         }
         assert 3 == queue.size();
         final Edge first = queue.pop();
-        expect(1, 100, 2, first);
+        expect(1, 100, 2, null, first);
         assert 2 == queue.size();
-        queue.push(4, 400, 500);
+        queue.push(4, 400, 500, null);
         assert 3 == queue.size();
     }
 
@@ -122,7 +144,7 @@ public class EdgeQueueTest
         final EdgeQueue queue = new EdgeQueue(3);
         for (int i = 1; i <= 4; i++)
         {
-            final boolean success = queue.push(i, i * 100, i + 1);
+            final boolean success = queue.push(i, i * 100, i + 1, null);
             if (i < 4)
             {
                 assert success;
@@ -143,7 +165,7 @@ public class EdgeQueueTest
         final EdgeQueue queue = new EdgeQueue(10);
         for (int i = 1; i <= 3; i++)
         {
-            final boolean success = queue.push(i, -1, graph.get(i));
+            final boolean success = queue.push(i, -1, graph.get(i), null);
             assert success;
         }
         assert 3 == queue.size();
@@ -156,18 +178,18 @@ public class EdgeQueueTest
             final Integer next = graph.get((Integer) current.to);
             if (next != null)
             {
-                final boolean success = queue.push(current.to, -1, next);
+                final boolean success = queue.push(current.to, -1, next, current);
                 assert success;
             }
         }
         assert 0 == queue.size();
 
         assert 5 == result.size();
-        expect(1, -1, 10, result.get(0));
-        expect(2, -1, 20, result.get(1));
-        expect(3, -1, 30, result.get(2));
-        expect(10, -1, 40, result.get(3));
-        expect(20, -1, 50, result.get(4));
+        expect(1, -1, 10, null, result.get(0));
+        expect(2, -1, 20, null, result.get(1));
+        expect(3, -1, 30, null, result.get(2));
+        expect(10, -1, 40, result.get(0), result.get(3));
+        expect(20, -1, 50, result.get(1), result.get(4));
     }
 
     private static void testPushPop()
@@ -176,7 +198,7 @@ public class EdgeQueueTest
         final EdgeQueue queue = new EdgeQueue(3);
         for (int i = 1; i <= 3; i++)
         {
-            final boolean success = queue.push(i, i * 100, i + 1);
+            final boolean success = queue.push(i, i * 100, i + 1, null);
             assert success;
         }
         assert 3 == queue.size();
@@ -193,15 +215,16 @@ public class EdgeQueueTest
         assert !queue.isFull();
 
         assert 3 == result.size();
-        expect(1, 100, 2, result.get(0));
-        expect(2, 200, 3, result.get(1));
-        expect(3, 300, 4, result.get(2));
+        expect(1, 100, 2, null, result.get(0));
+        expect(2, 200, 3, null, result.get(1));
+        expect(3, 300, 4, null, result.get(2));
     }
 
-    private static void expect(Object from, int location, Object to, Edge result)
+    private static void expect(Object from, int location, Object to, Edge parent, Edge result)
     {
         assert from.equals(result.from);
         assert location == result.location;
         assert to.equals(result.to);
+        assert parent == result.parent;
     }
 }
