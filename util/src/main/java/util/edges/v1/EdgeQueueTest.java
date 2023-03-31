@@ -134,8 +134,9 @@ public class EdgeQueueTest
         final Edge first = queue.pop();
         expect(1, 100, 2, null, first);
         assert 2 == queue.size();
-        queue.push(4, 400, 500, null);
-        assert 3 == queue.size();
+        final boolean success = queue.push(4, 400, 500, null);
+        assert !success;
+        assert 2 == queue.size();
     }
 
     private static void testPushBeyond()

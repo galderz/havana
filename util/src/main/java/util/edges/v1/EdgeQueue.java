@@ -1,5 +1,11 @@
 package util.edges.v1;
 
+/**
+ * A queue for edge nodes that enables computing the path to the root from any node.
+ * To avoid losing information in the path to the root,
+ * the queue does not write over any previously queued edge nodes.
+ * So this queue does not behave like a ring or circular queue.
+ */
 public final class EdgeQueue
 {
     private final Edge[] edges;
@@ -19,6 +25,9 @@ public final class EdgeQueue
     {
         if (tail - head < edges.length) {
             int pos = (int) (tail % edges.length);
+            if (pos < head) {
+                 return false; // wrapping around not supported
+            }
             set(from, location, to, parent, pos);
             tail++;
             return true;
@@ -38,11 +47,6 @@ public final class EdgeQueue
         }
 
         return null;
-    }
-
-    public Edge peek()
-    {
-        return edges[(int)(head % edges.length)];
     }
 
     public int size()
