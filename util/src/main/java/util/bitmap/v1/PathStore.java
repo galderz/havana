@@ -16,6 +16,7 @@ final class PathStore
     private final int rootContext;
     private final int leakContext;
     private final int maxRefChainDepth;
+    private int count;
 
     public PathStore(int capacity)
     {
@@ -42,6 +43,13 @@ final class PathStore
     Object getRoot(int path)
     {
         return paths[path][getIndex(rootPositions[path])];
+    }
+
+    int addPathElement(int position, UnsignedWord location, Object from)
+    {
+        int path = count++;
+        addPathElement(position, location, from, path);
+        return path;
     }
 
     void addPathElement(int position, UnsignedWord location, Object from, int path)
