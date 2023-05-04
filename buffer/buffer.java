@@ -1,22 +1,27 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
 //DEPS info.picocli:picocli:4.6.3
+//DEPS org.zeroturnaround:zt-exec:1.12
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.OpenOption;
+import java.io.File;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Random;
 import java.util.concurrent.Callable;
 
 @Command(name = "buffer", mixinStandardHelpOptions = true, version = "buffer 0.1",
     description = "buffer made with jbang")
 class buffer implements Callable<Integer>
 {
+    private static final Random R = new Random();
+
     @Parameters(index = "0", description = "The greeting to print", defaultValue = "World!")
-    private String greeting;
+    private Path msgPath;
 
     public static void main(String... args)
     {
@@ -27,38 +32,40 @@ class buffer implements Callable<Integer>
     @Override
     public Integer call() throws Exception
     {
-        String plist = """
-            <?xml version="1.0" encoding="UTF-8"?>
-            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-            <plist version="1.0">
-            	<dict>
-            		<key>Label</key>
-            		<string>havana.buffer</string>
-            		<key>EnvironmentVariables</key>
-            		<dict>
-            			<key>JAVA_HOME</key>
-            			<string>/opt/java-17</string>
-            		</dict>
-            		<key>ProgramArguments</key>
-            		<array>
-            			<string>/opt/jbang/bin/jbang</string>
-            			<string>/Users/g/Downloads/hellocli.java</string>
-            		</array>
-            		<key>StandardInPath</key>
-            		<string>/tmp/buffer.stdin</string>
-            		<key>StandardOutPath</key>
-            		<string>/tmp/buffer.stdout</string>
-            		<key>StandardErrorPath</key>
-            		<string>/tmp/buffer.stderr</string>
-            		<key>RunAtLoad</key>
-              		<true/>
-            	</dict>
-            </plist>
-            """;
-
-        final String userHome = System.getProperty("user.home");
-        final Path agentsPath = Path.of("Library", "LaunchAgents", "havana.buffer.plist");
-        Files.writeString(Path.of(userHome).resolve(agentsPath), plist);
+//        final Path dotBuffer = dotBuffer();
+//        final String msg = Files.readString(msgPath);
+        System.out.println(nextDateTime());
         return 0;
+    }
+
+    static LocalDateTime nextDateTime()
+    {
+        final int nextMinute = R.nextInt(59);
+        final LocalTime nextTime = LocalTime.of(13, nextMinute);
+        final LocalDate nextDate = nextDate();
+        return nextDate.atTime(nextTime);
+    }
+
+    static LocalDate nextDate()
+    {
+        // todo only provide dates that are weekdays
+        final LocalDateTime now = LocalDateTime.now();
+        final LocalDate today = now.toLocalDate();
+        return now.toLocalTime().getHour() > 13
+            ? today.plusDays(1)
+            : today;
+    }
+
+    static Path dotBuffer()
+    {
+        final Path userHome = Path.of(System.getProperty("user.home"));
+        final Path dotBuffer = userHome.resolve(Path.of(".buffer"));
+        final File dotBufferFile = dotBuffer.toFile();
+        if (!dotBufferFile.exists()) {
+            final boolean success = dotBufferFile.mkdir();
+            if (!success)
+                throw new RuntimeException("Unable to create ~/.buffer folder");
+        }
+        return dotBuffer;
     }
 }
