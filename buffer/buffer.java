@@ -48,12 +48,27 @@ class buffer implements Callable<Integer>
 
     static LocalDate nextDate()
     {
-        // todo only provide dates that are weekdays
         final LocalDateTime now = LocalDateTime.now();
+        final LocalDate nextDate = todayOrTomorrow(now);
+        return skipWeekend(nextDate);
+    }
+
+    private static LocalDate todayOrTomorrow(LocalDateTime now)
+    {
         final LocalDate today = now.toLocalDate();
         return now.toLocalTime().getHour() > 13
             ? today.plusDays(1)
             : today;
+    }
+
+    private static LocalDate skipWeekend(LocalDate date)
+    {
+        return switch (date.getDayOfWeek())
+        {
+            case SATURDAY -> date.plusDays(2);
+            case SUNDAY -> date.plusDays(1);
+            default -> date;
+        };
     }
 
     static Path dotBuffer()
@@ -61,7 +76,8 @@ class buffer implements Callable<Integer>
         final Path userHome = Path.of(System.getProperty("user.home"));
         final Path dotBuffer = userHome.resolve(Path.of(".buffer"));
         final File dotBufferFile = dotBuffer.toFile();
-        if (!dotBufferFile.exists()) {
+        if (!dotBufferFile.exists())
+        {
             final boolean success = dotBufferFile.mkdir();
             if (!success)
                 throw new RuntimeException("Unable to create ~/.buffer folder");
