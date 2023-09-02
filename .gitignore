@@ -1,30 +1,6 @@
-# ignore Maven generated target folders
-target
-# ignore eclipse files
-.project
-.classpath
-.settings
-.scala_dependencies
-.externalToolBuilders
-.factorypath
-# ignore IDEA files
-*.iml
-*.ipr
-*.iws
+# IDEA.gitignore
 .idea
-# generated class folder
-gen
+# Maven.gitignore
+mvnw*
+target
 .mvn
-# ignore native-image reports
-reports
-# classes
-*.class
-# jars
-*.jar
-# built modules
-mods
-mlib
-# jqwik temp files
-.jqwik-database
-# macos files
-.DS_Store
