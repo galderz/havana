@@ -25,6 +25,7 @@
         <module>guava</module>
         <module>classvalue-npe</module>
         <module>util</module>
+        <module>security</module>
     </modules>
 
 </project>
