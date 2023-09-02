@@ -1,0 +1,2 @@
+java_bin = $(JAVA_HOME)/bin
+java = $(java_bin)/java

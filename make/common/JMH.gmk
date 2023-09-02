@@ -1,0 +1,13 @@
+include $(TOPDIR)/make/common/Java.gmk
+include $(TOPDIR)/make/common/Maven.gmk
+
+jar := $(APP_DIR)/target/benchmarks.jar
+
+$(jar): $(mvnw) $(sources)
+> $(mvn) verify
+
+build: $(jar)
+
+run-jmh: $(jar)
+> $(java) -jar $<
+.PHONY: run-jmh
