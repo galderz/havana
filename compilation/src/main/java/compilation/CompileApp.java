@@ -5,6 +5,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
 import javax.lang.model.element.Modifier;
+import java.util.HexFormat;
 
 public class CompileApp
 {
@@ -12,6 +13,9 @@ public class CompileApp
     {
         final JavaFile javaFile = greetingJavaFile();
         compileToClass(javaFile);
+
+        final byte[] bytes = {-54, -2, -70, -66};
+        System.out.println(HexFormatting.encodeHexString(bytes));
     }
 
     private static void compileToClass(JavaFile javaFile)
