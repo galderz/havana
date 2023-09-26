@@ -6,7 +6,6 @@ import com.squareup.javapoet.TypeSpec;
 
 import javax.lang.model.element.Modifier;
 import java.util.Arrays;
-import java.util.HexFormat;
 
 public class CompileApp
 {
@@ -15,7 +14,12 @@ public class CompileApp
         final byte[] bytes = {-54, -2, -70, -66};
         System.out.println("Smoke test: " + HexFormatting.encodeHexString(bytes));
 
-        final JavaFile javaFile = greetingJavaFile();
+        compileHelloWorld();
+    }
+
+    private static void compileHelloWorld()
+    {
+        final JavaFile javaFile = helloWorldJavaFile();
         compileToClass(javaFile);
         compileToBytes(javaFile);
     }
@@ -34,7 +38,7 @@ public class CompileApp
         System.out.println("The marker for the class byte[] is: " + HexFormatting.encodeHexString(markerBytes));
     }
 
-    static JavaFile greetingJavaFile()
+    static JavaFile helloWorldJavaFile()
     {
         MethodSpec main = MethodSpec.methodBuilder("main")
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
