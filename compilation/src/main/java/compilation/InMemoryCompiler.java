@@ -1,16 +1,15 @@
 package compilation;
 
 import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
 
 import javax.annotation.processing.Processor;
-import javax.lang.model.element.Modifier;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
@@ -18,21 +17,43 @@ import java.util.Locale;
 
 public class InMemoryCompiler
 {
-    static Class<?> compile(JavaFile java) {
+    static byte[] compileAsBytes(JavaFile java) {
+        final ClassLoader parent = java.getClass().getClassLoader();
+        final List<String> options = Collections.emptyList();
+        final List<Processor> processors = Collections.emptyList();
+        try (InMemoryFileManager fileManager = compile(java, parent, options, processors))
+        {
+            final String name = getJavaClassName(java);
+            return fileManager.map.get(name).getBytes();
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    static Class<?> compileAsClass(JavaFile java) {
         ClassLoader parent = java.getClass().getClassLoader();
         List<String> options = Collections.emptyList();
         List<Processor> processors = Collections.emptyList();
-        ClassLoader loader = compile(java, parent, options, processors);
-        try {
-            String name = java.packageName;
-            name = name.isEmpty() ? java.typeSpec.name : name + "." + java.typeSpec.name;
+        ClassLoader loader;
+        try (InMemoryFileManager fileManager = compile(java, parent, options, processors))
+        {
+            loader = fileManager.getClassLoader(null);
+            final String name = getJavaClassName(java);
             return loader.loadClass(name);
-        } catch (ClassNotFoundException e) {
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e);
+        }
+        catch (ClassNotFoundException e)
+        {
             throw new IllegalStateException("loading class failed after successful compilation?!", e);
         }
     }
 
-    static ClassLoader compile(
+    static InMemoryFileManager compile(
         JavaFile java
         , ClassLoader parent
         , List<String> options
@@ -64,6 +85,13 @@ public class InMemoryCompiler
         if (!success)
             throw new RuntimeException("compilation failed" + diagnostics.getDiagnostics());
 
-        return manager.getClassLoader(null);
+        return manager;
+    }
+
+    private static String getJavaClassName(JavaFile java)
+    {
+        String name = java.packageName;
+        name = name.isEmpty() ? java.typeSpec.name : name + "." + java.typeSpec.name;
+        return name;
     }
 }
