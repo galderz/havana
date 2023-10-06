@@ -1,8 +1,13 @@
 package compilation;
 
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
+import io.quarkus.runtime.StartupEvent;
+import jakarta.enterprise.event.Observes;
+import org.jboss.logging.Logger;
 
 import javax.lang.model.element.Modifier;
 import java.util.Arrays;
@@ -15,11 +20,19 @@ public class CompileApp
         System.out.println("Smoke test: " + HexFormatting.encodeHexString(bytes));
 
         compileHelloWorld();
+        compileAppLifecycleBean();
     }
 
     private static void compileHelloWorld()
     {
         final JavaFile javaFile = helloWorldJavaFile();
+        compileToClass(javaFile);
+        compileToBytes(javaFile);
+    }
+
+    private static void compileAppLifecycleBean()
+    {
+        final JavaFile javaFile = appLifecycleBeanJavaFile();
         compileToClass(javaFile);
         compileToBytes(javaFile);
     }
@@ -53,6 +66,33 @@ public class CompileApp
             .build();
 
         return JavaFile.builder("com.example.helloworld", helloWorld)
+            .build();
+    }
+
+    static JavaFile appLifecycleBeanJavaFile()
+    {
+        MethodSpec onStart = MethodSpec.methodBuilder("onStart")
+            .returns(void.class)
+            .addParameter(
+                ParameterSpec.builder(StartupEvent.class, "ev")
+                    .addAnnotation(Observes.class)
+                    .build()
+            )
+            .addStatement("LOGGER.info($S)", "The application is starting...")
+            .build();
+
+        TypeSpec appLifecycleBean = TypeSpec.classBuilder("AppLifecycleBean")
+            .addField(
+                FieldSpec.builder(Logger.class, "LOGGER")
+                    .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                    .initializer("$T.getLogger($S)", Logger.class, "ListenerBean")
+                    .build()
+            )
+            .addModifiers(Modifier.PUBLIC)
+            .addMethod(onStart)
+            .build();
+
+        return JavaFile.builder("org.acme.lifecycle", appLifecycleBean)
             .build();
     }
 }
