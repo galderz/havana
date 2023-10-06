@@ -1,0 +1,55 @@
+FROM fedora:39
+
+RUN dnf install -y git
+
+ENV OPENJDK_HOME /opt/jdk
+
+ENV CAPSTONE_HOME /opt/capstone
+
+RUN git clone --depth 1 https://github.com/openjdk/jdk $OPENJDK_HOME
+
+ADD make-capstone.sh /opt
+
+RUN git clone --depth 1 https://github.com/capstone-engine/capstone $CAPSTONE_HOME
+
+ADD make-jdk.sh /opt
+
+RUN dnf groupinstall -y "Development Tools" && dnf install -y \
+autoconf \
+alsa-lib-devel \
+binutils \
+cups-devel \
+emacs \
+fontconfig-devel \
+gdb \
+gcc \
+gcc-c++ \
+glibc-devel \
+libstdc++-static \
+libXi-devel \
+libXrandr-devel \
+libXrender-devel \
+libXt-devel \
+libXtst-devel \
+perl-open.noarch \
+perf \
+sysstat \
+wget \
+zlib-devel
+
+WORKDIR /opt
+
+RUN echo -e '\
+set auto-load safe-path /local\n\
+add-auto-load-safe-path /\n\
+\n\
+handle 11 nostop\n\
+handle 4 noprint nostop\n\
+set print thread-events off\n\
+set step-mode on\n\
+\n\
+set height 0\n\
+'\
+>> $HOME/.gdbinit
+
+ENTRYPOINT /bin/bash
