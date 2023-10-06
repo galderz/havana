@@ -1,0 +1,28 @@
+COLIMA_CPU ?= 4
+COLIMA_MEMORY ?= 8
+COLIMA_VM ?= qemu
+
+colima_start += colima
+colima_start += start
+colima_start += --network-address
+colima_start += --cpu
+colima_start += $(COLIMA_CPU)
+colima_start += --memory
+colima_start += $(COLIMA_MEMORY)
+
+ifeq ($(COLIMA_VM), vz)
+  colima_start += --vm-type=vz
+  colima_start += --mount-type=virtiofs
+endif
+
+colima:
+> $(colima_start)
+.PHONY: colima
+
+colima-stop:
+> colima stop
+.PHONY: colima-stop
+
+colima-delete:
+> colima delete
+.PHONY: colima-delete
