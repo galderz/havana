@@ -166,6 +166,22 @@ public class JsonReader
     /**
      * string
      *     '"' characters '"'
+     * characters
+     *     ""
+     *     character characters
+     * character
+     *     '0020' . '10FFFF' - '"' - '\'
+     *     '\' escape
+     * escape
+     *     '"'
+     *     '\'
+     *     '/'
+     *     'b'
+     *     'f'
+     *     'n'
+     *     'r'
+     *     't'
+     *     'u' hex hex hex hex
      */
     private JsonString readString()
     {
