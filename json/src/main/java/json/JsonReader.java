@@ -8,36 +8,32 @@ import java.util.stream.Stream;
 
 /**
  * A json format reader.
- * It follows the <a href="https://www.json.org/json-en.html>ECMA-404 The JSON Data Interchange Standard.</a>.
+ * It follows the <a href="https://www.json.org/json-en.html">ECMA-404 The JSON Data Interchange Standard.</a>.
  */
-public class JsonReader
-{
+public class JsonReader {
+
     private final String text;
     private final int length;
     private int position;
 
-    private JsonReader(String text)
-    {
+    private JsonReader(String text) {
         this.text = text;
         this.length = text.length();
     }
 
-    public static JsonReader of(String source)
-    {
+    public static JsonReader of(String source) {
         return new JsonReader(source);
     }
 
-    public <T extends JsonValue> T read()
-    {
+    public <T extends JsonValue> T read() {
         return cast(readElement());
     }
 
     /**
      * element
-     *     ws value ws
+     * |---- ws value ws
      */
-    private JsonValue readElement()
-    {
+    private JsonValue readElement() {
         ignoreWhitespace();
         JsonValue result = readValue();
         ignoreWhitespace();
@@ -46,24 +42,21 @@ public class JsonReader
 
     /**
      * value
-     *     object
-     *     array
-     *     string
-     *     number
-     *     "true"
-     *     "false"
-     *     "null"
+     * |---- object
+     * |---- array
+     * |---- string
+     * |---- number
+     * |---- "true"
+     * |---- "false"
+     * |---- "null"
      */
-    private JsonValue readValue()
-    {
+    private JsonValue readValue() {
         final int ch = peekChar();
-        if (ch < 0)
-        {
+        if (ch < 0) {
             throw new IllegalArgumentException("Unable to fully read json value");
         }
 
-        switch (ch)
-        {
+        switch (ch) {
             case '{':
                 return readObject();
             case '[':
@@ -77,8 +70,7 @@ public class JsonReader
             case 'n':
                 return readConstant("null", JsonNull.INSTANCE);
             default:
-                if (Character.isDigit(ch) || '-' == ch)
-                {
+                if (Character.isDigit(ch) || '-' == ch) {
                     return readNumber(position);
                 }
                 throw new IllegalArgumentException("Unknown start character for json value: " + ch);
@@ -87,41 +79,29 @@ public class JsonReader
 
     /**
      * object
-     *     '{' ws '}'
-     *     '{' members '}'
+     * |---- '{' ws '}'
+     * |---- '{' members '}'
+     * </p>
      * members
-     *     member
-     *     member ',' members
-     * member
-     *     ws string ws ':' element
+     * |----- member
+     * |----- member ',' members
      */
-    private JsonValue readObject()
-    {
+    private JsonValue readObject() {
         position++;
 
-        Map<String, JsonValue> result = new HashMap<>();
+        Map<String, JsonValue> members = new HashMap<>();
 
-        while (position < length)
-        {
+        while (position < length) {
             ignoreWhitespace();
-            switch (peekChar())
-            {
+            switch (peekChar()) {
                 case '}':
                     position++;
-                    return new JsonObject(result);
+                    return new JsonObject(members);
                 case ',':
                     position++;
                     break;
                 case '"':
-                    final String attribute = readString().value;
-                    ignoreWhitespace();
-                    final int colon = nextChar();
-                    if (':' != colon)
-                    {
-                        throw new IllegalArgumentException("Expected : after attribute");
-                    }
-                    final JsonValue element = readElement();
-                    result.put(attribute, element);
+                    readMember(members);
                     break;
             }
         }
@@ -130,32 +110,45 @@ public class JsonReader
     }
 
     /**
-     * array
-     *     '[' ws ']'
-     *     '[' elements ']'
-     * elements
-     *     element
-     *     element ',' elements
+     * member
+     * |----- ws string ws ':' element
      */
-    private JsonValue readArray()
-    {
+    private void readMember(Map<String, JsonValue> members) {
+        final String attribute = readString().value;
+        ignoreWhitespace();
+        final int colon = nextChar();
+        if (':' != colon) {
+            throw new IllegalArgumentException("Expected : after attribute");
+        }
+        final JsonValue element = readElement();
+        members.put(attribute, element);
+    }
+
+    /**
+     * array
+     * |---- '[' ws ']'
+     * |---- '[' elements ']'
+     * </p>
+     * elements
+     * |----- element
+     * |----- element ',' elements
+     */
+    private JsonValue readArray() {
         position++;
 
-        final List<JsonValue> result = new ArrayList<>();
+        final List<JsonValue> elements = new ArrayList<>();
 
-        while (position < length)
-        {
+        while (position < length) {
             ignoreWhitespace();
-            switch (peekChar())
-            {
+            switch (peekChar()) {
                 case ']':
                     position++;
-                    return new JsonArray(result);
+                    return new JsonArray(elements);
                 case ',':
                     position++;
                     break;
                 default:
-                    result.add(readElement());
+                    elements.add(readElement());
                     break;
             }
         }
@@ -165,42 +158,44 @@ public class JsonReader
 
     /**
      * string
-     *     '"' characters '"'
+     * |---- '"' characters '"'
+     * </p>
      * characters
-     *     ""
-     *     character characters
+     * |----- ""
+     * |----- character characters
+     * </p>
      * character
-     *     '0020' . '10FFFF' - '"' - '\'
-     *     '\' escape
-     * escape
-     *     '"'
-     *     '\'
-     *     '/'
-     *     'b'
-     *     'f'
-     *     'n'
-     *     'r'
-     *     't'
-     *     'u' hex hex hex hex
+     * |----- '0020' . '10FFFF' - '"' - '\'
+     * |----- '\' escape
+     * |----- escape
+     * |----- '"'
+     * |----- '\'
+     * |----- '/'
+     * |----- 'b'
+     * |----- 'f'
+     * |----- 'n'
+     * |----- 'r'
+     * |----- 't'
+     * |----- 'u' hex hex hex hex
      */
-    private JsonString readString()
-    {
+    private JsonString readString() {
         position++;
 
         int start = position;
+        // Substring on string values that contain unicode characters won't work,
+        // because there are more characters read than actual characters represented.
+        // Use StringBuilder to buffer any string read up to unicode,
+        // then add unicode values into it and continue as usual.
         StringBuilder unicodeString = null;
 
-        while (position < length)
-        {
+        while (position < length) {
             final int ch = nextChar();
 
-            if (Character.isISOControl(ch))
-            {
+            if (Character.isISOControl(ch)) {
                 throw new IllegalArgumentException("Control characters not allowed in json string");
             }
 
-            if ('"' == ch)
-            {
+            if ('"' == ch) {
                 final String chunk = text.substring(start, position - 1);
                 final String result = unicodeString != null
                     ? unicodeString.append(chunk).toString()
@@ -210,20 +205,18 @@ public class JsonReader
                 return new JsonString(result);
             }
 
-            if ('\\' == ch)
-            {
-                switch (nextChar())
-                {
-                    case '"':     // quotation mark
-                    case '\\':    // reverse solidus
-                    case '/':     // solidus
-                    case 'b':     // backspace
-                    case 'f':     // formfeed
-                    case 'n':     // linefeed
-                    case 'r':     // carriage return
-                    case 't':     // horizontal tab
+            if ('\\' == ch) {
+                switch (nextChar()) {
+                    case '"': // quotation mark
+                    case '\\': // reverse solidus
+                    case '/': // solidus
+                    case 'b': // backspace
+                    case 'f': // formfeed
+                    case 'n': // linefeed
+                    case 'r': // carriage return
+                    case 't': // horizontal tab
                         break;
-                    case 'u':     // unicode
+                    case 'u': // unicode
                         if (unicodeString == null) {
                             unicodeString = new StringBuilder(position - start);
                         }
@@ -237,8 +230,7 @@ public class JsonReader
         throw new IllegalArgumentException("String not closed");
     }
 
-    private char readUnicode()
-    {
+    private char readUnicode() {
         final char digit1 = Character.forDigit(nextChar(), 16);
         final char digit2 = Character.forDigit(nextChar(), 16);
         final char digit3 = Character.forDigit(nextChar(), 16);
@@ -248,10 +240,9 @@ public class JsonReader
 
     /**
      * number
-     *     integer fraction exponent
+     * |---- integer fraction exponent
      */
-    private JsonValue readNumber(int numStartIndex)
-    {
+    private JsonValue readNumber(int numStartIndex) {
         final boolean isFraction = skipToEndOfNumber();
         final String number = text.substring(numStartIndex, position);
         return isFraction
@@ -259,38 +250,32 @@ public class JsonReader
             : new JsonInteger(Long.parseLong(number));
     }
 
-    private boolean skipToEndOfNumber()
-    {
+    private boolean skipToEndOfNumber() {
         // Find the end of a number then parse with library methods
         int ch = nextChar();
-        if ('-' == ch)
-        {
+        if ('-' == ch) {
             ch = nextChar();
         }
 
-        if (Character.isDigit(ch) && '0' != ch)
-        {
+        if (Character.isDigit(ch) && '0' != ch) {
             ignoreDigits();
         }
 
         boolean isFraction = false;
         ch = peekChar();
-        if ('.' == ch)
-        {
+        if ('.' == ch) {
             isFraction = true;
             position++;
             ignoreDigits();
         }
 
         ch = peekChar();
-        switch (ch)
-        {
+        switch (ch) {
             case 'e':
             case 'E':
                 position++;
                 ch = nextChar();
-                switch (ch)
-                {
+                switch (ch) {
                     case '-':
                     case '+':
                         position++;
@@ -301,23 +286,18 @@ public class JsonReader
         return isFraction;
     }
 
-    private void ignoreDigits()
-    {
-        while (position < length)
-        {
+    private void ignoreDigits() {
+        while (position < length) {
             final int ch = peekChar();
-            if (!Character.isDigit(ch))
-            {
+            if (!Character.isDigit(ch)) {
                 break;
             }
             position++;
         }
     }
 
-    private JsonValue readConstant(String expected, JsonValue result)
-    {
-        if (text.regionMatches(position, expected, 0, expected.length()))
-        {
+    private JsonValue readConstant(String expected, JsonValue result) {
+        if (text.regionMatches(position, expected, 0, expected.length())) {
             position += expected.length();
             return result;
         }
@@ -326,23 +306,20 @@ public class JsonReader
 
     /**
      * ws
-     *     ""
-     *     '0020' ws
-     *     '000A' ws
-     *     '000D' ws
-     *     '0009' ws
+     * |---- ""
+     * |---- '0020' ws
+     * |---- '000A' ws
+     * |---- '000D' ws
+     * |---- '0009' ws
      */
-    private void ignoreWhitespace()
-    {
-        while (position < length)
-        {
+    private void ignoreWhitespace() {
+        while (position < length) {
             final int ch = peekChar();
-            switch (ch)
-            {
-                case ' ':   // '0020' SPACE
-                case '\n':  // '000A' LINE FEED
-                case '\r':  // '000D' CARRIAGE RETURN
-                case '\t':  // '0009' CHARACTER TABULATION
+            switch (ch) {
+                case ' ': // '0020' SPACE
+                case '\n': // '000A' LINE FEED
+                case '\r': // '000D' CARRIAGE RETURN
+                case '\t': // '0009' CHARACTER TABULATION
                     position++;
                     break;
                 default:
@@ -364,125 +341,102 @@ public class JsonReader
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T cast(Object obj)
-    {
+    private static <T> T cast(Object obj) {
         return (T) obj;
     }
 
-    public interface JsonValue {}
+    public interface JsonValue {
 
-    public static final class JsonObject implements JsonValue
-    {
-        private final Map<String, JsonValue> value;
-
-        public JsonObject(Map<String, JsonValue> value)
-        {
-            this.value = value;
-        }
-
-        <T extends JsonValue> T get(String attribute)
-        {
-            return cast(value.get(attribute));
-        }
-
-//        Map<String, JsonValue> value()
-//        {
-//            return value;
-//        }
     }
 
-    public static final class JsonArray implements JsonValue
-    {
-        private final List<JsonValue> value;
+    public static final class JsonObject implements JsonValue {
+        private final Map<String, JsonValue> value;
 
-        public JsonArray(List<JsonValue> value)
-        {
+        public JsonObject(Map<String, JsonValue> value) {
             this.value = value;
         }
 
-        public List<JsonValue> value()
-        {
+        public <T extends JsonValue> T get(String attribute) {
+            return cast(value.get(attribute));
+        }
+    }
+
+    public static final class JsonArray implements JsonValue {
+        private final List<JsonValue> value;
+
+        public JsonArray(List<JsonValue> value) {
+            this.value = value;
+        }
+
+        public List<JsonValue> value() {
             return value;
         }
 
-        public <T extends JsonValue> Stream<T> stream()
-        {
+        public <T extends JsonValue> Stream<T> stream() {
             return cast(value.stream());
         }
     }
 
-    public static final class JsonString implements JsonValue
-    {
+    public static final class JsonString implements JsonValue {
         private final String value;
 
-        public JsonString(String value)
-        {
+        public JsonString(String value) {
             this.value = value;
         }
 
-        public String value()
-        {
+        public String value() {
             return value;
         }
     }
 
-    public interface JsonNumber extends JsonValue {}
+    public interface JsonNumber extends JsonValue {
 
-    public static final class JsonInteger implements JsonNumber
-    {
+    }
+
+    public static final class JsonInteger implements JsonNumber {
         private final long value;
 
-        public JsonInteger(long value)
-        {
+        public JsonInteger(long value) {
             this.value = value;
         }
 
-        public long longValue()
-        {
+        public long longValue() {
             return value;
         }
 
-        public int intValue()
-        {
+        public int intValue() {
             return (int) value;
         }
     }
 
-    public static final class JsonDouble implements JsonNumber
-    {
+    public static final class JsonDouble implements JsonNumber {
         private final double value;
 
-        public JsonDouble(double value)
-        {
+        public JsonDouble(double value) {
             this.value = value;
         }
 
-        public double value()
-        {
+        public double value() {
             return value;
         }
     }
 
-    public enum JsonBoolean implements JsonValue
-    {
+    public enum JsonBoolean implements JsonValue {
         TRUE(true),
         FALSE(false);
 
         private final boolean value;
 
-        JsonBoolean(boolean value)
-        {
+        JsonBoolean(boolean value) {
             this.value = value;
         }
 
-        public boolean value()
-        {
+        public boolean value() {
             return value;
         }
     }
 
-    public enum JsonNull implements JsonValue
-    {
+    public enum JsonNull implements JsonValue {
         INSTANCE;
     }
 }
