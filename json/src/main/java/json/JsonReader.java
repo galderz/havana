@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -89,7 +91,7 @@ public class JsonReader {
     private JsonValue readObject() {
         position++;
 
-        Map<String, JsonValue> members = new HashMap<>();
+        Map<JsonString, JsonValue> members = new HashMap<>();
 
         while (position < length) {
             ignoreWhitespace();
@@ -113,8 +115,8 @@ public class JsonReader {
      * member
      * |----- ws string ws ':' element
      */
-    private void readMember(Map<String, JsonValue> members) {
-        final String attribute = readString().value;
+    private void readMember(Map<JsonString, JsonValue> members) {
+        final JsonString attribute = readString();
         ignoreWhitespace();
         final int colon = nextChar();
         if (':' != colon) {
@@ -350,14 +352,30 @@ public class JsonReader {
     }
 
     public static final class JsonObject implements JsonValue {
-        private final Map<String, JsonValue> value;
+        private final Map<JsonString, JsonValue> value;
 
-        public JsonObject(Map<String, JsonValue> value) {
+        public JsonObject(Map<JsonString, JsonValue> value) {
             this.value = value;
         }
 
         public <T extends JsonValue> T get(String attribute) {
-            return cast(value.get(attribute));
+            return cast(value.get(new JsonString(attribute)));
+        }
+
+        public List<JsonMember> members() {
+            return value.entrySet().stream()
+                .map(e -> new JsonMember(e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
+        }
+    }
+
+    public static final class JsonMember implements JsonValue {
+        private final JsonString attribute;
+        private final JsonValue value;
+
+        public JsonMember(JsonString attribute, JsonValue value) {
+            this.attribute = attribute;
+            this.value = value;
         }
     }
 
@@ -386,6 +404,19 @@ public class JsonReader {
 
         public String value() {
             return value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            JsonString that = (JsonString) o;
+            return Objects.equals(value, that.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(value);
         }
     }
 
