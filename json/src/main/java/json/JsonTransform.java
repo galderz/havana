@@ -1,18 +1,25 @@
 package json;
 
-public class JsonTransform
+import java.util.function.Predicate;
+
+@FunctionalInterface
+public interface JsonTransform<T>
 {
+    void accept(Json.JsonBuilder<T> builder, JsonReader.JsonValue element);
 
-    public static final class JsonString
+    static <T> JsonTransform<T> dropping(Predicate<JsonReader.JsonValue> filter)
     {
-        public void toObject(JsonString value, Json.JsonObjectBuilder builder)
+        return (builder, element) ->
         {
-            builder.put(value, value);
-        }
-
-        public void toArray(Json.JsonArrayBuilder builder)
-        {
-            builder.add(value);
-        }
+            if (!filter.test(element))
+                element.to(builder);
+                // element.to(builder);
+                // to(element, builder);
+        };
     }
+
+//    static <T> void to(JsonReader.JsonValue element, Json.JsonBuilder<T> builder)
+//    {
+//
+//    }
 }

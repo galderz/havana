@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,6 +31,12 @@ public class JsonReader {
 
     public <T extends JsonValue> T read() {
         return cast(readElement());
+    }
+
+    public <T> String transform(JsonValue value, JsonTransform<T> transform)
+    {
+        value.forEach(transform);
+        return null;
     }
 
     /**
@@ -348,8 +356,26 @@ public class JsonReader {
     }
 
     public interface JsonValue {
+        // TODO use with multi values only
+        default <T> Json.JsonBuilder<?> forEach(JsonTransform<T> transform) {
+            transform.accept(null, this);
+            return null;
+        }
 
+        default <T> void to(Json.JsonBuilder<T> builder) {}
+
+        void toObject(JsonString attribute, Json.JsonObjectBuilder builder) {}
+
+        void toArray(Json.JsonArrayBuilder builder) {}
     }
+
+//    public interface JsonMultiValue extends JsonValue {
+////        default <T> void forEach(JsonTransform<T> transform) {
+////            transform.accept(null, this);
+////        }
+//
+//        default <T> void to(Json.JsonBuilder<T> builder) {}
+//    }
 
     public static final class JsonObject implements JsonValue {
         private final Map<JsonString, JsonValue> value;
@@ -367,6 +393,28 @@ public class JsonReader {
                 .map(e -> new JsonMember(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
         }
+
+        @Override
+        public <T> Json.JsonBuilder<?> forEach(JsonTransform<T> transform) {
+            final JsonTransform<Json.JsonObjectBuilder> objectTransform = cast(transform);
+            final Json.JsonObjectBuilder objectBuilder = Json.object();
+            objectTransform.accept(objectBuilder, this);
+            final ResolvedTransform<Json.JsonObjectBuilder> resolvedTransform = new ResolvedTransform<>(objectBuilder, objectTransform);
+            members().forEach(member -> member.forEach(resolvedTransform));
+            return objectBuilder;
+        }
+
+        @Override
+        public void toObject(JsonString attribute, Json.JsonObjectBuilder builder)
+        {
+            builder.put(attribute.value, )
+        }
+
+        @Override
+        public void toArray(Json.JsonArrayBuilder builder)
+        {
+            // TODO: Customise this generated block
+        }
     }
 
     public static final class JsonMember implements JsonValue {
@@ -376,6 +424,27 @@ public class JsonReader {
         public JsonMember(JsonString attribute, JsonValue value) {
             this.attribute = attribute;
             this.value = value;
+        }
+
+//        @Override
+//        public <T> void forEach(JsonTransform<T> transform) {
+//            transform.accept(null, this);
+//            attribute.forEach(transform);
+//            value.forEach(transform);
+//        }
+//
+//        @Override
+//        public <T> void to(Json.JsonBuilder<T> builder) {
+//            value.with(builder);
+//            final Json.JsonObjectBuilder objectBuilder = cast(builder);
+//            objectBuilder.put(attribute.value, value);
+//            return objectBuilder;
+//        }
+
+        @Override
+        public <T> void to(Json.JsonBuilder<T> builder) {
+            final Json.JsonObjectBuilder objectBuilder = cast(builder);
+            value.toObject(attribute, objectBuilder);
         }
     }
 
@@ -393,6 +462,15 @@ public class JsonReader {
         public <T extends JsonValue> Stream<T> stream() {
             return cast(value.stream());
         }
+
+//        @Override
+//        public <T> void forEach(JsonTransform<T> transform) {
+//            final JsonTransform<Json.JsonArrayBuilder> arrayTransform = cast(transform);
+//            final Json.JsonArrayBuilder arrayBuilder = Json.array();
+//            arrayTransform.accept(arrayBuilder, this);
+//            final ResolvedTransform<Json.JsonArrayBuilder> resolvedTransform = new ResolvedTransform<>(arrayBuilder, arrayTransform);
+//            value.forEach(value -> value.forEach(resolvedTransform));
+//        }
     }
 
     public static final class JsonString implements JsonValue {
@@ -417,6 +495,16 @@ public class JsonReader {
         @Override
         public int hashCode() {
             return Objects.hash(value);
+        }
+
+        @Override
+        public void toObject(JsonString attribute, Json.JsonObjectBuilder builder) {
+            builder.put(attribute.value, value);
+        }
+
+        @Override
+        public void toArray(Json.JsonArrayBuilder builder) {
+            builder.add(value);
         }
     }
 
@@ -469,5 +557,21 @@ public class JsonReader {
 
     public enum JsonNull implements JsonValue {
         INSTANCE;
+    }
+
+    private static final class ResolvedTransform<T> implements JsonTransform<T> {
+        private final Json.JsonBuilder<T> resolvedBuilder;
+        private final JsonTransform<T> transform;
+
+        private ResolvedTransform(Json.JsonBuilder<T> resolvedBuilder, JsonTransform<T> transform) {
+            this.resolvedBuilder = resolvedBuilder;
+            this.transform = transform;
+        }
+
+        @Override
+        public void accept(Json.JsonBuilder<T> builder, JsonValue element)
+        {
+            transform.accept(builder == null ? resolvedBuilder : builder, element);
+        }
     }
 }

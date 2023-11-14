@@ -77,7 +77,7 @@ public final class Json
         return new JsonObjectBuilder(ignoreEmptyBuilders);
     }
 
-    abstract static class JsonBuilder<T> {
+    public abstract static class JsonBuilder<T> {
 
         protected boolean ignoreEmptyBuilders = false;
 
