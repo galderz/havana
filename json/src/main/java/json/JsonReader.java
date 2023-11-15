@@ -348,7 +348,9 @@ public class JsonReader {
     }
 
     public interface JsonValue {
-
+        default <T> void forEach(JsonTransform<T> transform) {
+            transform.accept(null, this);
+        }
     }
 
     public static final class JsonObject implements JsonValue {
@@ -367,6 +369,11 @@ public class JsonReader {
                 .map(e -> new JsonMember(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
         }
+
+        @Override
+        public <T> void forEach(JsonTransform<T> transform) {
+            members().forEach(member -> transform.accept(null, member));
+        }
     }
 
     public static final class JsonMember implements JsonValue {
@@ -376,6 +383,14 @@ public class JsonReader {
         public JsonMember(JsonString attribute, JsonValue value) {
             this.attribute = attribute;
             this.value = value;
+        }
+
+        public JsonString attribute() {
+            return attribute;
+        }
+
+        public JsonValue value() {
+            return value;
         }
     }
 
@@ -392,6 +407,11 @@ public class JsonReader {
 
         public <T extends JsonValue> Stream<T> stream() {
             return cast(value.stream());
+        }
+
+        @Override
+        public <T> void forEach(JsonTransform<T> transform) {
+            value.forEach(v -> transform.accept(null, v));
         }
     }
 

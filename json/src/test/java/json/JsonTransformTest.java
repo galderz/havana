@@ -2,6 +2,7 @@ package json;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,14 +10,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 
-public class JsonReaderTest
+public class JsonTransformTest
 {
     @Test
-    public void testResourceJson()
+    public void testKeepAll() throws IOException
     {
-        String text = JsonSamples.resourcesJsonContent();
+        String original = JsonSamples.resourcesJsonContent();
 
-        final JsonReader reader = JsonReader.of(text);
+        final Json.JsonObjectBuilder objBuilder = Json.object();
+        objBuilder.transform(JsonReader.of(original).read(), JsonTransform.dropping(v -> false));
+
+        final JsonReader reader = JsonReader.of(objBuilder.build());
         final JsonReader.JsonObject obj = reader.read();
         final JsonReader.JsonArray includes = obj
             .<JsonReader.JsonObject>get("resources")
