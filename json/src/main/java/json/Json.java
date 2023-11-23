@@ -49,7 +49,7 @@ public final class Json
      * @return the new JSON array builder, empty builders are not ignored
      */
     public static JsonArrayBuilder array() {
-        return new JsonArrayBuilder(false);
+        return new JsonArrayBuilder(false, false);
     }
 
     /**
@@ -57,37 +57,40 @@ public final class Json
      * @return the new JSON array builder
      * @see JsonBuilder#ignoreEmptyBuilders
      */
-    static JsonArrayBuilder array(boolean ignoreEmptyBuilders) {
-        return new JsonArrayBuilder(ignoreEmptyBuilders);
+    static JsonArrayBuilder array(boolean ignoreEmptyBuilders, boolean skipEscape) {
+        return new JsonArrayBuilder(ignoreEmptyBuilders, skipEscape);
     }
 
     /**
      * @return the new JSON object builder, empty builders are not ignored
      */
     public static JsonObjectBuilder object() {
-        return new JsonObjectBuilder(false);
+        return new JsonObjectBuilder(false, false);
     }
 
     /**
      * @param ignoreEmptyBuilders
+     * @param skipEscape
      * @return the new JSON object builder
      * @see JsonBuilder#ignoreEmptyBuilders
      */
-    static JsonObjectBuilder object(boolean ignoreEmptyBuilders) {
-        return new JsonObjectBuilder(ignoreEmptyBuilders);
+    static JsonObjectBuilder object(boolean ignoreEmptyBuilders, boolean skipEscape) {
+        return new JsonObjectBuilder(ignoreEmptyBuilders, skipEscape);
     }
 
     public abstract static class JsonBuilder<T> {
 
         protected boolean ignoreEmptyBuilders = false;
+        protected final boolean skipEscape;
         protected JsonTransform transform;
 
         /**
          * @param ignoreEmptyBuilders If set to true all empty builders added to this builder will be ignored during
          *        {@link #build()}
          */
-        JsonBuilder(boolean ignoreEmptyBuilders) {
+        JsonBuilder(boolean ignoreEmptyBuilders, boolean skipEscape) {
             this.ignoreEmptyBuilders = ignoreEmptyBuilders;
+            this.skipEscape = skipEscape;
         }
 
         /**
@@ -147,8 +150,8 @@ public final class Json
 
         private final List<Object> values;
 
-        private JsonArrayBuilder(boolean ignoreEmptyBuilders) {
-            super(ignoreEmptyBuilders);
+        private JsonArrayBuilder(boolean ignoreEmptyBuilders, boolean skipEscape) {
+            super(ignoreEmptyBuilders, skipEscape);
             this.values = new ArrayList<Object>();
         }
 
@@ -217,7 +220,7 @@ public final class Json
                 if (++idx > 1) {
                     appendable.append(ENTRY_SEPARATOR);
                 }
-                appendValue(appendable, value);
+                appendValue(appendable, value, skipEscape);
             }
             appendable.append(ARRAY_END);
         }
@@ -242,7 +245,7 @@ public final class Json
             } else if (element instanceof JsonReader.JsonBoolean) {
                 add(((JsonReader.JsonBoolean) element).value());
             } else if (element instanceof JsonReader.JsonArray) {
-                final JsonArrayBuilder arrayBuilder = Json.array();
+                final JsonArrayBuilder arrayBuilder = Json.array(ignoreEmptyBuilders, skipEscape);
                 arrayBuilder.transform((JsonReader.JsonArray) element, transform);
                 add(arrayBuilder);
                 
@@ -251,7 +254,7 @@ public final class Json
 //                resolved.accept(arrayBuilder, element);
 //                add(arrayBuilder);
             } else if (element instanceof JsonReader.JsonObject) {
-                final JsonObjectBuilder objectBuilder = Json.object();
+                final JsonObjectBuilder objectBuilder = Json.object(ignoreEmptyBuilders, skipEscape);
                 objectBuilder.transform((JsonReader.JsonObject) element, transform);
                 add(objectBuilder);
             }
@@ -271,8 +274,8 @@ public final class Json
 
         private final Map<String, Object> properties;
 
-        private JsonObjectBuilder(boolean ignoreEmptyBuilders) {
-            super(ignoreEmptyBuilders);
+        private JsonObjectBuilder(boolean ignoreEmptyBuilders, boolean skipEscape) {
+            super(ignoreEmptyBuilders, skipEscape);
             this.properties = new HashMap<String, Object>();
         }
 
@@ -342,9 +345,9 @@ public final class Json
                 if (++idx > 1) {
                     appendable.append(ENTRY_SEPARATOR);
                 }
-                appendStringValue(appendable, entry.getKey());
+                appendStringValue(appendable, entry.getKey(), skipEscape);
                 appendable.append(NAME_VAL_SEPARATOR);
-                appendValue(appendable, entry.getValue());
+                appendValue(appendable, entry.getValue(), skipEscape);
             }
             appendable.append(OBJECT_END);
         }
@@ -374,13 +377,13 @@ public final class Json
                     final boolean booleanValue = ((JsonReader.JsonBoolean) value).value();
                     put(attribute, booleanValue);
                 } else if (value instanceof JsonReader.JsonArray) {
-                    final JsonArrayBuilder arrayBuilder = Json.array();
+                    final JsonArrayBuilder arrayBuilder = Json.array(ignoreEmptyBuilders, skipEscape);
                     arrayBuilder.transform((JsonReader.JsonArray) value, transform);
 //                    final ResolvedTransform<JsonArrayBuilder> resolved = new ResolvedTransform<>(arrayBuilder, transform);
 //                    resolved.accept(arrayBuilder, value);
                     put(attribute, arrayBuilder);
                 } else if (value instanceof JsonReader.JsonObject) {
-                    final JsonObjectBuilder objectBuilder = Json.object();
+                    final JsonObjectBuilder objectBuilder = Json.object(ignoreEmptyBuilders, skipEscape);
                     objectBuilder.transform((JsonReader.JsonObject) value, transform);
 //                    final ResolvedTransform<JsonObjectBuilder> resolved = new ResolvedTransform<>(objectBuilder, transform);
 //                    resolved.accept(objectBuilder, value);
@@ -401,13 +404,13 @@ public final class Json
 //        }
     }
 
-    static void appendValue(Appendable appendable, Object value) throws IOException {
+    static void appendValue(Appendable appendable, Object value, boolean skipEscape) throws IOException {
         if (value instanceof JsonObjectBuilder) {
             appendable.append(((JsonObjectBuilder) value).build());
         } else if (value instanceof JsonArrayBuilder) {
             appendable.append(((JsonArrayBuilder) value).build());
         } else if (value instanceof String) {
-            appendStringValue(appendable, value.toString());
+            appendStringValue(appendable, value.toString(), skipEscape);
         } else if (value instanceof Boolean || value instanceof Integer || value instanceof Long) {
             appendable.append(value.toString());
         } else {
@@ -415,9 +418,13 @@ public final class Json
         }
     }
 
-    static void appendStringValue(Appendable appendable, String value) throws IOException {
+    static void appendStringValue(Appendable appendable, String value, boolean skipEscape) throws IOException {
         appendable.append(CHAR_QUOTATION_MARK);
-        appendable.append(escape(value));
+        if (skipEscape) {
+            appendable.append(value);
+        } else {
+            appendable.append(escape(value));
+        }
         appendable.append(CHAR_QUOTATION_MARK);
     }
 
@@ -442,7 +449,7 @@ public final class Json
         return builder.toString();
     }
 
-    static final class ResolvedTransform<T> implements JsonTransform<T>
+    private static final class ResolvedTransform<T> implements JsonTransform<T>
     {
         private final Json.JsonBuilder<T> resolvedBuilder;
         private final JsonTransform<T> transform;
