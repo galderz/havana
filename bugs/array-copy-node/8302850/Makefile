@@ -9,9 +9,8 @@ JDK_HOME ?= $(HOME)/1/jdk
 capstone_home = $(opt)/capstone
 capstone_makefile = $(capstone_home)/Makefile
 capstone_lib = $(capstone_home)/libcapstone.a
-capstone_usr_lib = $(usr_local)/lib/libcapstone.a
-capstone_usr_os_lib = $(usr_local)/lib/libcapstone.5.dylib
-capstone_os_lib = libcapstone.5.dylib
+capstone_lib_os = $(capstone_home)/$(capstone_lib_os_name)
+capstone_lib_os_name = libcapstone.5.dylib
 conf_args += --with-boot-jdk=$(BOOT_JDK_HOME)
 conf_args += --with-jmh=build/jmh/jars
 dot_jmh = $(JDK_HOME)/build/jmh/jars/.jmh
@@ -24,15 +23,19 @@ jvm_args += -XX:TieredStopAtLevel=1
 jvm_args += -XX:+PrintIR
 jvm_args += -XX:+PrintIRWithLIR
 jvm_args += -XX:+PrintLIRWithAssembly
-jvm_args += -XX:CompileOnly=Test.test
 jvm_args += -XX:+Verbose
 jvm_args += -Xlog:os
 usr_local := /usr/local
-test = Test.java
+test_copy = TestArrayCopy.java
+test_clone = TestArrayClone.java
 
-run: $(java_fast) $(test) $(capstone_os_lib)
-> $< $(jvm_args) $(test)
-.PHONY: run
+run-clone: $(java_fast) $(test_clone) $(capstone_lib_os)
+> $< $(jvm_args) -XX:CompileOnly=TestArrayClone.test $(test_clone)
+.PHONY: run-clone
+
+run-copy: $(java_fast) $(test_copy) $(capstone_lib_os)
+> $< $(jvm_args) -XX:CompileOnly=TestArrayCopy.test $(test_copy)
+.PHONY: run-copy
 
 $(java_fast): $(shell find $(JDK_HOME)/src -type f -name '*.java')
 $(java_fast): $(shell find $(JDK_HOME)/test -type f -name '*.java')
@@ -53,12 +56,12 @@ config-release: $(dot_jmh)
 >   --with-conf-name=$(CONF_RELEASE)
 .PHONY: config-release
 
-config-fast: $(dot_jmh) $(capstone_usr_lib)
+config-fast: $(dot_jmh) $(capstone_lib_os)
 > cd $(JDK_HOME)
 > bash configure \
 >   $(conf_args) \
 >   --enable-hsdis-bundling \
->   --with-capstone=$(usr_local) \
+>   --with-capstone=$(capstone_home) \
 >   --with-conf-name=$(CONF_FAST) \
 >   --with-debug-level=fastdebug \
 >   --with-hsdis=capstone
@@ -69,12 +72,8 @@ $(dot_jmh):
 > sh make/devkit/createJMHBundle.sh
 > touch $@
 
-$(capstone_os_lib): $(capstone_usr_os_lib)
+$(capstone_lib_os_name): $(capstone_lib_os)
 > ln -s $<
-
-$(capstone_usr_lib): $(capstone_lib)
-> cd $(capstone_home)
-> sudo ./make.sh install
 
 $(capstone_lib): $(capstone_makefile)
 > cd $(capstone_home)

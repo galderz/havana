@@ -1,6 +1,6 @@
 import java.util.concurrent.ThreadLocalRandom;
 
-class Test
+class TestArrayCopy
 {
     public static void main(String[] args)
     {
