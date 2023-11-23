@@ -17,7 +17,7 @@ public class JsonTransformTest
     {
         String original = JsonSamples.resourcesJsonContent();
 
-        final Json.JsonObjectBuilder objBuilder = Json.object();
+        final Json.JsonObjectBuilder objBuilder = Json.object(false, true);
         objBuilder.transform(JsonReader.of(original).read(), JsonTransform.dropping(v -> false));
 
         final JsonReader reader = JsonReader.of(objBuilder.build());
