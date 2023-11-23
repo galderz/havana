@@ -247,16 +247,15 @@ public final class Json
             } else if (element instanceof JsonReader.JsonArray) {
                 final JsonArrayBuilder arrayBuilder = Json.array(ignoreEmptyBuilders, skipEscape);
                 arrayBuilder.transform((JsonReader.JsonArray) element, transform);
-                add(arrayBuilder);
-                
-//                final JsonArrayBuilder arrayBuilder = Json.array();
-//                final ResolvedTransform<JsonArrayBuilder> resolved = new ResolvedTransform<>(arrayBuilder, transform);
-//                resolved.accept(arrayBuilder, element);
-//                add(arrayBuilder);
+                if (!arrayBuilder.isEmpty()) {
+                    add(arrayBuilder);
+                }
             } else if (element instanceof JsonReader.JsonObject) {
                 final JsonObjectBuilder objectBuilder = Json.object(ignoreEmptyBuilders, skipEscape);
                 objectBuilder.transform((JsonReader.JsonObject) element, transform);
-                add(objectBuilder);
+                if (!objectBuilder.isEmpty()) {
+                    add(objectBuilder);
+                }
             }
         }
 
@@ -379,29 +378,23 @@ public final class Json
                 } else if (value instanceof JsonReader.JsonArray) {
                     final JsonArrayBuilder arrayBuilder = Json.array(ignoreEmptyBuilders, skipEscape);
                     arrayBuilder.transform((JsonReader.JsonArray) value, transform);
-//                    final ResolvedTransform<JsonArrayBuilder> resolved = new ResolvedTransform<>(arrayBuilder, transform);
-//                    resolved.accept(arrayBuilder, value);
-                    put(attribute, arrayBuilder);
+                    if (!arrayBuilder.isEmpty()) {
+                        put(attribute, arrayBuilder);
+                    }
                 } else if (value instanceof JsonReader.JsonObject) {
                     final JsonObjectBuilder objectBuilder = Json.object(ignoreEmptyBuilders, skipEscape);
                     objectBuilder.transform((JsonReader.JsonObject) value, transform);
-//                    final ResolvedTransform<JsonObjectBuilder> resolved = new ResolvedTransform<>(objectBuilder, transform);
-//                    resolved.accept(objectBuilder, value);
-                    put(attribute, objectBuilder);
+                    if (!objectBuilder.isEmpty()) {
+                        put(attribute, objectBuilder);
+                    }
                 }
             }
         }
 
-        public void transform(JsonReader.JsonObject value, JsonTransform<JsonObjectBuilder> transform)
-        {
+        public void transform(JsonReader.JsonObject value, JsonTransform<JsonObjectBuilder> transform) {
             final ResolvedTransform<JsonObjectBuilder> resolved = new ResolvedTransform<>(this, transform);
             value.forEach(resolved);
         }
-
-//        @Override
-//        void transform(JsonReader.JsonValue value, JsonTransform<JsonObjectBuilder> transform) {
-//            super.transform(value, transform);    // TODO: Customise this generated block
-//        }
     }
 
     static void appendValue(Appendable appendable, Object value, boolean skipEscape) throws IOException {
@@ -449,21 +442,18 @@ public final class Json
         return builder.toString();
     }
 
-    private static final class ResolvedTransform<T> implements JsonTransform<T>
-    {
+    private static final class ResolvedTransform<T> implements JsonTransform<T> {
         private final Json.JsonBuilder<T> resolvedBuilder;
         private final JsonTransform<T> transform;
 
-        private ResolvedTransform(Json.JsonBuilder<T> resolvedBuilder, JsonTransform<T> transform)
-        {
+        private ResolvedTransform(Json.JsonBuilder<T> resolvedBuilder, JsonTransform<T> transform) {
             this.resolvedBuilder = resolvedBuilder;
             this.resolvedBuilder.setTransform(transform);
             this.transform = transform;
         }
 
         @Override
-        public void accept(Json.JsonBuilder<T> builder, JsonReader.JsonValue element)
-        {
+        public void accept(Json.JsonBuilder<T> builder, JsonReader.JsonValue element) {
             transform.accept(builder == null ? resolvedBuilder : builder, element);
         }
     }
