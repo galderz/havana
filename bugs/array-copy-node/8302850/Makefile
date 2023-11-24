@@ -2,8 +2,10 @@ TOPDIR = ../../..
 include $(TOPDIR)/make/common/MakeBase.gmk
 
 BOOT_JDK_HOME ?= $(opt)/java-21
+CONF ?= $(CONF_SLOW)
 CONF_FAST ?= fast
 CONF_RELEASE ?= release
+CONF_SLOW ?= slow
 JDK_HOME ?= $(HOME)/1/jdk
 
 capstone_home = $(opt)/capstone
@@ -14,8 +16,8 @@ capstone_lib_os_name = libcapstone.5.dylib
 conf_args += --with-boot-jdk=$(BOOT_JDK_HOME)
 conf_args += --with-jmh=build/jmh/jars
 dot_jmh = $(JDK_HOME)/build/jmh/jars/.jmh
+java = $(JDK_HOME)/build/$(CONF)/jdk/bin/java
 java_fast = $(JDK_HOME)/build/$(CONF_FAST)/jdk/bin/java
-java_fast_makefile = $(JDK_HOME)/build/$(CONF_FAST)/Makefile
 java_release = $(JDK_HOME)/build/$(CONF_RELEASE)/jdk/bin/java
 jvm_args += -XX:-UseOnStackReplacement
 jvm_args += -XX:-BackgroundCompilation
@@ -29,13 +31,19 @@ usr_local := /usr/local
 test_copy = TestArrayCopy.java
 test_clone = TestArrayClone.java
 
-run-clone: $(java_fast) $(test_clone) $(capstone_lib_os)
+run-clone: $(java) $(test_clone) $(capstone_lib_os)
 > $< $(jvm_args) -XX:CompileOnly=TestArrayClone.test $(test_clone)
 .PHONY: run-clone
 
 run-copy: $(java_fast) $(test_copy) $(capstone_lib_os)
 > $< $(jvm_args) -XX:CompileOnly=TestArrayCopy.test $(test_copy)
 .PHONY: run-copy
+
+$(java): $(shell find $(JDK_HOME)/src -type f -name '*.java')
+$(java): $(shell find $(JDK_HOME)/test -type f -name '*.java')
+$(java):
+> cd $(JDK_HOME)
+> CONF=$(CONF) make
 
 $(java_fast): $(shell find $(JDK_HOME)/src -type f -name '*.java')
 $(java_fast): $(shell find $(JDK_HOME)/test -type f -name '*.java')
@@ -49,13 +57,6 @@ $(java_release):
 > cd $(JDK_HOME)
 > CONF=$(CONF_RELEASE) make
 
-config-release: $(dot_jmh)
-> cd $(JDK_HOME)
-> bash configure \
->   $(conf_args) \
->   --with-conf-name=$(CONF_RELEASE)
-.PHONY: config-release
-
 config-fast: $(dot_jmh) $(capstone_lib_os)
 > cd $(JDK_HOME)
 > bash configure \
@@ -66,6 +67,24 @@ config-fast: $(dot_jmh) $(capstone_lib_os)
 >   --with-debug-level=fastdebug \
 >   --with-hsdis=capstone
 .PHONY: config-fast
+
+config-release: $(dot_jmh)
+> cd $(JDK_HOME)
+> bash configure \
+>   $(conf_args) \
+>   --with-conf-name=$(CONF_RELEASE)
+.PHONY: config-release
+
+config-slow: $(dot_jmh) $(capstone_lib_os)
+> cd $(JDK_HOME)
+> bash configure \
+>   $(conf_args) \
+>   --enable-hsdis-bundling \
+>   --with-capstone=$(capstone_home) \
+>   --with-conf-name=$(CONF_SLOW) \
+>   --with-debug-level=slowdebug \
+>   --with-hsdis=capstone
+.PHONY: config-slow
 
 $(dot_jmh):
 > cd $(JDK_HOME)
