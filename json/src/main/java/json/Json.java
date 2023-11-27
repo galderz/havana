@@ -137,7 +137,7 @@ public final class Json
 
         abstract void with(JsonReader.JsonValue element);
 
-        public void setTransform(JsonTransform<T> transform)
+        public void setTransform(JsonTransform transform)
         {
             this.transform = transform;
         }
@@ -259,9 +259,9 @@ public final class Json
             }
         }
 
-        public void transform(JsonReader.JsonArray value, JsonTransform<JsonArrayBuilder> transform)
+        public void transform(JsonReader.JsonArray value, JsonTransform transform)
         {
-            final ResolvedTransform<JsonArrayBuilder> resolved = new ResolvedTransform<>(this, transform);
+            final ResolvedTransform resolved = new ResolvedTransform(this, transform);
             value.forEach(resolved);
         }
     }
@@ -391,8 +391,8 @@ public final class Json
             }
         }
 
-        public void transform(JsonReader.JsonObject value, JsonTransform<JsonObjectBuilder> transform) {
-            final ResolvedTransform<JsonObjectBuilder> resolved = new ResolvedTransform<>(this, transform);
+        public void transform(JsonReader.JsonObject value, JsonTransform transform) {
+            final ResolvedTransform resolved = new ResolvedTransform(this, transform);
             value.forEach(resolved);
         }
     }
@@ -442,19 +442,21 @@ public final class Json
         return builder.toString();
     }
 
-    private static final class ResolvedTransform<T> implements JsonTransform<T> {
-        private final Json.JsonBuilder<T> resolvedBuilder;
-        private final JsonTransform<T> transform;
+    private static final class ResolvedTransform implements JsonTransform {
+        private final Json.JsonBuilder<?> resolvedBuilder;
+        private final JsonTransform transform;
 
-        private ResolvedTransform(Json.JsonBuilder<T> resolvedBuilder, JsonTransform<T> transform) {
+        private ResolvedTransform(Json.JsonBuilder<?> resolvedBuilder, JsonTransform transform) {
             this.resolvedBuilder = resolvedBuilder;
             this.resolvedBuilder.setTransform(transform);
             this.transform = transform;
         }
 
         @Override
-        public void accept(Json.JsonBuilder<T> builder, JsonReader.JsonValue element) {
-            transform.accept(builder == null ? resolvedBuilder : builder, element);
+        public void accept(Json.JsonBuilder<?> builder, JsonReader.JsonValue element) {
+            if (builder == null) {
+                transform.accept(resolvedBuilder, element);
+            }
         }
     }
 }

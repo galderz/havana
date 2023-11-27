@@ -3,11 +3,11 @@ package json;
 import java.util.function.Predicate;
 
 @FunctionalInterface
-public interface JsonTransform<T>
+public interface JsonTransform
 {
-    void accept(Json.JsonBuilder<T> builder, JsonReader.JsonValue element);
+    void accept(Json.JsonBuilder<?> builder, JsonReader.JsonValue element);
 
-    static <T> JsonTransform<T> dropping(Predicate<JsonReader.JsonValue> filter)
+    static JsonTransform dropping(Predicate<JsonReader.JsonValue> filter)
     {
         return (builder, element) ->
         {
