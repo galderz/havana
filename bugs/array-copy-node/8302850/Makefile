@@ -27,6 +27,7 @@ jvm_args += -XX:+PrintIRWithLIR
 jvm_args += -XX:+PrintLIRWithAssembly
 jvm_args += -XX:+Verbose
 jvm_args += -Xlog:os
+jvm_args += -Xlog:jit*=debug
 usr_local := /usr/local
 test_copy = TestArrayCopy.java
 test_clone = TestArrayClone.java
