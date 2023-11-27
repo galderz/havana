@@ -2,6 +2,35 @@ package json;
 
 final class JsonSamples
 {
+    static String reflectionJsonContent()
+    {
+        return "[\n" +
+            "  {\n" +
+            "    \"name\": \"[B\",\n" +
+            "    \"allDeclaredFields\": true,\n" +
+            "    \"queryAllDeclaredMethods\": true,\n" +
+            "    \"queryAllPublicMethods\": true,\n" +
+            "    \"queryAllDeclaredConstructors\": true\n" +
+            "  },\n" +
+            "  {\n" +
+            "    \"name\": \"[BBeanInfo\"\n" +
+            "  },\n" +
+            "  {\n" +
+            "    \"name\": \"io.quarkus.arc.deployment.ArcTestConfig\",\n" +
+            "    \"allDeclaredFields\": true,\n" +
+            "    \"methods\": [\n" +
+            "      {\n" +
+            "        \"name\": \"<init>\",\n" +
+            "        \"parameterTypes\": []\n" +
+            "      }\n" +
+            "    ]\n" +
+            "  },\n" +
+            "  {\n" +
+            "    \"name\": \"io.quarkus.arc.impl.DefaultAsyncObserverExceptionHandler\"\n" +
+            "  }\n" +
+            "]";
+    }
+
     static String resourcesJsonContent()
     {
         return "{\n" +

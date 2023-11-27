@@ -14,6 +14,35 @@ import static org.hamcrest.core.Is.is;
 public class JsonTransformTest
 {
     @Test
+    public void testDiscardingReflection() throws IOException
+    {
+        String original = JsonSamples.reflectionJsonContent();
+        final Json.JsonArrayBuilder arrayBuilder = Json.array(false, true);
+
+        final Predicate<JsonReader.JsonValue> discardValues = v ->
+        {
+            if (v instanceof JsonReader.JsonObject)
+            {
+                final JsonReader.JsonObject obj = (JsonReader.JsonObject) v;
+                final String name = obj.<JsonReader.JsonString>get("name").value();
+                return name.contains("io.quarkus");
+            }
+
+            return false;
+        };
+
+        arrayBuilder.transform(JsonReader.of(original).read(), JsonTransform.dropping(discardValues));
+        final JsonReader reader = JsonReader.of(arrayBuilder.build());
+        final JsonReader.JsonArray array = reader.read();
+
+        final List<Object> names = array.<JsonReader.JsonObject>stream()
+            .map(obj -> obj.get("name"))
+            .collect(Collectors.toList());
+
+        assertThat(names.size(), is(2));
+    }
+
+    @Test
     public void testDiscardingPatterns() throws IOException
     {
         String original = JsonSamples.resourcesJsonContent();
