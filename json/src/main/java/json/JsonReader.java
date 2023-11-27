@@ -348,12 +348,15 @@ public class JsonReader {
     }
 
     public interface JsonValue {
+    }
+
+    public interface JsonMultiValue extends JsonValue {
         default <T> void forEach(JsonTransform<T> transform) {
             transform.accept(null, this);
         }
     }
 
-    public static final class JsonObject implements JsonValue {
+    public static final class JsonObject implements JsonMultiValue {
         private final Map<JsonString, JsonValue> value;
 
         public JsonObject(Map<JsonString, JsonValue> value) {
@@ -394,7 +397,7 @@ public class JsonReader {
         }
     }
 
-    public static final class JsonArray implements JsonValue {
+    public static final class JsonArray implements JsonMultiValue {
         private final List<JsonValue> value;
 
         public JsonArray(List<JsonValue> value) {
