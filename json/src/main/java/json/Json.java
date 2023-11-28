@@ -247,9 +247,7 @@ public final class Json
             } else if (element instanceof JsonReader.JsonArray) {
                 final JsonArrayBuilder arrayBuilder = Json.array(ignoreEmptyBuilders, skipEscape);
                 arrayBuilder.transform((JsonReader.JsonArray) element, transform);
-                if (!arrayBuilder.isEmpty()) {
-                    add(arrayBuilder);
-                }
+                add(arrayBuilder);
             } else if (element instanceof JsonReader.JsonObject) {
                 final JsonObjectBuilder objectBuilder = Json.object(ignoreEmptyBuilders, skipEscape);
                 objectBuilder.transform((JsonReader.JsonObject) element, transform);
@@ -378,9 +376,7 @@ public final class Json
                 } else if (value instanceof JsonReader.JsonArray) {
                     final JsonArrayBuilder arrayBuilder = Json.array(ignoreEmptyBuilders, skipEscape);
                     arrayBuilder.transform((JsonReader.JsonArray) value, transform);
-                    if (!arrayBuilder.isEmpty()) {
-                        put(attribute, arrayBuilder);
-                    }
+                    put(attribute, arrayBuilder);
                 } else if (value instanceof JsonReader.JsonObject) {
                     final JsonObjectBuilder objectBuilder = Json.object(ignoreEmptyBuilders, skipEscape);
                     objectBuilder.transform((JsonReader.JsonObject) value, transform);

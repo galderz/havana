@@ -2,6 +2,19 @@ package json;
 
 final class JsonSamples
 {
+    static String emptyParameterTypeJsonContent()
+    {
+        return "[\n" +
+            "{\n" +
+            "  \"name\":\"java.io.Serializable\",\n" +
+            "  \"allDeclaredFields\":true,\n" +
+            "  \"queryAllDeclaredMethods\":true,\n" +
+            "  \"queryAllPublicMethods\":true,\n" +
+            "  \"methods\":[{\"name\":\"toString\",\"parameterTypes\":[] }]\n" +
+            "}\n" +
+        "]";
+    }
+
     static String reflectionJsonContent()
     {
         return "[\n" +
