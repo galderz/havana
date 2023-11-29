@@ -30,11 +30,11 @@ usr_local := /usr/local
 test_copy = TestArrayCopy.java
 test_clone = TestArrayClone.java
 
-run-clone: $(java) $(test_clone) $(capstone_lib)
+run-clone: $(java_fast) $(test_clone) $(capstone_lib)
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -XX:CompileOnly=TestArrayClone.test $(test_clone)
 .PHONY: run-clone
 
-gdb-clone: $(java) $(test_clone) $(capstone_lib)
+gdb-clone: $(java_slow) $(test_clone) $(capstone_lib)
 > LD_LIBRARY_PATH=$(capstone_home) gdb --args $< $(jvm_args) -XX:CompileOnly=TestArrayClone.test $(test_clone)
 .PHONY: gdb-clone
 
@@ -42,7 +42,7 @@ run-copy: $(java_fast) $(test_copy) $(capstone_lib)
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -XX:CompileOnly=TestArrayCopy.test $(test_copy)
 .PHONY: run-copy
 
-gdb-copy: $(java_fast) $(test_copy) $(capstone_lib)
+gdb-copy: $(java_slow) $(test_copy) $(capstone_lib)
 > LD_LIBRARY_PATH=$(capstone_home) gdb --args $< $(jvm_args) -XX:CompileOnly=TestArrayCopy.test $(test_copy)
 .PHONY: gdb-copy
 
@@ -57,6 +57,12 @@ $(java_fast): $(shell find $(JDK_HOME)/test -type f -name '*.java')
 $(java_fast):
 > cd $(JDK_HOME)
 > CONF=$(CONF_FAST) make
+
+$(java_slow): $(shell find $(JDK_HOME)/src -type f -name '*.java')
+$(java_slow): $(shell find $(JDK_HOME)/test -type f -name '*.java')
+$(java_slow):
+> cd $(JDK_HOME)
+> CONF=$(CONF_slOW) make
 
 $(java_release): $(shell find $(JDK_HOME)/src -type f -name '*.java')
 $(java_release): $(shell find $(JDK_HOME)/test -type f -name '*.java')
