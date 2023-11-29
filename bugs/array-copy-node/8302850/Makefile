@@ -34,9 +34,17 @@ run-clone: $(java) $(test_clone) $(capstone_lib)
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -XX:CompileOnly=TestArrayClone.test $(test_clone)
 .PHONY: run-clone
 
+gdb-clone: $(java) $(test_clone) $(capstone_lib)
+> LD_LIBRARY_PATH=$(capstone_home) gdb --args $< $(jvm_args) -XX:CompileOnly=TestArrayClone.test $(test_clone)
+.PHONY: gdb-clone
+
 run-copy: $(java_fast) $(test_copy) $(capstone_lib)
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -XX:CompileOnly=TestArrayCopy.test $(test_copy)
 .PHONY: run-copy
+
+gdb-copy: $(java_fast) $(test_copy) $(capstone_lib)
+> LD_LIBRARY_PATH=$(capstone_home) gdb --args $< $(jvm_args) -XX:CompileOnly=TestArrayCopy.test $(test_copy)
+.PHONY: gdb-copy
 
 $(java): $(shell find $(JDK_HOME)/src -type f -name '*.java')
 $(java): $(shell find $(JDK_HOME)/test -type f -name '*.java')
