@@ -7,3 +7,4 @@ target
 .mvn
 # C++.gitignore
 *.o
+*.dylib
