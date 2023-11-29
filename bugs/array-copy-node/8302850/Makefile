@@ -100,7 +100,7 @@ $(dot_jmh):
 $(capstone_lib_os_name): $(capstone_lib_os)
 > ln -s $<
 
-$(capstone_lib): $(capstone_makefile)
+$(capstone_lib_os): $(capstone_makefile)
 > cd $(capstone_home)
 > ./make.sh
 
