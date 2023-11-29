@@ -87,6 +87,11 @@ config-slow: $(dot_jmh) $(capstone_lib_os)
 >   --with-hsdis=capstone
 .PHONY: config-slow
 
+reconfig-slow:
+> cd $(JDK_HOME)
+> CONF=slow make reconfigure
+.PHONY: config-slow
+
 $(dot_jmh):
 > cd $(JDK_HOME)
 > sh make/devkit/createJMHBundle.sh
