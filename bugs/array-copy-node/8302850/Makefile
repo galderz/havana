@@ -17,6 +17,7 @@ dot_jmh = $(JDK_HOME)/build/jmh/jars/.jmh
 java = $(JDK_HOME)/build/$(CONF)/jdk/bin/java
 java_fast = $(JDK_HOME)/build/$(CONF_FAST)/jdk/bin/java
 java_release = $(JDK_HOME)/build/$(CONF_RELEASE)/jdk/bin/java
+java_slow = $(JDK_HOME)/build/$(CONF_SLOW)/jdk/bin/java
 jvm_args += -XX:-UseOnStackReplacement
 jvm_args += -XX:-BackgroundCompilation
 jvm_args += -XX:TieredStopAtLevel=1
