@@ -2,7 +2,6 @@ TOPDIR = ../../..
 include $(TOPDIR)/make/common/MakeBase.gmk
 
 BOOT_JDK_HOME ?= $(opt)/java-21
-CONF ?= $(CONF_SLOW)
 CONF_FAST ?= fast
 CONF_RELEASE ?= release
 CONF_SLOW ?= slow
@@ -14,7 +13,6 @@ capstone_lib = $(capstone_home)/libcapstone.a
 conf_args += --with-boot-jdk=$(BOOT_JDK_HOME)
 conf_args += --with-jmh=build/jmh/jars
 dot_jmh = $(JDK_HOME)/build/jmh/jars/.jmh
-java = $(JDK_HOME)/build/$(CONF)/jdk/bin/java
 java_fast = $(JDK_HOME)/build/$(CONF_FAST)/jdk/bin/java
 java_release = $(JDK_HOME)/build/$(CONF_RELEASE)/jdk/bin/java
 java_slow = $(JDK_HOME)/build/$(CONF_SLOW)/jdk/bin/java
@@ -46,12 +44,6 @@ run-copy: $(java_fast) $(test_copy) $(capstone_lib)
 gdb-copy: $(java_slow) $(test_copy) $(capstone_lib)
 > LD_LIBRARY_PATH=$(capstone_home) gdb --args $< $(jvm_args) -XX:CompileOnly=TestArrayCopy.test $(test_copy)
 .PHONY: gdb-copy
-
-$(java): $(shell find $(JDK_HOME)/src -type f -name '*.java')
-$(java): $(shell find $(JDK_HOME)/test -type f -name '*.java')
-$(java):
-> cd $(JDK_HOME)
-> CONF=$(CONF) make
 
 $(java_fast): $(shell find $(JDK_HOME)/src -type f -name '*.java')
 $(java_fast): $(shell find $(JDK_HOME)/test -type f -name '*.java')
