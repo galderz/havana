@@ -33,11 +33,11 @@ test_copy = TestArrayCopy.java
 test_clone = TestArrayClone.java
 
 run-clone: $(java) $(test_clone) $(capstone_lib_os)
-> $< $(jvm_args) -XX:CompileOnly=TestArrayClone.test $(test_clone)
+> LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -XX:CompileOnly=TestArrayClone.test $(test_clone)
 .PHONY: run-clone
 
 run-copy: $(java_fast) $(test_copy) $(capstone_lib_os)
-> $< $(jvm_args) -XX:CompileOnly=TestArrayCopy.test $(test_copy)
+> LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -XX:CompileOnly=TestArrayCopy.test $(test_copy)
 .PHONY: run-copy
 
 $(java): $(shell find $(JDK_HOME)/src -type f -name '*.java')
