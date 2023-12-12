@@ -1,0 +1,1 @@
+br set -n main -o true -G true -C "pro hand -p true -s false SIGSEGV SIGBUS"
