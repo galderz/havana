@@ -34,6 +34,7 @@ jvm_args += -XX:TraceLinearScanLevel=4
 jvm_args += -XX:+PrintIR
 jvm_args += -XX:+PrintIRWithLIR
 jvm_args += -XX:+PrintLIRWithAssembly
+jvm_args += -XX:+PrintNMethods
 jvm_args += -XX:+Verbose
 jvm_args += -Xlog:os
 #jvm_args += -Xlog:jit*=debug
