@@ -30,17 +30,19 @@ java_slow = $(JDK_HOME)/build/$(conf_slow_dir)/jdk/bin/java
 jvm_args += -XX:-UseOnStackReplacement
 jvm_args += -XX:-BackgroundCompilation
 jvm_args += -XX:TieredStopAtLevel=1
+jvm_args += -XX:TraceLinearScanLevel=4
 jvm_args += -XX:+PrintIR
 jvm_args += -XX:+PrintIRWithLIR
 jvm_args += -XX:+PrintLIRWithAssembly
 jvm_args += -XX:+Verbose
 jvm_args += -Xlog:os
 #jvm_args += -Xlog:jit*=debug
+lldbinit = $(TOPDIR)/make/common/.lldbinit
 usr_local := /usr/local
 test_copy = TestArrayCopy.java
 test_clone = TestArrayClone.java
 
-run-clone: $(java_fast) $(test_clone) $(capstone_lib)
+run-clone: $(java_slow) $(test_clone) $(capstone_lib)
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) $(args_clone)
 .PHONY: run-clone
 
@@ -48,7 +50,7 @@ gdb-clone: $(java_slow) $(test_clone) $(capstone_lib)
 > LD_LIBRARY_PATH=$(capstone_home) gdb --args $< $(jvm_args) $(args_clone)
 .PHONY: gdb-clone
 
-run-copy: $(java_fast) $(test_copy) $(capstone_lib)
+run-copy: $(java_slow) $(test_copy) $(capstone_lib)
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) $(args_copy)
 .PHONY: run-copy
 
@@ -56,24 +58,35 @@ gdb-copy: $(java_slow) $(test_copy) $(capstone_lib)
 > LD_LIBRARY_PATH=$(capstone_home) gdb --args $< $(jvm_args) $(args_copy)
 .PHONY: gdb-copy
 
-
 $(java_fast): $(shell find $(JDK_HOME)/src -type f -name '*.java')
+$(java_fast): $(shell find $(JDK_HOME)/src -type f -name '*pp')
 $(java_fast): $(shell find $(JDK_HOME)/test -type f -name '*.java')
+$(java_fast): $(shell find $(JDK_HOME)/test -type f -name '*pp')
 $(java_fast):
-> cd $(JDK_HOME)
+> pushd $(JDK_HOME)
 > CONF=$(conf_fast_dir) make
+> popd
+> cp $(lldbinit) $(JDK_HOME)/build/$(conf_fast_dir)
 
 $(java_slow): $(shell find $(JDK_HOME)/src -type f -name '*.java')
+$(java_slow): $(shell find $(JDK_HOME)/src -type f -name '*pp')
 $(java_slow): $(shell find $(JDK_HOME)/test -type f -name '*.java')
+$(java_slow): $(shell find $(JDK_HOME)/test -type f -name '*pp')
 $(java_slow):
-> cd $(JDK_HOME)
+> pushd $(JDK_HOME)
 > CONF=$(conf_slow_dir) make
+> popd
+> cp $(lldbinit) $(JDK_HOME)/build/$(conf_slow_dir)
 
 $(java_release): $(shell find $(JDK_HOME)/src -type f -name '*.java')
+$(java_release): $(shell find $(JDK_HOME)/src -type f -name '*pp')
 $(java_release): $(shell find $(JDK_HOME)/test -type f -name '*.java')
+$(java_release): $(shell find $(JDK_HOME)/test -type f -name '*pp')
 $(java_release):
-> cd $(JDK_HOME)
+> pushd $(JDK_HOME)
 > CONF=$(conf_release_dir) make
+> popd
+> cp $(lldbinit) $(JDK_HOME)/build/$(conf_release_dir)
 
 config-fast: $(dot_jmh) $(capstone_lib)
 > cd $(JDK_HOME)
