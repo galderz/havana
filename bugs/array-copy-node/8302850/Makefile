@@ -47,17 +47,14 @@ run-clone: $(java_slow) $(test_clone) $(capstone_lib)
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) $(args_clone)
 .PHONY: run-clone
 
-gdb-clone: $(java_slow) $(test_clone) $(capstone_lib)
-> LD_LIBRARY_PATH=$(capstone_home) gdb --args $< $(jvm_args) $(args_clone)
-.PHONY: gdb-clone
-
 run-copy: $(java_slow) $(test_copy) $(capstone_lib)
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) $(args_copy)
 .PHONY: run-copy
 
-gdb-copy: $(java_slow) $(test_copy) $(capstone_lib)
-> LD_LIBRARY_PATH=$(capstone_home) gdb --args $< $(jvm_args) $(args_copy)
-.PHONY: gdb-copy
+gdb: $(java_slow) $(test_copy) $(test_clone) $(capstone_lib)
+#> LD_LIBRARY_PATH=$(capstone_home) gdb --args $< $(jvm_args) $(args_copy)
+> LD_LIBRARY_PATH=$(capstone_home) gdb --args $<
+.PHONY: gdb
 
 $(java_fast): $(shell find $(JDK_HOME)/src -type f -name '*.java')
 $(java_fast): $(shell find $(JDK_HOME)/src -type f -name '*pp')
