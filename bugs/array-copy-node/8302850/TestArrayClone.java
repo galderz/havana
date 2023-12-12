@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 class TestArrayClone
@@ -14,6 +15,7 @@ class TestArrayClone
         for (int i = 0; i < 1_000; i++)
         {
             int[] result = test(ints);
+            System.out.println(Arrays.toString(result));
             blackhole(result);
         }
     }

@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 class TestArrayCopy
@@ -15,6 +16,7 @@ class TestArrayCopy
         {
             int[] copy = new int[ints.length];
             int[] result = test(ints, copy);
+            System.out.println(Arrays.toString(result));
             blackhole(result);
         }
     }
