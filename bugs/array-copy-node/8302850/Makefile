@@ -14,6 +14,8 @@ args_clone += -XX:CompileOnly=TestArrayClone.test
 args_clone += $(current_dir)/$(test_clone)
 args_copy += -XX:CompileOnly=TestArrayCopy.test
 args_copy += $(current_dir)/$(test_copy)
+args_list_clone += -XX:CompileOnly=TestArrayListClone.test
+args_list_clone += $(current_dir)/$(test_list_clone)
 capstone_home = $(opt)/capstone
 capstone_makefile = $(capstone_home)/Makefile
 capstone_lib = $(capstone_home)/libcapstone.a
@@ -42,14 +44,22 @@ lldbinit = $(TOPDIR)/make/common/.lldbinit
 usr_local := /usr/local
 test_copy = TestArrayCopy.java
 test_clone = TestArrayClone.java
+test_list_clone = TestArrayListClone.java
 
 run-clone: $(java_slow) $(test_clone) $(capstone_lib)
+> rm -f *.log
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) $(args_clone)
 .PHONY: run-clone
 
 run-copy: $(java_slow) $(test_copy) $(capstone_lib)
+> rm -f *.log
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) $(args_copy)
 .PHONY: run-copy
+
+run-list-clone: $(java_slow) $(test_list_clone) $(capstone_lib)
+> rm -f *.log
+> LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) $(args_list_clone)
+.PHONY: run-list-clone
 
 gdb: $(java_slow) $(test_copy) $(test_clone) $(capstone_lib)
 #> LD_LIBRARY_PATH=$(capstone_home) gdb --args $< $(jvm_args) $(args_copy)
