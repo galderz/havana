@@ -8,3 +8,5 @@ target
 # C++.gitignore
 *.o
 *.dylib
+# Java.gitignore
+*.log
