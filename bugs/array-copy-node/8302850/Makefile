@@ -16,6 +16,8 @@ args_copy += -XX:CompileOnly=TestArrayCopy.test
 args_copy += $(current_dir)/$(test_copy)
 args_list_clone += -XX:CompileOnly=TestArrayListClone.test
 args_list_clone += $(current_dir)/$(test_list_clone)
+args_uuid_array_clone += -XX:CompileOnly=TestUUIDArrayClone.test
+args_uuid_array_clone += $(current_dir)/$(test_uuid_array_clone)
 capstone_home = $(opt)/capstone
 capstone_makefile = $(capstone_home)/Makefile
 capstone_lib = $(capstone_home)/libcapstone.a
@@ -45,6 +47,7 @@ usr_local := /usr/local
 test_copy = TestArrayCopy.java
 test_clone = TestArrayClone.java
 test_list_clone = TestArrayListClone.java
+test_uuid_array_clone = TestUUIDArrayClone.java
 
 run-clone: $(java_slow) $(test_clone) $(capstone_lib)
 > rm -f *.log
@@ -60,6 +63,14 @@ run-list-clone: $(java_slow) $(test_list_clone) $(capstone_lib)
 > rm -f *.log
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) $(args_list_clone)
 .PHONY: run-list-clone
+
+run-uuid-array-clone: $(java_slow) $(test_uuid_array_clone) $(capstone_lib)
+> rm -f *.log
+> LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) $(args_uuid_array_clone)
+.PHONY: run-uuid-array-clone
+
+all: run-clone run-copy run-list-clone run-uuid-array-clone
+.PHONY: all
 
 gdb: $(java_slow) $(test_copy) $(test_clone) $(capstone_lib)
 #> LD_LIBRARY_PATH=$(capstone_home) gdb --args $< $(jvm_args) $(args_copy)
