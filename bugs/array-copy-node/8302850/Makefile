@@ -16,8 +16,12 @@ args_copy += -XX:CompileOnly=TestArrayCopy.test
 args_copy += $(current_dir)/$(test_copy)
 args_list_clone += -XX:CompileOnly=TestArrayListClone.test
 args_list_clone += $(current_dir)/$(test_list_clone)
+args_object_clone += -XX:CompileOnly=TestObjectClone.test
+args_object_clone += $(current_dir)/$(test_object_clone)
 args_uuid_array_clone += -XX:CompileOnly=TestUUIDArrayClone.test
 args_uuid_array_clone += $(current_dir)/$(test_uuid_array_clone)
+args_array_clone_oome += -XX:CompileOnly=TestArrayCloneOOME.test
+args_array_clone_oome += $(current_dir)/$(test_array_clone_oome)
 capstone_home = $(opt)/capstone
 capstone_makefile = $(capstone_home)/Makefile
 capstone_lib = $(capstone_home)/libcapstone.a
@@ -34,20 +38,24 @@ java_slow = $(JDK_HOME)/build/$(conf_slow_dir)/jdk/bin/java
 jvm_args += -XX:-UseOnStackReplacement
 jvm_args += -XX:-BackgroundCompilation
 jvm_args += -XX:TieredStopAtLevel=1
-jvm_args += -XX:TraceLinearScanLevel=4
+#jvm_args += -XX:TraceLinearScanLevel=4
 jvm_args += -XX:+PrintIR
 jvm_args += -XX:+PrintIRWithLIR
 jvm_args += -XX:+PrintLIRWithAssembly
-jvm_args += -XX:+PrintNMethods
+#jvm_args += -XX:+PrintNMethods
 jvm_args += -XX:+Verbose
 jvm_args += -Xlog:os
 #jvm_args += -Xlog:jit*=debug
 lldbinit = $(TOPDIR)/make/common/.lldbinit
 usr_local := /usr/local
+
 test_copy = TestArrayCopy.java
 test_clone = TestArrayClone.java
 test_list_clone = TestArrayListClone.java
+test_object_clone = TestObjectClone.java
 test_uuid_array_clone = TestUUIDArrayClone.java
+
+test_array_clone_oome = TestArrayCloneOOME.java
 
 run-clone: $(java_slow) $(test_clone) $(capstone_lib)
 > rm -f *.log
@@ -64,12 +72,22 @@ run-list-clone: $(java_slow) $(test_list_clone) $(capstone_lib)
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) $(args_list_clone)
 .PHONY: run-list-clone
 
+run-object-clone: $(java_slow) $(test_object_clone) $(capstone_lib)
+> rm -f *.log
+> LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) $(args_object_clone)
+.PHONY: run-object-clone
+
 run-uuid-array-clone: $(java_slow) $(test_uuid_array_clone) $(capstone_lib)
 > rm -f *.log
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) $(args_uuid_array_clone)
 .PHONY: run-uuid-array-clone
 
-all: run-clone run-copy run-list-clone run-uuid-array-clone
+run-oome-array-clone: $(java_slow) $(test_array_clone_oome) $(capstone_lib)
+> rm -f *.log
+> LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -Xmx2m $(args_array_clone_oome)
+.PHONY: oome-array-clone
+
+all: run-clone run-copy run-list-clone run-object-clone run-uuid-array-clone
 .PHONY: all
 
 gdb: $(java_slow) $(test_copy) $(test_clone) $(capstone_lib)
@@ -86,6 +104,7 @@ $(java_fast):
 > CONF=$(conf_fast_dir) make
 > popd
 > cp $(lldbinit) $(JDK_HOME)/build/$(conf_fast_dir)
+> touch $@
 
 $(java_slow): $(shell find $(JDK_HOME)/src -type f -name '*.java')
 $(java_slow): $(shell find $(JDK_HOME)/src -type f -name '*pp')
@@ -96,6 +115,7 @@ $(java_slow):
 > CONF=$(conf_slow_dir) make
 > popd
 > cp $(lldbinit) $(JDK_HOME)/build/$(conf_slow_dir)
+> touch $@
 
 $(java_release): $(shell find $(JDK_HOME)/src -type f -name '*.java')
 $(java_release): $(shell find $(JDK_HOME)/src -type f -name '*pp')
@@ -106,6 +126,7 @@ $(java_release):
 > CONF=$(conf_release_dir) make
 > popd
 > cp $(lldbinit) $(JDK_HOME)/build/$(conf_release_dir)
+> touch $@
 
 config-fast: $(dot_jmh) $(capstone_lib)
 > cd $(JDK_HOME)
