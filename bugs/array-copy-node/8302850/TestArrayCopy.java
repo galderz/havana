@@ -14,15 +14,15 @@ class TestArrayCopy
 
         for (int i = 0; i < 1_000; i++)
         {
-            int[] copy = new int[ints.length];
-            int[] result = test(ints, copy);
+            int[] result = test(ints);
             System.out.println(Arrays.toString(result));
             blackhole(result);
         }
     }
 
-    static int[] test(int[] ints, int[] copy)
+    static int[] test(int[] ints)
     {
+        int[] copy = new int[ints.length];
         System.arraycopy(ints, 0, copy, 0, ints.length);
         return copy;
     }
