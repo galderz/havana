@@ -84,7 +84,7 @@ run-uuid-array-clone: $(java_slow) $(test_uuid_array_clone) $(capstone_lib)
 
 run-oome-array-clone: $(java_slow) $(test_array_clone_oome) $(capstone_lib)
 > rm -f *.log
-> LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -Xmx2m $(args_array_clone_oome)
+> LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -Xmx32m $(args_array_clone_oome)
 .PHONY: oome-array-clone
 
 all: run-clone run-copy run-list-clone run-object-clone run-uuid-array-clone
