@@ -35,6 +35,9 @@ dot_jmh = $(JDK_HOME)/build/jmh/jars/.jmh
 java_fast = $(JDK_HOME)/build/$(conf_fast_dir)/jdk/bin/java
 java_release = $(JDK_HOME)/build/$(conf_release_dir)/jdk/bin/java
 java_slow = $(JDK_HOME)/build/$(conf_slow_dir)/jdk/bin/java
+jtreg_bin = $(jtreg_home)/bin/jtreg
+jtreg_opt = $(opt)/jtreg
+jtreg_home = $(jtreg_opt)/build/images/jtreg
 jvm_args += -XX:-UseOnStackReplacement
 jvm_args += -XX:-BackgroundCompilation
 jvm_args += -XX:TieredStopAtLevel=1
@@ -47,7 +50,6 @@ jvm_args += -XX:+Verbose
 jvm_args += -Xlog:os
 #jvm_args += -Xlog:jit*=debug
 lldbinit = $(TOPDIR)/make/common/.lldbinit
-usr_local := /usr/local
 
 test_copy = TestArrayCopy.java
 test_clone = TestArrayClone.java
@@ -128,7 +130,7 @@ $(java_release):
 > cp $(lldbinit) $(JDK_HOME)/build/$(conf_release_dir)
 > touch $@
 
-config-fast: $(dot_jmh) $(capstone_lib)
+config-fast: $(dot_jmh) $(capstone_lib) $(jtreg_bin)
 > cd $(JDK_HOME)
 > bash configure \
 >   $(conf_args) \
@@ -136,17 +138,19 @@ config-fast: $(dot_jmh) $(capstone_lib)
 >   --with-capstone=$(capstone_home) \
 >   --with-conf-name=$(conf_fast_dir) \
 >   --with-debug-level=fastdebug \
->   --with-hsdis=capstone
+>   --with-hsdis=capstone \
+>   --with-jtreg=$(jtreg_home)
 .PHONY: config-fast
 
-config-release: $(dot_jmh)
+config-release: $(dot_jmh) $(jtreg_bin)
 > cd $(JDK_HOME)
 > bash configure \
 >   $(conf_args) \
->   --with-conf-name=$(conf_release_dir)
+>   --with-conf-name=$(conf_release_dir) \
+>   --with-jtreg=$(jtreg_home)
 .PHONY: config-release
 
-config-slow: $(dot_jmh) $(capstone_lib)
+config-slow: $(dot_jmh) $(capstone_lib) $(jtreg_bin)
 > cd $(JDK_HOME)
 > bash configure \
 >   $(conf_args) \
@@ -155,7 +159,8 @@ config-slow: $(dot_jmh) $(capstone_lib)
 >   --with-capstone=$(capstone_home) \
 >   --with-conf-name=$(conf_slow_dir) \
 >   --with-debug-level=slowdebug \
->   --with-hsdis=capstone
+>   --with-hsdis=capstone \
+>   --with-jtreg=$(jtreg_home)
 .PHONY: config-slow
 
 reconfig-slow:
@@ -176,6 +181,14 @@ $(capstone_makefile):
 > cd $(opt)
 > git clone https://github.com/capstone-engine/capstone
 
+$(jtreg_bin): $(jtreg_opt)
+> cd $<
+> sh make/build.sh --jdk $(opt)/java-21
+
+$(jtreg_opt):
+> cd $(opt)
+> git clone https://github.com/openjdk/jtreg
+
 commands:
 > cd $(JDK_HOME)
 > CONF=$(conf_slow_dir) make compile-commands
@@ -191,7 +204,27 @@ micro: $(java_release)
 > CONF=$(conf_release_dir) make test TEST="micro:java.lang.ArrayClone" MICRO="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
 .PHONY: micro
 
+test-hotspot-compiler: $(java_release)
+> cd $(JDK_HOME)
+> CONF=$(conf_release_dir) make test TEST="hotspot_compiler" JTREG="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
+.PHONY: test
+
+test-single: $(java_slow)
+> cd $(JDK_HOME)
+> CONF=$(conf_slow_dir) make test TEST="test/hotspot/jtreg/compiler/arraycopy/TestArrayCopyAsLoadsStores.java" JTREG="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
+.PHONY: test-single
+
 clean:
 > cd $(JDK_HOME)
 > CONF=$(conf_slow_dir) make clean
 .PHONY: clean
+
+clean-release:
+> cd $(JDK_HOME)
+> CONF=$(conf_release_dir) make clean
+.PHONY: clean-release
+
+clean-fast:
+> cd $(JDK_HOME)
+> CONF=$(conf_fast_dir) make clean
+.PHONY: clean-fast
