@@ -1,6 +1,6 @@
 AP_VERSION ?= 2.10
 
-ap_agent = $(ap_home)/build/libasyncProfiler.so
+ap_agent = $(ap_home)/lib/libasyncProfiler.so
 ap_home = $(opt)/async-profiler-$(AP_VERSION)-linux-x64
 ap_profiler = $(ap_home)/profiler.sh
 ap_tar_name = async-profiler-$(AP_VERSION)-linux-x64.tar.gz
