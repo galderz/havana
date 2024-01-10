@@ -1,0 +1,26 @@
+AP_VERSION ?= 2.10
+
+ap_agent = $(ap_home)/build/libasyncProfiler.so
+ap_home = $(opt)/async-profiler-$(AP_VERSION)-linux-x64
+ap_profiler = $(ap_home)/profiler.sh
+ap_tar_name = async-profiler-$(AP_VERSION)-linux-x64.tar.gz
+ap_tar_path = $(opt)/$(ap_tar_name)
+ap_tar_path_prefix = https://github.com/async-profiler/async-profiler/releases/download/v$(AP_VERSION)
+ap_jvm_opts += -XX:+UnlockDiagnosticVMOptions
+ap_jvm_opts += -XX:+DebugNonSafepoints
+
+#run-ap-threads: $(jar) $(ap_agent)
+#> $(java) -agentpath:$(ap_agent)=start,event=wall,threads,interval=5ms,file=$(target)/profile-threads.html $(run_jvm_opts) -jar $<
+#.PHONY: run-ap-threads
+#
+#ap-cpu: $(ap_agent)
+#> $(ap_profiler) -e cpu -d 3 -f $(target)/cpu-profile.html $$($(jps) | grep "quarkus-run.jar" | awk '{print $$1}')
+#.PHONY: ap-cpu
+
+$(ap_agent): $(ap_tar_path)
+> cd $(opt)
+> tar -xzvpf $<
+
+$(ap_tar_path):
+> cd $(opt)
+> wget $(ap_tar_path_prefix)/$(ap_tar_name)

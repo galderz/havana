@@ -1,5 +1,6 @@
 TOPDIR = ../../..
 include $(TOPDIR)/make/common/MakeBase.gmk
+include $(TOPDIR)/make/common/AsyncProfiler.gmk
 
 os = $(shell uname | tr A-Z a-z)
 cpu = $(shell uname -m | tr A-Z a-z)
@@ -213,6 +214,11 @@ test-single: $(java_slow)
 > cd $(JDK_HOME)
 > CONF=$(conf_slow_dir) make test TEST="test/hotspot/jtreg/compiler/arraycopy/TestArrayCopyAsLoadsStores.java" JTREG="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
 .PHONY: test-single
+
+ap-clone: $(java_slow) $(test_clone) $(capstone_lib) $(ap_agent)
+> rm -f *.log
+> LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -agentpath:$(ap_agent)=start,event=cpu,file=cpu.html $(args_clone)
+.PHONY: ap-clone
 
 clean:
 > cd $(JDK_HOME)
