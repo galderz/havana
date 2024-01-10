@@ -1,5 +1,8 @@
 TOPDIR = ../../..
 include $(TOPDIR)/make/common/MakeBase.gmk
+
+default: run-clone
+
 include $(TOPDIR)/make/common/AsyncProfiler.gmk
 
 os = $(shell uname | tr A-Z a-z)
