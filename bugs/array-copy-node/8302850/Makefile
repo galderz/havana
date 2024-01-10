@@ -225,7 +225,8 @@ ap-clone: $(java_slow) $(test_clone) $(capstone_lib) $(ap_agent)
 
 ap-copy: $(java_slow) $(test_copy) $(capstone_lib) $(ap_agent)
 > rm -f *.log
-> LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -agentpath:$(ap_agent)=start,event=cpu,file=cpu.html $(args_copy)
+#> LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -agentpath:$(ap_agent)=start,event=cpu,file=cpu.html $(args_copy)
+> LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -agentpath:$(ap_agent)=start,event=LIRGenerator::do_ArrayCopy,file=cpu.html $(args_copy)
 .PHONY: ap-copy
 
 clean:
