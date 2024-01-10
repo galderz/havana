@@ -223,6 +223,11 @@ ap-clone: $(java_slow) $(test_clone) $(capstone_lib) $(ap_agent)
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -agentpath:$(ap_agent)=start,event=cpu,file=cpu.html $(args_clone)
 .PHONY: ap-clone
 
+ap-copy: $(java_slow) $(test_copy) $(capstone_lib) $(ap_agent)
+> rm -f *.log
+> LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -agentpath:$(ap_agent)=start,event=cpu,file=cpu.html $(args_copy)
+.PHONY: ap-copy
+
 clean:
 > cd $(JDK_HOME)
 > CONF=$(conf_slow_dir) make clean
