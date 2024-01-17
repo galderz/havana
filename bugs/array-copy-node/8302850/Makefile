@@ -208,6 +208,11 @@ micro: $(java_release)
 > CONF=$(conf_release_dir) make test TEST="micro:java.lang.ArrayClone" MICRO="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
 .PHONY: micro
 
+micro-c2: $(java_release)
+> cd $(JDK_HOME)
+> CONF=$(conf_release_dir) make test TEST="micro:java.lang.ArrayClone"
+.PHONY: micro-c2
+
 test-hotspot-compiler: $(java_release)
 > cd $(JDK_HOME)
 > CONF=$(conf_release_dir) make test TEST="hotspot_compiler" JTREG="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
