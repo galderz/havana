@@ -23,6 +23,7 @@ public class Aspects
             .getLoaded()
             .newInstance();
 
+        LoggerInterceptor.infrastructure = new Infrastructure();
         System.out.println(loggingDatabase.load("message"));
     }
 
@@ -36,6 +37,8 @@ public class Aspects
 
     public static class LoggerInterceptor
     {
+        static Infrastructure infrastructure;
+
         public static List<String> log(@SuperCall Callable<List<String>> zuper) throws Exception
         {
             System.out.println("Calling database");
@@ -47,7 +50,7 @@ public class Aspects
                 {
                     result = zuper.call();
                     System.out.println(result);
-                } while (TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - startTime) < 2);
+                } while (!infrastructure.isDone(startTime));
 
                 return result;
             }
@@ -55,6 +58,14 @@ public class Aspects
             {
                 System.out.println("Returned from database");
             }
+        }
+    }
+
+    public static class Infrastructure
+    {
+        boolean isDone(long startTime)
+        {
+            return TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - startTime) >= 2;
         }
     }
 }
