@@ -7,6 +7,7 @@ import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import static net.bytebuddy.matcher.ElementMatchers.named;
 
@@ -38,9 +39,17 @@ public class Aspects
         public static List<String> log(@SuperCall Callable<List<String>> zuper) throws Exception
         {
             System.out.println("Calling database");
+            long startTime = System.nanoTime();
             try
             {
-                return zuper.call();
+                List<String> result;
+                do
+                {
+                    result = zuper.call();
+                    System.out.println(result);
+                } while (TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - startTime) < 2);
+
+                return result;
             }
             finally
             {
