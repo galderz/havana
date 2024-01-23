@@ -29,16 +29,23 @@ class TestMultiClone
                 System.out.println(Arrays.toString(result2));
                 blackhole(result2);
             }
-            catch (Exception ex)
+            catch (CloneNotSupportedException ex)
             {
                 throw new AssertionError(ex);
             }
         }
     }
 
-    static ArrayList<Integer> test1(ArrayList lints)
+    static ArrayList<Integer> test1(ArrayList lints) throws CloneNotSupportedException
     {
-        return (ArrayList<Integer>) lints.clone();
+        try
+        {
+            return (ArrayList<Integer>) lints.clone();
+        }
+        catch (Exception e)
+        {
+            throw new CloneNotSupportedException("Blah");
+        }
     }
 
     static int[] test2(int[] ints)
