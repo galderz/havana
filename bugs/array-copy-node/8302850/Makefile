@@ -26,6 +26,8 @@ args_uuid_array_clone += -XX:CompileOnly=TestUUIDArrayClone.test
 args_uuid_array_clone += $(current_dir)/$(test_uuid_array_clone)
 args_array_clone_oome += -XX:CompileOnly=TestArrayCloneOOME.test
 args_array_clone_oome += $(current_dir)/$(test_array_clone_oome)
+args_multi_clone += -XX:CompileOnly=TestMultiClone.test1,TestMultiClone.test2,
+args_multi_clone += $(current_dir)/$(test_multi_clone)
 capstone_home = $(opt)/capstone
 capstone_makefile = $(capstone_home)/Makefile
 capstone_lib = $(capstone_home)/libcapstone.a
@@ -60,6 +62,7 @@ test_clone = TestArrayClone.java
 test_list_clone = TestArrayListClone.java
 test_object_clone = TestObjectClone.java
 test_uuid_array_clone = TestUUIDArrayClone.java
+test_multi_clone = TestMultiClone.java
 
 test_array_clone_oome = TestArrayCloneOOME.java
 
@@ -92,6 +95,11 @@ run-oome-array-clone: $(java_slow) $(test_array_clone_oome) $(capstone_lib)
 > rm -f *.log
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -Xmx32m $(args_array_clone_oome)
 .PHONY: oome-array-clone
+
+run-multi-clone: $(java_slow) $(test_multi_clone) $(capstone_lib)
+> rm -f *.log
+> LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) $(args_multi_clone)
+.PHONY: run-multi-clone
 
 all: run-clone run-copy run-list-clone run-object-clone run-uuid-array-clone
 .PHONY: all
