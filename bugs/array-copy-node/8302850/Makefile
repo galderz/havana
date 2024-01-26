@@ -36,11 +36,13 @@ conf_args += --with-jmh=build/jmh/jars
 conf_fast_dir = $(CONF_FAST)-$(os)-$(cpu)
 conf_release_dir = $(CONF_RELEASE)-$(os)-$(cpu)
 conf_slow_dir = $(CONF_SLOW)-$(os)-$(cpu)
+conf_686_slow_dir = $(CONF_SLOW)-$(os)-686
 current_dir = $(shell pwd)
 dot_jmh = $(JDK_HOME)/build/jmh/jars/.jmh
 java_fast = $(JDK_HOME)/build/$(conf_fast_dir)/jdk/bin/java
 java_release = $(JDK_HOME)/build/$(conf_release_dir)/jdk/bin/java
 java_slow = $(JDK_HOME)/build/$(conf_slow_dir)/jdk/bin/java
+java_686_slow = $(JDK_HOME)/build/$(conf_686_slow_dir)/jdk/bin/java
 jtreg_bin = $(jtreg_home)/bin/jtreg
 jtreg_opt = $(opt)/jtreg
 jtreg_home = $(jtreg_opt)/build/images/jtreg
@@ -70,6 +72,11 @@ run-clone: $(java_slow) $(test_clone) $(capstone_lib)
 > rm -f *.log
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) $(args_clone)
 .PHONY: run-clone
+
+run-686-clone: $(java_686_slow) $(test_clone)
+> rm -f *.log
+> $< $(jvm_args) $(args_clone)
+.PHONY: run-686-clone
 
 run-copy: $(java_slow) $(test_copy) $(capstone_lib)
 > rm -f *.log
@@ -142,6 +149,16 @@ $(java_release):
 > cp $(lldbinit) $(JDK_HOME)/build/$(conf_release_dir)
 > touch $@
 
+$(java_686_slow): $(shell find $(JDK_HOME)/src -type f -name '*.java')
+$(java_686_slow): $(shell find $(JDK_HOME)/src -type f -name '*pp')
+$(java_686_slow): $(shell find $(JDK_HOME)/test -type f -name '*.java')
+$(java_686_slow): $(shell find $(JDK_HOME)/test -type f -name '*pp')
+$(java_686_slow):
+> pushd $(JDK_HOME)
+> CONF=$(conf_686_slow_dir) make
+> popd
+> touch $@
+
 config-fast: $(dot_jmh) $(capstone_lib) $(jtreg_bin)
 > cd $(JDK_HOME)
 > bash configure \
@@ -174,6 +191,20 @@ config-slow: $(dot_jmh) $(capstone_lib) $(jtreg_bin)
 >   --with-hsdis=capstone \
 >   --with-jtreg=$(jtreg_home)
 .PHONY: config-slow
+
+#>   --enable-hsdis-bundling \
+#>   --with-capstone=$(capstone_home) \
+#>   --with-hsdis=capstone \
+config-686-slow: $(dot_jmh) $(jtreg_bin)
+> cd $(JDK_HOME)
+> bash configure \
+>   $(conf_args) \
+>   --disable-precompiled-headers \
+>   --with-conf-name=slow-linux-686 \
+>   --with-debug-level=slowdebug \
+>   --with-jtreg=$(jtreg_home) \
+>   --with-target-bits=32
+.PHONY: config-686-slow
 
 reconfig-slow:
 > cd $(JDK_HOME)
