@@ -284,3 +284,8 @@ clean-fast:
 > cd $(JDK_HOME)
 > CONF=$(conf_fast_dir) make clean
 .PHONY: clean-fast
+
+clean-686:
+> cd $(JDK_HOME)
+> CONF=$(conf_686_slow_dir) make clean
+.PHONY: clean-686
