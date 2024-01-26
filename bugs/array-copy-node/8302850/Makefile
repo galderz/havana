@@ -192,15 +192,12 @@ config-slow: $(dot_jmh) $(capstone_lib) $(jtreg_bin)
 >   --with-jtreg=$(jtreg_home)
 .PHONY: config-slow
 
-#>   --enable-hsdis-bundling \
-#>   --with-capstone=$(capstone_home) \
-#>   --with-hsdis=capstone \
 config-686-slow: $(dot_jmh) $(jtreg_bin)
 > cd $(JDK_HOME)
 > bash configure \
 >   $(conf_args) \
 >   --disable-precompiled-headers \
->   --with-conf-name=slow-linux-686 \
+>   --with-conf-name=$(conf_686_slow_dir) \
 >   --with-debug-level=slowdebug \
 >   --with-jtreg=$(jtreg_home) \
 >   --with-target-bits=32
