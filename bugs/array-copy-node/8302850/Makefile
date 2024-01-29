@@ -215,6 +215,14 @@ config-686-slow: $(dot_jmh) $(jtreg_bin)
 >   --with-target-bits=32
 .PHONY: config-686-slow
 
+config-686-release: $(dot_jmh) $(jtreg_bin)
+> cd $(JDK_HOME)
+> bash configure \
+>   $(conf_args) \
+>   --with-conf-name=$(conf_686_release_dir) \
+>   --with-jtreg=$(jtreg_home)
+.PHONY: config-686-release
+
 reconfig-slow:
 > cd $(JDK_HOME)
 > CONF=$(conf_slow_dir) make reconfigure
