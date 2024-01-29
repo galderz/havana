@@ -35,6 +35,7 @@ conf_args += --with-boot-jdk=$(BOOT_JDK_HOME)
 conf_args += --with-jmh=build/jmh/jars
 conf_fast_dir = $(CONF_FAST)-$(os)-$(cpu)
 conf_release_dir = $(CONF_RELEASE)-$(os)-$(cpu)
+conf_686_release_dir = $(CONF_RELEASE)-$(os)-686
 conf_slow_dir = $(CONF_SLOW)-$(os)-$(cpu)
 conf_686_slow_dir = $(CONF_SLOW)-$(os)-686
 current_dir = $(shell pwd)
@@ -159,6 +160,17 @@ $(java_686_slow):
 > popd
 > touch $@
 
+$(java_686_release): $(shell find $(JDK_HOME)/src -type f -name '*.java')
+$(java_686_release): $(shell find $(JDK_HOME)/src -type f -name '*pp')
+$(java_686_release): $(shell find $(JDK_HOME)/test -type f -name '*.java')
+$(java_686_release): $(shell find $(JDK_HOME)/test -type f -name '*pp')
+$(java_686_release):
+> pushd $(JDK_HOME)
+> CONF=$(conf_686_release_dir) make
+> popd
+> cp $(lldbinit) $(JDK_HOME)/build/$(conf_686_release_dir)
+> touch $@
+
 config-fast: $(dot_jmh) $(capstone_lib) $(jtreg_bin)
 > cd $(JDK_HOME)
 > bash configure \
@@ -244,6 +256,11 @@ micro: $(java_release)
 > CONF=$(conf_release_dir) make test TEST="micro:java.lang.ArrayClone" MICRO="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
 .PHONY: micro
 
+micro-686: $(java_686_release)
+> cd $(JDK_HOME)
+> CONF=$(conf_686_release_dir) make test TEST="micro:java.lang.ArrayClone" MICRO="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
+.PHONY: micro-686
+
 micro-c2: $(java_release)
 > cd $(JDK_HOME)
 > CONF=$(conf_release_dir) make test TEST="micro:java.lang.ArrayClone"
@@ -252,7 +269,12 @@ micro-c2: $(java_release)
 test-hotspot-compiler: $(java_release)
 > cd $(JDK_HOME)
 > CONF=$(conf_release_dir) make test TEST="hotspot_compiler" JTREG="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
-.PHONY: test
+.PHONY: test-hotspot-compiler
+
+test-hotspot-compiler-686: $(java_686_release)
+> cd $(JDK_HOME)
+> CONF=$(conf_686_release_dir) make test TEST="hotspot_compiler" JTREG="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
+.PHONY: test-hotspot-compiler-686
 
 test-single: $(java_slow)
 > cd $(JDK_HOME)
