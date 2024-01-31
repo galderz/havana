@@ -319,3 +319,8 @@ clean-686:
 > cd $(JDK_HOME)
 > CONF=$(conf_686_slow_dir) make clean
 .PHONY: clean-686
+
+clean-686-release:
+> cd $(JDK_HOME)
+> CONF=$(conf_686_release_dir) make clean
+.PHONY: clean-686-release
