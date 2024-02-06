@@ -286,7 +286,10 @@ test-hotspot-compiler-686: $(java_686_release)
 
 test-single: $(java_slow)
 > cd $(JDK_HOME)
-> CONF=$(conf_slow_dir) make test TEST="test/hotspot/jtreg/compiler/arraycopy/TestArrayCopyAsLoadsStores.java" JTREG="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
+# > CONF=$(conf_slow_dir) make test TEST="test/hotspot/jtreg/compiler/arraycopy/TestArrayCopyAsLoadsStores.java" JTREG="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
+# > CONF=$(conf_slow_dir) make test TEST="test/hotspot/jtreg/compiler/codecache/stress/UnexpectedDeoptimizationAllTest.java" JTREG="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
+> CONF=$(conf_slow_dir) make test TEST="test/hotspot/jtreg/compiler/c2/irTests/scalarReplacement/AllocationMergesTests.java"
+> CONF=$(conf_slow_dir) make test TEST="test/hotspot/jtreg/compiler/interpreter/Test6833129.java"
 .PHONY: test-single
 
 ap-clone: $(java_slow) $(test_clone) $(capstone_lib) $(ap_agent)
