@@ -259,8 +259,8 @@ public final class Json
 
         public void transform(JsonReader.JsonArray value, JsonTransform transform)
         {
-            final ResolvedTransform resolved = new ResolvedTransform(this, transform);
-            value.forEach(resolved);
+            setTransform(transform);
+            value.forEach(transform, this);
         }
     }
 
@@ -388,8 +388,10 @@ public final class Json
         }
 
         public void transform(JsonReader.JsonObject value, JsonTransform transform) {
-            final ResolvedTransform resolved = new ResolvedTransform(this, transform);
-            value.forEach(resolved);
+//            final ResolvedTransform resolved = new ResolvedTransform(this, transform);
+//            value.forEach(resolved);
+            setTransform(transform);
+            value.forEach(transform, this);
         }
     }
 
@@ -436,23 +438,5 @@ public final class Json
             }
         }
         return builder.toString();
-    }
-
-    private static final class ResolvedTransform implements JsonTransform {
-        private final Json.JsonBuilder<?> resolvedBuilder;
-        private final JsonTransform transform;
-
-        private ResolvedTransform(Json.JsonBuilder<?> resolvedBuilder, JsonTransform transform) {
-            this.resolvedBuilder = resolvedBuilder;
-            this.resolvedBuilder.setTransform(transform);
-            this.transform = transform;
-        }
-
-        @Override
-        public void accept(Json.JsonBuilder<?> builder, JsonReader.JsonValue element) {
-            if (builder == null) {
-                transform.accept(resolvedBuilder, element);
-            }
-        }
     }
 }

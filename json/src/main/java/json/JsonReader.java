@@ -351,8 +351,8 @@ public class JsonReader {
     }
 
     public interface JsonMultiValue extends JsonValue {
-        default void forEach(JsonTransform transform) {
-            transform.accept(null, this);
+        default void forEach(JsonTransform transform, Json.JsonBuilder<?> builder) {
+            transform.accept(builder, this);
         }
     }
 
@@ -374,8 +374,8 @@ public class JsonReader {
         }
 
         @Override
-        public void forEach(JsonTransform transform) {
-            members().forEach(member -> transform.accept(null, member));
+        public void forEach(JsonTransform transform, Json.JsonBuilder<?> builder) {
+            members().forEach(member -> transform.accept(builder, member));
         }
     }
 
@@ -413,8 +413,8 @@ public class JsonReader {
         }
 
         @Override
-        public void forEach(JsonTransform transform) {
-            value.forEach(v -> transform.accept(null, v));
+        public void forEach(JsonTransform transform, Json.JsonBuilder<?> builder) {
+            value.forEach(v -> transform.accept(builder, v));
         }
     }
 
