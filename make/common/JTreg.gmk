@@ -1,0 +1,4 @@
+jtreg_bin = $(jtreg_home)/bin/jtreg
+jtreg_opt = $(opt)/jtreg
+jtreg_home = $(jtreg_opt)/build/images/jtreg
+

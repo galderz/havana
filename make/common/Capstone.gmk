@@ -1,0 +1,11 @@
+capstone_home = $(opt)/capstone
+capstone_makefile = $(capstone_home)/Makefile
+capstone_lib = $(capstone_home)/libcapstone.a
+
+$(capstone_lib): $(capstone_makefile)
+> cd $(capstone_home)
+> ./make.sh
+
+$(capstone_makefile):
+> cd $(opt)
+> git clone https://github.com/capstone-engine/capstone

@@ -1,0 +1,68 @@
+include $(TOPDIR)/make/common/Capstone.gmk
+
+CONF ?= slow
+
+call_java += LD_LIBRARY_PATH=$(capstone_home)
+call_java += $(java)
+conf_name = $(CONF)-$(os)-$(cpu)
+cpu = $(shell uname -m | tr A-Z a-z)
+java = $(JDK_HOME)/build/$(conf_name)/jdk/bin/java
+jmh = $(JDK_HOME)/build/jmh/jars/.jmh
+lldbinit = $(TOPDIR)/make/common/.lldbinit
+os = $(shell uname | tr A-Z a-z)
+
+ifeq ($(CONF),slow)
+  conf_args += --with-debug-level=slowdebug
+endif
+
+$(java): $(shell find $(JDK_HOME)/src -type f -name '*.java')
+$(java): $(shell find $(JDK_HOME)/src -type f -name '*pp')
+$(java): $(shell find $(JDK_HOME)/test -type f -name '*.java')
+$(java): $(shell find $(JDK_HOME)/test -type f -name '*pp')
+$(java):
+> pushd $(JDK_HOME)
+> CONF=$(conf_name) make
+> popd
+> cp $(lldbinit) $(JDK_HOME)/build/$(conf_name)
+> touch $@
+
+config: $(jmh) $(capstone_lib) $(jtreg_bin)
+> cd $(JDK_HOME)
+> bash configure \
+>   --enable-hsdis-bundling \
+>   --disable-precompiled-headers \
+>   --with-boot-jdk=$(BOOT_JDK_HOME) \
+>   --with-capstone=$(capstone_home) \
+>   --with-conf-name=$(conf_name) \
+>   --with-hsdis=capstone \
+>   --with-jmh=build/jmh/jars \
+>   --with-jtreg=$(jtreg_home) \
+>   $(conf_args)
+.PHONY: config
+
+commands:
+> cd $(JDK_HOME)
+> CONF=$(conf_name) make compile-commands
+.PHONY: commands
+
+clear-logs:
+> rm -f *.log
+.PHONY: clear-logs
+
+idea:
+> cd $(JDK_HOME)
+> CONF=$(conf_name) sh bin/idea.sh
+.PHONY: idea
+
+$(jmh):
+> cd $(JDK_HOME)
+> sh make/devkit/createJMHBundle.sh
+> touch $@
+
+$(jtreg_bin): $(jtreg_opt)
+> cd $<
+> sh make/build.sh --jdk $(BOOT_JDK_HOME)
+
+$(jtreg_opt):
+> cd $(opt)
+> git clone https://github.com/openjdk/jtreg
