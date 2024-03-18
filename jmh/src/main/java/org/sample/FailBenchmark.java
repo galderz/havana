@@ -14,9 +14,27 @@ import java.util.Collection;
 public class FailBenchmark
 {
     @Benchmark
-    public void defaultMode()
+    public void singleException()
     {
         throw new ExpectedException();
+    }
+
+    @Benchmark
+    public void chainedExceptions()
+    {
+        try
+        {
+            generateException();
+        }
+        catch (NullPointerException e)
+        {
+            throw new RuntimeException("Something went wrong", e);
+        }
+    }
+
+    private static void generateException()
+    {
+        throw new NullPointerException();
     }
 
     public static void main(String[] args) throws RunnerException
@@ -24,7 +42,7 @@ public class FailBenchmark
         System.out.println("FailBenchmark.main");
         Options opt = new OptionsBuilder()
             .include(FailBenchmark.class.getSimpleName())
-            .forks(1)
+            .forks(0)
             .jvmArgs("-ea")
             .shouldFailOnError(true)
             .build();
