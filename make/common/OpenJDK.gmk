@@ -8,6 +8,9 @@ conf_name = $(CONF)-$(os)-$(cpu)
 cpu = $(shell uname -m | tr A-Z a-z)
 java = $(JDK_HOME)/build/$(conf_name)/jdk/bin/java
 jmh = $(JDK_HOME)/build/jmh/jars/.jmh
+jtreg_bin = $(jtreg_home)/bin/jtreg
+jtreg_opt = $(opt)/jtreg
+jtreg_home = $(jtreg_opt)/build/images/jtreg
 lldbinit = $(TOPDIR)/make/common/.lldbinit
 os = $(shell uname | tr A-Z a-z)
 
@@ -66,3 +69,8 @@ $(jtreg_bin): $(jtreg_opt)
 $(jtreg_opt):
 > cd $(opt)
 > git clone https://github.com/openjdk/jtreg
+
+test: $(java)
+> cd $(JDK_HOME)
+> CONF=$(conf_name) make test TEST="$(TEST)"
+.PHONY: test
