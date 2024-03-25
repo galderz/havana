@@ -3,7 +3,8 @@ include $(TOPDIR)/make/common/MakeBase.gmk
 
 default: run
 
-JDK_HOME ?= $(HOME)/1/jdk
+CLASS ?= Test
+JDK_HOME ?= $(HOME)/1/jdk-c2-opt-fp-min-max-same
 BOOT_JDK_HOME ?= $(opt)/java-21
 include $(TOPDIR)/make/common/OpenJDK.gmk
 
@@ -11,9 +12,16 @@ current_dir = $(shell pwd)
 
 run: clear-logs $(java)
 > $(call_java) \
->   -XX:CompileOnly=Test.test \
+>   -ea \
+>   -XX:-BackgroundCompilation \
+>   -XX:CompileCommand=PrintIdealPhase,$(CLASS).test,MATCHING,FINAL_CODE \
+>   -XX:CompileOnly=$(CLASS).test \
+>   -XX:+LogCompilation \
+>   -XX:+PrintLIRWithAssembly \
 >   -XX:+PrintIdeal \
->   -XX:CompileCommand=PrintIdealPhase,Test.test,MATCHING,FINAL_CODE \
+>   -XX:+PrintIR \
+>   -XX:+PrintNMethods \
 >   -XX:+PrintOptoAssembly \
->   $(current_dir)/Test.java
+>   -XX:-UseOnStackReplacement \
+>   $(current_dir)/$(CLASS).java
 .PHONY: run
