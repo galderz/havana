@@ -2,19 +2,18 @@ class Test
 {
     public static void main(String[] args)
     {
-        float a = 5.6f;
-        float b = 5.6f;
+        float value = 5.6f;
         for (int i = 0; i < 10_000; i++)
         {
             blackhole(
-                test(a, b)
+                test(value)
             );
         }
     }
 
-    static float test(float a, float b)
+    static float test(float a)
     {
-        return Math.max(a, b);
+        return Math.max(a, a);
     }
 
     static void blackhole(Object obj)
