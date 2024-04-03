@@ -74,3 +74,13 @@ test: $(java)
 > cd $(JDK_HOME)
 > CONF=$(conf_name) make test TEST="$(TEST)"
 .PHONY: test
+
+test-hotspot-compiler: $(java)
+> cd $(JDK_HOME)
+> CONF=$(conf_name) make test TEST="hotspot_compiler"
+.PHONY: test-hotspot-compiler
+
+test-hotspot-compiler-c1-only: $(java)
+> cd $(JDK_HOME)
+> CONF=$(conf_name) make test TEST="hotspot_compiler" JTREG="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
+.PHONY: test-hotspot-compiler-c1-only
