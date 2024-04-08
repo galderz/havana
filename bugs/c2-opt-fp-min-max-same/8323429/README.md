@@ -10,6 +10,7 @@ $ git worktree add -b c2-opt-fp-min-max-same ../jdk-c2-opt-fp-min-max-same topic
 Test newly added IR test:
 
 ```bash
+$ m config
 $ m test TEST=test/hotspot/jtreg/compiler/intrinsics/math/TestFpMinMaxOpt.java
 ```
 
