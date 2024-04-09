@@ -11,7 +11,7 @@ Test newly added IR test:
 
 ```bash
 $ m config
-$ m test TEST=test/hotspot/jtreg/compiler/intrinsics/math/TestFpMinMaxOpt.java
+$ m test TEST=test/hotspot/jtreg/compiler/intrinsics/math/TestMinMaxOpt.java
 ```
 
 Test hotspot compiler:
