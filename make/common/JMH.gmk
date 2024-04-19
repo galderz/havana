@@ -11,3 +11,7 @@ build: $(jar)
 run-jmh: $(jar)
 > $(java) -jar $< -f 1 -i 1 -wi 1 -r 2 -w 2
 .PHONY: run-jmh
+
+debug-build:
+> $(mvn_debug) verify
+.PHONY: debug-build
