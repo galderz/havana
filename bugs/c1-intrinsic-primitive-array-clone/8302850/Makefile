@@ -284,6 +284,11 @@ test-hotspot-compiler-686: $(java_686_release)
 > CONF=$(conf_686_release_dir) make test TEST="hotspot_compiler" JTREG="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
 .PHONY: test-hotspot-compiler-686
 
+test-all: $(java_release)
+> cd $(JDK_HOME)
+> CONF=$(conf_release_dir) make test TEST="hotspot_compiler:hotspot_gc::hotspot_serviceability:hotspot_runtime:tier1:tier2:tier3" JTREG="JAVA_OPTIONS=-XX:TieredStopAtLevel=1 -Xcomp"
+.PHONY: test-hotspot-compiler
+
 test-single: $(java_slow)
 > cd $(JDK_HOME)
 # > CONF=$(conf_slow_dir) make test TEST="test/hotspot/jtreg/compiler/arraycopy/TestArrayCopyAsLoadsStores.java" JTREG="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
