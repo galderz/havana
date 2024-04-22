@@ -298,6 +298,24 @@ test-single: $(java_slow)
 > CONF=$(conf_slow_dir) make test TEST="test/hotspot/jtreg/compiler/c1/TestNullArrayClone.java"
 .PHONY: test-single
 
+#    TEST                                              TOTAL  PASS  FAIL ERROR
+# >> jtreg:test/jdk:tier1                               2369  2368     1     0 <<
+# jdk/jfr/event/compiler/TestCompilerCompile.java
+regression_tests += test/jdk/jdk/jfr/event/compiler/TestCompilerCompile.java
+# >> jtreg:test/jdk:tier2                               4100  4098     1     1 <<
+regression_tests += test/jdk/java/security/AccessController/DoPrivAccompliceTest.java
+# >> jtreg:test/langtools:tier2                           11    10     1     0 <<
+regression_tests += test/langtools/jdk/jshell/FailOverDirectExecutionControlTest.java
+# >> jtreg:test/jdk:tier3                               1413  1406     4     3 <<
+regression_tests += test/jdk/java/rmi/server/RemoteServer/AddrInUse.java
+regression_tests += test/jdk/java/rmi/server/RMISocketFactory/useSocketFactory/unicast/TCPEndpointReadBug.java
+regression_tests += test/jdk/jdk/jfr/event/gc/stacktrace/TestMetaspaceParallelGCAllocationPendingStackTrace.java
+regression_tests += test/jdk/jdk/jfr/event/gc/stacktrace/TestMetaspaceSerialGCAllocationPendingStackTrace.java
+test-regressions: $(java_release)
+> cd $(JDK_HOME)
+> CONF=$(conf_release_dir) make test TEST="$(regression_tests)"
+.PHONY: test-regressions
+
 ap-clone: $(java_slow) $(test_clone) $(capstone_lib) $(ap_agent)
 > rm -f *.log
 > LD_LIBRARY_PATH=$(capstone_home) $< $(jvm_args) -agentpath:$(ap_agent)=start,event=cpu,file=cpu.html $(args_clone)
