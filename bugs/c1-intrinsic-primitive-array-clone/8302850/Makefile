@@ -313,7 +313,7 @@ regression_tests += test/jdk/jdk/jfr/event/gc/stacktrace/TestMetaspaceParallelGC
 regression_tests += test/jdk/jdk/jfr/event/gc/stacktrace/TestMetaspaceSerialGCAllocationPendingStackTrace.java
 test-regressions: $(java_release)
 > cd $(JDK_HOME)
-> CONF=$(conf_release_dir) make test TEST="$(regression_tests)"
+> CONF=$(conf_release_dir) make test TEST="$(regression_tests)" JTREG="JAVA_OPTIONS=-XX:TieredStopAtLevel=1 -Xcomp"
 .PHONY: test-regressions
 
 ap-clone: $(java_slow) $(test_clone) $(capstone_lib) $(ap_agent)
