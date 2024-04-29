@@ -19,7 +19,7 @@ class Test
         for (int i = 0; i < RANGE; i++)
         {
             final long v = 11 * data[i];
-            sum += v;
+            sum = Math.max(sum, v);
         }
         return sum;
     }
