@@ -18,6 +18,7 @@ run: clear-logs $(java)
 >   $(jvm_args) \
 >   -Xbatch \
 >   -XX:CompileCommand=compileonly,$(CLASS)::test \
+>   -XX:+TraceLoopOpts \
 >   -XX:+TraceNewVectors \
 >   -XX:+TraceSuperWord \
 >   $(shell pwd)/$(CLASS).java
@@ -33,8 +34,8 @@ rr: $(java)
 >   -XX:CompileCommand=printcompilation,$(CLASS)::test \
 >   -XX:CompileCommand=compileonly,$(CLASS)::test \
 >   -Xbatch \
->   -XX:+TraceSuperWord \
 >   -XX:+TraceLoopOpts \
+>   -XX:+TraceSuperWord \
 >   -XX:LoopMaxUnroll=5
 >   $(shell pwd)/$(CLASS).java
 .PHONY: rr
