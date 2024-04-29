@@ -30,7 +30,7 @@ perf: $(java)
 .PHONY: perf
 
 rr: $(java)
-> rr $(call_java) \
+> LD_LIBRARY_PATH=$(capstone_home) rr $(java) \
 >   -XX:CompileCommand=printcompilation,$(CLASS)::test \
 >   -XX:CompileCommand=compileonly,$(CLASS)::test \
 >   -Xbatch \
