@@ -17,8 +17,9 @@ run: clear-logs $(java)
 > $(call_java) \
 >   $(jvm_args) \
 >   -Xbatch \
->   -XX:LoopUnrollLimit=250 \
->   -XX:CompileCommand=exclude,$(CLASS)::main \
+>   -XX:CompileCommand=compileonly,$(CLASS)::test \
+>   -XX:+TraceNewVectors \
+>   -XX:+TraceSuperWord \
 >   $(shell pwd)/$(CLASS).java
 .PHONY: run
 
