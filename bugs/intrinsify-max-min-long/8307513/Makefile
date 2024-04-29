@@ -28,6 +28,17 @@ perf: $(java)
 > CONF=$(CONF) make test TEST="test/hotspot/jtreg/compiler/loopopts/superword/ReductionPerf.java"
 .PHONY: perf
 
+rr: $(java)
+> rr $(call_java) \
+>   -XX:CompileCommand=printcompilation,$(CLASS)::test \
+>   -XX:CompileCommand=compileonly,$(CLASS)::test \
+>   -Xbatch \
+>   -XX:+TraceSuperWord \
+>   -XX:+TraceLoopOpts \
+>   -XX:LoopMaxUnroll=5
+>   $(shell pwd)/$(CLASS).java
+.PHONY: rr
+
 # >   -ea \
 # >   -XX:-BackgroundCompilation \
 # >   -XX:+LogCompilation \
