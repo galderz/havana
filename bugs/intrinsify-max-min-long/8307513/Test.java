@@ -14,7 +14,7 @@ class Test
         }
     }
 
-    static int test(long[] data, long sum)
+    static long test(long[] data, long sum)
     {
         for (int i = 0; i < RANGE; i++)
         {
