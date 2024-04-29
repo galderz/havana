@@ -18,6 +18,8 @@ ifeq ($(CONF),slow)
   conf_args += --with-debug-level=slowdebug
 endif
 
+java: $(java)
+
 $(java): $(shell find $(JDK_HOME)/src -type f -name '*.java')
 $(java): $(shell find $(JDK_HOME)/src -type f -name '*pp')
 $(java): $(shell find $(JDK_HOME)/test -type f -name '*.java')
