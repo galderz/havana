@@ -36,7 +36,7 @@ rr: $(java)
 >   -Xbatch \
 >   -XX:+TraceLoopOpts \
 >   -XX:+TraceSuperWord \
->   -XX:LoopMaxUnroll=5
+>   -XX:LoopMaxUnroll=5 \
 >   $(shell pwd)/$(CLASS).java
 .PHONY: rr
 
