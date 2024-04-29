@@ -1,12 +1,12 @@
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-class Test
+class IntAdd
 {
     static final int RANGE = 1024;
     static final int ITER = 10_000;
 
-    static void init(long[] data)
+    static void init(int[] data)
     {
         for (int i = 0; i < RANGE; i++)
         {
@@ -14,11 +14,11 @@ class Test
         }
     }
 
-    static int test(long[] data, long sum)
+    static int test(int[] data, int sum)
     {
         for (int i = 0; i < RANGE; i++)
         {
-            final long v = 11 * data[i];
+            final int v = 11 * data[i];
             sum += v;
         }
         return sum;
@@ -26,9 +26,9 @@ class Test
 
     public static void main(String[] args)
     {
-        long[] data = new long[RANGE];
+        int[] data = new int[RANGE];
         init(data);
-        for (long i = 0; i < ITER; i++)
+        for (int i = 0; i < ITER; i++)
         {
             test(data, i);
         }

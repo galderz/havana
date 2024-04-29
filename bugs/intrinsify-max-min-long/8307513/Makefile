@@ -23,10 +23,10 @@ run: clear-logs $(java)
 >   $(shell pwd)/$(CLASS).java
 .PHONY: run
 
-test-perf: $(java)
+perf: $(java)
 > cd $(JDK_HOME)
 > CONF=$(CONF) make test TEST="test/hotspot/jtreg/compiler/loopopts/superword/ReductionPerf.java"
-.PHONY: test-perf
+.PHONY: perf
 
 # >   -ea \
 # >   -XX:-BackgroundCompilation \
