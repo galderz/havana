@@ -24,6 +24,7 @@ $(java): $(shell find $(JDK_HOME)/src -type f -name '*.java')
 $(java): $(shell find $(JDK_HOME)/src -type f -name '*pp')
 $(java): $(shell find $(JDK_HOME)/test -type f -name '*.java')
 $(java): $(shell find $(JDK_HOME)/test -type f -name '*pp')
+$(java): $(shell find $(JDK_HOME)/src -type f -name '*.ad')
 $(java):
 > pushd $(JDK_HOME)
 > CONF=$(conf_name) make
