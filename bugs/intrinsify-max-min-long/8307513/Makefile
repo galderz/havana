@@ -18,8 +18,12 @@ run: clear-logs $(java)
 >   $(jvm_args) \
 >   -Xbatch \
 >   -XX:CompileCommand=compileonly,$(CLASS)::test \
+>   -XX:+PrintIdeal \
+>   -XX:+PrintIntrinsics \
+>   -XX:+PrintIR \
 >   -XX:+TraceLoopOpts \
 >   -XX:+TraceNewVectors \
+>   -XX:+TraceOptoParse \
 >   -XX:+TraceSuperWord \
 >   $(shell pwd)/$(CLASS).java
 .PHONY: run
