@@ -25,6 +25,7 @@ run: clear-logs $(java)
 >   -XX:+TraceNewVectors \
 >   -XX:+TraceOptoParse \
 >   -XX:+TraceSuperWord \
+>   -XX:CompileCommand=TraceAutoVectorization,*::*,ALL \
 >   $(shell pwd)/$(CLASS).java
 .PHONY: run
 
