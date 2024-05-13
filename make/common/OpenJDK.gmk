@@ -32,7 +32,12 @@ $(java):
 > cp $(lldbinit) $(JDK_HOME)/build/$(conf_name)
 > touch $@
 
-config: $(jmh) $(capstone_lib) $(jtreg_bin)
+clean:
+> pushd $(JDK_HOME)
+> CONF=$(conf_name) make clean
+.PHONY: clean
+
+configure: $(jmh) $(capstone_lib) $(jtreg_bin)
 > cd $(JDK_HOME)
 > bash configure \
 >   --enable-hsdis-bundling \
@@ -44,12 +49,12 @@ config: $(jmh) $(capstone_lib) $(jtreg_bin)
 >   --with-jmh=build/jmh/jars \
 >   --with-jtreg=$(jtreg_home) \
 >   $(conf_args)
-.PHONY: config
+.PHONY: configure
 
-commands:
+compile-commands:
 > cd $(JDK_HOME)
 > CONF=$(conf_name) make compile-commands
-.PHONY: commands
+.PHONY: compile-commands
 
 clear-logs:
 > rm -f *.log
