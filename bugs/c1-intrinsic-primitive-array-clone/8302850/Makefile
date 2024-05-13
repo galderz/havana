@@ -12,7 +12,7 @@ BOOT_JDK_HOME ?= $(opt)/java-21
 CONF_FAST ?= fast
 CONF_RELEASE ?= release
 CONF_SLOW ?= slow
-JDK_HOME ?= $(HOME)/1/jdk
+JDK_HOME ?= $(HOME)/1/jdk-c1-array-clone
 
 args_clone += -XX:CompileOnly=TestArrayClone.test
 args_clone += $(current_dir)/$(test_clone)
