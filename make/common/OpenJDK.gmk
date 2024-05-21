@@ -62,7 +62,7 @@ clear-logs:
 
 idea:
 > cd $(JDK_HOME)
-> CONF=$(conf_name) sh bin/idea.sh
+> ANT_HOME=$(HOME)/opt/ant CONF=$(conf_name) sh bin/idea.sh
 .PHONY: idea
 
 $(jmh):
