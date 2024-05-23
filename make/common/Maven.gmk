@@ -14,6 +14,6 @@ $(mvnw):
 > JAVA_HOME=$(JAVA_HOME) $(boot_maven_home)/bin/mvn -N wrapper:wrapper -Dmaven=$(MAVEN_VERSION)
 > touch $@
 
-clean:
+clean-maven:
 > rm -drf $(target)
-.PHONY: clean
+.PHONY: clean-maven

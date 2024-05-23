@@ -32,10 +32,10 @@ $(java):
 > cp $(lldbinit) $(JDK_HOME)/build/$(conf_name)
 > touch $@
 
-clean:
+clean-jdk:
 > pushd $(JDK_HOME)
 > CONF=$(conf_name) make clean
-.PHONY: clean
+.PHONY: clean-jdk
 
 configure: $(jmh) $(capstone_lib) $(jtreg_bin)
 > cd $(JDK_HOME)
