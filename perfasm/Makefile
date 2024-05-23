@@ -1,7 +1,7 @@
 TOPDIR = ..
 include $(TOPDIR)/make/common/MakeBase.gmk
 
-default: run
+default: perfasm
 
 BOOT_JDK_HOME ?= $(opt)/boot-java-21
 CLASS ?= Test
@@ -18,3 +18,16 @@ run: clear-logs $(java)
 >   $(jvm_args) \
 >   $(shell pwd)/$(CLASS).java
 .PHONY: run
+
+JMH_HOME ?= $(HOME)/1/jmh
+benchmarks_jar = $(JMH_HOME)/jmh-samples/target/benchmarks.jar
+include $(TOPDIR)/make/common/Maven.gmk
+
+perfasm: $(benchmarks_jar) $(java)
+> $(java) -jar $(benchmarks_jar) JMHSample_01 -f 1 -i 1 -r 11 -wi 1 -w 1 -prof perfasm
+.PHONY: perfasm
+
+$(benchmarks_jar): $(shell find $(JMH_HOME) -type f -name '*.java')
+$(benchmarks_jar): $(java) $(mvnw)
+> cd $(JMH_HOME)
+> $(mvn) clean install -DskipTests
