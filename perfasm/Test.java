@@ -15,7 +15,7 @@ class Test
         for (int i = 0; i < 10_000; i++)
         {
             int[] result = test(ints);
-            System.out.println(Arrays.toString(result));
+            // System.out.println(Arrays.toString(result));
             blackhole(result);
         }
     }
