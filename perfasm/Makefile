@@ -29,7 +29,7 @@ perfasm: $(benchmarks_jar) $(java)
 .PHONY: perfasm
 
 perfstat: $(benchmarks_jar) $(java)
-> $(java) -jar $(benchmarks_jar) JMHSample_01 -f 1 -i 1 -r 1 -wi 1 -w 1 -prof perfstat
+> $(java) -jar $(benchmarks_jar) JMHSample_01 -f 1 -i 1 -r 1 -wi 1 -w 1 -prof perf
 .PHONY: perfstat
 
 perfnorm: $(benchmarks_jar) $(java)
