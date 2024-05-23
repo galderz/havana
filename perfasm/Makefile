@@ -25,7 +25,7 @@ benchmarks_jar = $(APP_DIR)/jmh-samples/target/benchmarks.jar
 include $(TOPDIR)/make/common/Maven.gmk
 
 perfasm: $(benchmarks_jar) $(java)
-> $(java) -jar $(benchmarks_jar) JMHSample_01 -f 1 -i 1 -r 11 -wi 1 -w 1 -prof perfasm
+> $(java) -jar $(benchmarks_jar) JMHSample_01 -f 1 -i 1 -r 1 -wi 1 -w 1 -prof perfasm
 .PHONY: perfasm
 
 $(benchmarks_jar): $(shell find $(JMH_HOME) -type f -name '*.java')
