@@ -19,9 +19,9 @@ run: clear-logs $(java)
 >   $(shell pwd)/$(CLASS).java
 .PHONY: run
 
-JMH_HOME ?= $(HOME)/1/jmh
+APP_DIR = $(HOME)/1/jmh
 JAVA_HOME ?= $(JDK_HOME)/build/$(conf_name)/jdk
-benchmarks_jar = $(JMH_HOME)/jmh-samples/target/benchmarks.jar
+benchmarks_jar = $(APP_DIR)/jmh-samples/target/benchmarks.jar
 include $(TOPDIR)/make/common/Maven.gmk
 
 perfasm: $(benchmarks_jar) $(java)
@@ -30,5 +30,5 @@ perfasm: $(benchmarks_jar) $(java)
 
 $(benchmarks_jar): $(shell find $(JMH_HOME) -type f -name '*.java')
 $(benchmarks_jar): $(java) $(mvnw)
-> cd $(JMH_HOME)
+> cd $(APP_DIR)
 > $(mvn) clean install -DskipTests
