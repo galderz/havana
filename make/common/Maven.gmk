@@ -11,6 +11,7 @@ sources += $(shell find $(APP_DIR)/src -type f -name '*.properties' | sed 's: :\
 target = $(APP_DIR)/target
 
 $(mvnw):
+> cd $(APP_DIR)
 > JAVA_HOME=$(JAVA_HOME) $(boot_maven_home)/bin/mvn -N wrapper:wrapper -Dmaven=$(MAVEN_VERSION)
 > touch $@
 
