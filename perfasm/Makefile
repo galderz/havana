@@ -20,6 +20,7 @@ run: clear-logs $(java)
 .PHONY: run
 
 JMH_HOME ?= $(HOME)/1/jmh
+JAVA_HOME ?= $(JDK_HOME)/build/$(conf_name)/jdk
 benchmarks_jar = $(JMH_HOME)/jmh-samples/target/benchmarks.jar
 include $(TOPDIR)/make/common/Maven.gmk
 
