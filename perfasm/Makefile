@@ -28,6 +28,14 @@ perfasm: $(benchmarks_jar) $(java)
 > $(java) -jar $(benchmarks_jar) JMHSample_01 -f 1 -i 1 -r 1 -wi 1 -w 1 -prof perfasm
 .PHONY: perfasm
 
+perfstat: $(benchmarks_jar) $(java)
+> $(java) -jar $(benchmarks_jar) JMHSample_01 -f 1 -i 1 -r 1 -wi 1 -w 1 -prof perfstat
+.PHONY: perfstat
+
+perfnorm: $(benchmarks_jar) $(java)
+> $(java) -jar $(benchmarks_jar) JMHSample_01 -f 1 -i 1 -r 1 -wi 1 -w 1 -prof perfnorm
+.PHONY: perfnorm
+
 $(benchmarks_jar): $(shell find $(JMH_HOME) -type f -name '*.java')
 $(benchmarks_jar): $(java) $(mvnw)
 > cd $(APP_DIR)
