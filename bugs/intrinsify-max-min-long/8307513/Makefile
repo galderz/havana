@@ -31,7 +31,7 @@ run: clear-logs $(java)
 
 perf: $(java)
 > cd $(JDK_HOME)
-> CONF=$(CONF) make test TEST="test/hotspot/jtreg/compiler/loopopts/superword/ReductionPerf.java"
+> CONF=$(conf_name) make test TEST="test/hotspot/jtreg/compiler/loopopts/superword/ReductionPerf.java"
 .PHONY: perf
 
 rr: $(java)
