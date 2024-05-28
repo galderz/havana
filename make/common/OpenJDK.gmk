@@ -4,6 +4,7 @@ CONF ?= slow
 
 call_java += LD_LIBRARY_PATH=$(capstone_home)
 call_java += $(java)
+gtest_opt = $(opt)/googletest
 java = $(java_build_dir)/jdk/bin/java
 java_build_dir = $(JDK_HOME)/build/$(conf_name)
 jmh = $(JDK_HOME)/build/jmh/jars/.jmh
@@ -48,7 +49,7 @@ clean-jdk:
 > CONF=$(conf_name) make clean
 .PHONY: clean-jdk
 
-configure: $(jmh) $(capstone_lib) $(jtreg_bin)
+configure: $(jmh) $(capstone_lib) $(jtreg_bin) $(gtest_opt)
 > cd $(JDK_HOME)
 > bash configure \
 >   --enable-hsdis-bundling \
@@ -57,6 +58,7 @@ configure: $(jmh) $(capstone_lib) $(jtreg_bin)
 >   --with-capstone=$(capstone_home) \
 >   --with-conf-name=$(conf_name) \
 >   --with-hsdis=capstone \
+>   --with-gtest=$(gtest_opt) \
 >   --with-jmh=build/jmh/jars \
 >   --with-jtreg=$(jtreg_home) \
 >   $(conf_args)
@@ -80,6 +82,10 @@ $(jmh):
 > cd $(JDK_HOME)
 > sh make/devkit/createJMHBundle.sh
 > touch $@
+
+$(gtest_opt):
+> cd $(opt)
+> git clone -b v1.14.0 https://github.com/google/googletest
 
 $(jtreg_bin): $(jtreg_opt)
 > cd $<
