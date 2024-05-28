@@ -32,6 +32,7 @@ run: clear-logs $(java)
 perf: $(java)
 > cd $(JDK_HOME)
 > CONF=$(conf_name) make test TEST="test/hotspot/jtreg/compiler/loopopts/superword/ReductionPerf.java"
+> grep -E -i -w '^(long max|long min)' $(java_build_dir)/test-support/jtreg_test_hotspot_jtreg_compiler_loopopts_superword_ReductionPerf_java/compiler/loopopts/superword/ReductionPerf.jtr
 .PHONY: perf
 
 rr: $(java)
