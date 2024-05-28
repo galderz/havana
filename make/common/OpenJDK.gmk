@@ -94,6 +94,11 @@ test: $(java)
 > CONF=$(conf_name) make test TEST="$(TEST)"
 .PHONY: test
 
+test-tier1: $(java)
+> cd $(JDK_HOME)
+> CONF=$(conf_name) make test TEST="tier1"
+.PHONY: test-tier1
+
 test-hotspot-compiler: $(java)
 > cd $(JDK_HOME)
 > CONF=$(conf_name) make test TEST="hotspot_compiler"
