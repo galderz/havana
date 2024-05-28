@@ -4,7 +4,6 @@ CONF ?= slow
 
 call_java += LD_LIBRARY_PATH=$(capstone_home)
 call_java += $(java)
-cpu = $(shell uname -m | tr A-Z a-z)
 java = $(java_build_dir)/jdk/bin/java
 java_build_dir = $(JDK_HOME)/build/$(conf_name)
 jmh = $(JDK_HOME)/build/jmh/jars/.jmh
@@ -14,12 +13,13 @@ jtreg_home = $(jtreg_opt)/build/images/jtreg
 lldbinit = $(TOPDIR)/make/common/.lldbinit
 os = $(shell uname | tr A-Z a-z)
 
-ARCH ?=
-ifdef ARCH
-  conf_name = $(CONF)-$(ARCH)
+CPU ?=
+ifdef CPU
+  cpu = $(CPU)
 else
-  conf_name = $(CONF)-$(os)-$(cpu)
+  cpu = $(shell uname -m | tr A-Z a-z)
 endif
+conf_name = $(CONF)-$(os)-$(cpu)
 
 ifeq ($(ARCH),686)
   conf_args += --with-target-bits=32
