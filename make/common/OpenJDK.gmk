@@ -6,7 +6,8 @@ call_java += LD_LIBRARY_PATH=$(capstone_home)
 call_java += $(java)
 conf_name = $(CONF)-$(os)-$(cpu)
 cpu = $(shell uname -m | tr A-Z a-z)
-java = $(JDK_HOME)/build/$(conf_name)/jdk/bin/java
+java = $(java_build_dir)/jdk/bin/java
+java_build_dir = $(JDK_HOME)/build/$(conf_name)
 jmh = $(JDK_HOME)/build/jmh/jars/.jmh
 jtreg_bin = $(jtreg_home)/bin/jtreg
 jtreg_opt = $(opt)/jtreg
