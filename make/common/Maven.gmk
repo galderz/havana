@@ -1,10 +1,12 @@
 MAVEN_VERSION ?= 3.9.2
 
 boot_maven_home = $(opt)/boot-maven-3
+boot_maven_bin = $(boot_maven_home)/bin
+boot_mvn = $(boot_maven_bin)/mvn
 mvn += JAVA_HOME=$(JAVA_HOME)
 mvn += $(mvnw)
 mvn_debug += JAVA_HOME=$(JAVA_HOME)
-mvn_debug += $(boot_maven_home)/bin/mvnDebug
+mvn_debug += $(boot_maven_bin)/mvnDebug
 mvnw = $(APP_DIR)/mvnw
 sources += $(shell find $(APP_DIR)/src -type f -name '*.java' | sed 's: :\\ :g')
 sources += $(shell find $(APP_DIR)/src -type f -name '*.properties' | sed 's: :\\ :g')
@@ -12,7 +14,7 @@ target = $(APP_DIR)/target
 
 $(mvnw):
 > cd $(APP_DIR)
-> JAVA_HOME=$(JAVA_HOME) $(boot_maven_home)/bin/mvn -N wrapper:wrapper -Dmaven=$(MAVEN_VERSION)
+> JAVA_HOME=$(JAVA_HOME) $(boot_mvn) -N wrapper:wrapper -Dmaven=$(MAVEN_VERSION)
 > touch $@
 
 clean-maven:

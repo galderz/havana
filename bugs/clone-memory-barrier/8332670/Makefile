@@ -7,6 +7,7 @@ CLASS ?= Test
 JDK_HOME ?= $(HOME)/1/jdk-clone-memory-barrier
 BOOT_JDK_HOME ?= $(opt)/java-22
 include $(TOPDIR)/make/common/OpenJDK.gmk
+include $(TOPDIR)/make/common/JCStress.gmk
 
 run: clear-logs $(java)
 > $(call_java) \

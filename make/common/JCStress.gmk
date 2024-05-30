@@ -1,0 +1,17 @@
+include $(TOPDIR)/make/common/Maven.gmk
+
+jcstress_opt = $(opt)/jcstress
+jcstress_pom = $(jcstress_opt)/pom.xml
+jcstress_jar = $(jcstress_opt)/tests-all/target/jcstress.jar
+
+test-jcstress: $(jcstress_jar) $(java)
+> $(call_java) -jar $< -t $(TEST)
+.PHONY: test-jcstress
+
+$(jcstress_jar): $(jcstress_pom)
+> cd $(jcstress_opt)
+> JAVA_HOME=$(opt)/java-21 $(boot_mvn) install -DskipTests
+
+$(jcstress_pom):
+> cd $(opt)
+> git clone https://github.com/openjdk/jcstress
