@@ -1,142 +1,99 @@
 package concurrency;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 public class CloneArrayVisibility
 {
-    static final int ARRAY_SIZE = 100_000;
-    static int[] src;
-
-    static long sum;
-
-    static
-    {
-//        src = new int[1];
-//        src[0] = -1;
-
-        src = new int[ARRAY_SIZE];
-        for (int i = 0; i < src.length; i++)
-        {
-            src[i] = i;
-            sum = sum + i;
-        }
-    }
-
-    int[] copy;
-
     public static void main(String[] args) throws Exception
     {
         Asserts.needEnabledAsserts();
 
-        try (final ExecutorService exec = Executors.newCachedThreadPool())
+        ExecutorService service = Executors.newFixedThreadPool(2, r ->
         {
-            final long start = System.nanoTime();
-            final long end = start + TimeUnit.SECONDS.toNanos(10);
-            int iterations = 0;
+            Thread t = new Thread(r);
+            t.setDaemon(true);
+            return t;
+        });
 
-            while (System.nanoTime() < end)
+        for (int c = 0; c < 10000; c++)
+        {
+            final Test[] tests = new Test[10000];
+            final ZII_Result[] results = new ZII_Result[10000];
+            for (int t = 0; t < tests.length; t++)
             {
-                final CloneArrayVisibility shared = new CloneArrayVisibility();
-                final CyclicBarrier barrier = new CyclicBarrier(3);
-                final Future<Result> resultFuture = exec.submit(new Reader(shared, barrier));
-                exec.submit(new Cloner(shared, barrier));
-                // System.out.println("Wait for threads to be ready");
-                barrier.await();
-                // System.out.println("Wait for threads to finish");
-                barrier.await();
-                // System.out.println("Threads finished");
-                final Result result = resultFuture.get();
-                // final Void unused = clonerResult.get();
-                // System.out.println("Validate result");
-                assert result.typeEquals : "type not equals";
-                assert result.arrayLength == 0 || result.arrayLength == ARRAY_SIZE : "array length not equals";
-                assert result.sum == -1 || result.sum == sum : "unexpected array content";
+                tests[t] = new Test();
+            }
 
-                iterations++;
-                if (iterations % 1000 == 0)
+            Future<?> f1 = service.submit(() ->
+            {
+                ZII_Result r = new ZII_Result();
+                for (int t = 0; t < tests.length; t++)
                 {
-                    System.out.println(iterations + " iterations");
+                    final Test test = tests[t];
+                    test.actor2(r);
+                    results[t] = r;
                 }
-            }
-        }
-    }
-
-    static final class Reader implements Callable<Result>
-    {
-        final CloneArrayVisibility shared;
-        final CyclicBarrier barrier;
-
-        Reader(CloneArrayVisibility result, CyclicBarrier barrier)
-        {
-            this.shared = result;
-            this.barrier = barrier;
-        }
-
-        @Override
-        public Result call() throws Exception
-        {
-            barrier.await();
-            try
+            });
+            Future<?> f2 = service.submit(() ->
             {
-                int[] t = shared.copy;
-                if (t != null)
+                for (Test test : tests)
                 {
-                    return new Result((t.getClass() == int[].class), t.length, sum(t));
+                    test.actor1();
                 }
+            });
 
-                return new Result(true, 0, -1);
-            }
-            finally
+            f1.get();
+            f2.get();
+
+            for (ZII_Result result : results)
             {
-                barrier.await();
+                assert result.r1 : "type not equals";
+                assert result.r2 == 1 : "array length not equals";
+                assert result.r3 == 0 || result.r3 == -1 : "unexpected array content";
             }
         }
     }
 
-    static long sum(int[] t) {
-        long sum = 0;
-
-        for (int i : t)
-        {
-            sum = sum + i;
-        }
-
-        return sum;
+    public static class ZII_Result {
+        boolean r1;
+        int r2, r3;
     }
 
-    static final class Cloner implements Callable<Void>
+    public static class Test
     {
-        final CloneArrayVisibility shared;
-        final CyclicBarrier barrier;
-
-        Cloner(CloneArrayVisibility result, CyclicBarrier barrier)
+        static int[] src;
+        static
         {
-            this.shared = result;
-            this.barrier = barrier;
+            src = new int[1];
+            src[0] = -1;
         }
 
-        @Override
-        public Void call() throws Exception
+        int[] copy;
+
+        public void actor1()
         {
-            barrier.await();
-            try
+            copy = src.clone();
+        }
+
+        public void actor2(ZII_Result r)
+        {
+            int[] t = copy;
+            if (t != null)
             {
-                shared.copy = src.clone();
-                return null;
+                r.r1 = (t.getClass() == int[].class);
+                r.r2 = t.length;
+                r.r3 = t[0];
             }
-            finally
+            else
             {
-                barrier.await();
+                r.r1 = true;
+                r.r2 = 1;
+                r.r3 = -1;
             }
         }
     }
-
-    record Result(boolean typeEquals, int arrayLength, long sum) {}
 }
 
 
