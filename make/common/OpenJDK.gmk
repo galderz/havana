@@ -29,6 +29,8 @@ endif
 
 ifeq ($(CONF),slow)
   conf_args += --with-debug-level=slowdebug
+else ifeq ($(CONF),fast)
+  conf_args += --with-debug-level=fastdebug
 endif
 
 java: $(java)
