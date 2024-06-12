@@ -1,10 +1,20 @@
-capstone_home = $(opt)/capstone
-capstone_makefile = $(capstone_home)/Makefile
-capstone_lib = $(capstone_home)/libcapstone.a
+include $(TOPDIR)/make/common/OS.gmk
+
+capstone_repo = $(opt)/capstone
+capstone_makefile = $(capstone_repo)/Makefile
+
+ifeq ($(UNAME_S),Linux)
+  capstone_home = /usr
+else ifeq ($(UNAME_S),Darwin)
+  capstone_home = /usr/local
+endif
+
+capstone_lib = $(capstone_home)/lib/libcapstone.a
 
 $(capstone_lib): $(capstone_makefile)
 > cd $(capstone_home)
 > ./make.sh
+> sudo ./make.sh install
 
 $(capstone_makefile):
 > cd $(opt)
