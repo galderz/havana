@@ -18,12 +18,12 @@ public class JmhBc2BcGenerator
         final Path buildDir = Path.of(args[0]);
 
         final Path sourceDirectory = buildDir.resolve("generated-sources").resolve("bc");
-        final Path genClassesDir = buildDir.resolve("generated-classes");
+        final Path outputDir = buildDir.resolve("generated-classes");
         final Path classesDir = buildDir.resolve("classes");
         final List<Path> pathArgs = List.of(
             classesDir // compiled bytecode directory
             , sourceDirectory // output source directory
-            , genClassesDir // output resources directory
+            , outputDir // output resources directory
         );
 
         final String[] bytecodeGenArgs = pathArgs.stream()
@@ -38,7 +38,7 @@ public class JmhBc2BcGenerator
             , Path.of(System.getProperty("user.home"))
                 .resolve(".m2/repository/org/openjdk/jmh/jmh-core/1.37/jmh-core-1.37.jar")
         );
-        new JavaCompilerTool().compile(javaFiles, classPath);
+        new JavaCompilerTool().compile(javaFiles, classPath, outputDir);
     }
 
     static Set<File> classFilesInDirectory(Path dir) throws IOException

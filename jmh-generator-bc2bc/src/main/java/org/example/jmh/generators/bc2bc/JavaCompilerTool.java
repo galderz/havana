@@ -19,7 +19,7 @@ import java.util.Set;
 
 public class JavaCompilerTool
 {
-    public void compile(Set<File> files, List<Path> classPath)
+    public void compile(Set<File> files, List<Path> classPath, Path classOutputDir)
     {
         Asserts.needEnabledAsserts();
 
@@ -37,6 +37,10 @@ public class JavaCompilerTool
             fileManager.setLocation(
                 StandardLocation.CLASS_PATH
                 , classPath.stream().map(Path::toFile).toList()
+            );
+            fileManager.setLocation(
+                StandardLocation.CLASS_OUTPUT
+                , List.of(classOutputDir.toFile())
             );
 
             final Iterable<? extends JavaFileObject> compilationUnit = fileManager
@@ -77,6 +81,12 @@ public class JavaCompilerTool
     public static void main(String[] args)
     {
         final Set<File> javaFiles = Set.of(Path.of("jmh-generator-bc2bc/src/test/java/HelloJmh.java").toFile());
-        new JavaCompilerTool().compile(javaFiles, List.of());
+        final Path outputDir = Path.of("jmh-generator-bc2bc/target/generated-classes");
+        final boolean success = outputDir.toFile().mkdirs();
+        if (!success)
+        {
+            throw new UncheckedIOException(new IOException("Could not create output dir: " + outputDir));
+        }
+        new JavaCompilerTool().compile(javaFiles, List.of(), outputDir);
     }
 }
