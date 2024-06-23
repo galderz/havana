@@ -32,18 +32,6 @@ public class JmhBc2BcGenerator
 
         JmhBytecodeGenerator.main(bytecodeGenArgs);
 
-//        final File compiledBytecodeDirectory = new File(args[0]);
-//        final File outputSourceDirectory = new File(args[1]);
-//        final File outputResourceDirectory = new File(args[2]);
-        // final File classDirectory = new File(args[3]);
-
-//        final Path path = Path.of("/Users/galder/1/fibula-show/2406-team/jmh/target/generated-sources/bc/org/sample/jmh_generated/MyFirstBenchmark_helloWorld_jmhTest.java");
-//        System.out.println(
-//            path.getFileName().endsWith(".java")
-//        );
-
-        System.out.println();
-
         final Set<File> javaFiles = classFilesInDirectory(sourceDirectory);
         final List<Path> classPath = List.of(
             classesDir
