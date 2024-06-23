@@ -6,6 +6,7 @@ import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
+import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
@@ -14,10 +15,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class JavaCompilerTool
 {
-    public void compile(List<File> files)
+    public void compile(Set<File> files, List<Path> classPath)
     {
         Asserts.needEnabledAsserts();
 
@@ -32,6 +34,11 @@ public class JavaCompilerTool
             , StandardCharsets.UTF_8
         ))
         {
+            fileManager.setLocation(
+                StandardLocation.CLASS_PATH
+                , classPath.stream().map(Path::toFile).toList()
+            );
+
             final Iterable<? extends JavaFileObject> compilationUnit = fileManager
                 .getJavaFileObjects(files.toArray(new File[0]));
 
@@ -69,8 +76,7 @@ public class JavaCompilerTool
 
     public static void main(String[] args)
     {
-        new JavaCompilerTool().compile(List.of(
-            Path.of("jmh-generator-bc2bc/src/test/java/HelloJmh.java").toFile()
-        ));
+        final Set<File> javaFiles = Set.of(Path.of("jmh-generator-bc2bc/src/test/java/HelloJmh.java").toFile());
+        new JavaCompilerTool().compile(javaFiles, List.of());
     }
 }
