@@ -2,7 +2,6 @@ include $(TOPDIR)/make/common/Capstone.gmk
 
 CONF ?= slow
 
-call_java += LD_LIBRARY_PATH=$(capstone_home)
 call_java += $(java)
 gtest_opt = $(opt)/googletest
 java = $(java_build_dir)/jdk/bin/java
@@ -43,6 +42,7 @@ $(java): $(shell find $(JDK_HOME)/src -type f -name '*.ad')
 $(java):
 > pushd $(JDK_HOME)
 > CONF=$(conf_name) make
+> cp $(capstone_lib) $(JDK_HOME)/build/$(conf_name)/jdk/lib
 > popd
 > cp $(lldbinit) $(JDK_HOME)/build/$(conf_name)
 > touch $@
@@ -58,7 +58,7 @@ configure: $(jmh) $(capstone_lib) $(jtreg_bin) $(gtest_opt)
 >   --enable-hsdis-bundling \
 >   --disable-precompiled-headers \
 >   --with-boot-jdk=$(BOOT_JDK_HOME) \
->   --with-capstone=$(capstone_home) \
+>   --with-capstone=$(usr_home) \
 >   --with-conf-name=$(conf_name) \
 >   --with-hsdis=capstone \
 >   --with-gtest=$(gtest_opt) \
