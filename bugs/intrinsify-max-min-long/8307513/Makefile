@@ -13,19 +13,28 @@ ifdef AVX
   jvm_args += -XX:UseAVX=$(AVX)
 endif
 
+jvm_args += -Xbatch
+jvm_args += -XX:CompileCommand=compileonly,$(CLASS)::test
+jvm_args += -XX:CompileCommand=TraceAutoVectorization,$(CLASS)::test,ALL
+jvm_args += -XX:CompileCommand=PrintIdealPhase,$(CLASS)::test,"BEFORE_MACRO_EXPANSION,AFTER_MACRO_EXPANSION_STEP"
+jvm_args += -XX:-BackgroundCompilation
+
+# Other args
+#jvm_args += -XX:+PrintCompilation
+
+OSR ?= true
+ifeq ($(OSR),false)
+  jvm_args += -XX:-UseOnStackReplacement
+endif
+
+IGV ?=
+ifdef IGV
+  jvm_args += -XX:PrintIdealGraphLevel=$(IGV)
+endif
+
 run: clear-logs $(java)
 > $(call_java) \
 >   $(jvm_args) \
->   -Xbatch \
->   -XX:CompileCommand=compileonly,$(CLASS)::test \
->   -XX:+PrintIdeal \
->   -XX:+PrintIntrinsics \
->   -XX:+PrintIR \
->   -XX:+TraceLoopOpts \
->   -XX:+TraceNewVectors \
->   -XX:+TraceOptoParse \
->   -XX:+TraceSuperWord \
->   -XX:CompileCommand=TraceAutoVectorization,*::*,ALL \
 >   $(shell pwd)/$(CLASS).java
 .PHONY: run
 
@@ -36,7 +45,7 @@ perf: $(java)
 .PHONY: perf
 
 rr: $(java)
-> LD_LIBRARY_PATH=$(capstone_home) rr $(java) \
+> rr $(java) \
 >   -XX:CompileCommand=printcompilation,$(CLASS)::test \
 >   -XX:CompileCommand=compileonly,$(CLASS)::test \
 >   -Xbatch \
@@ -46,12 +55,19 @@ rr: $(java)
 >   $(shell pwd)/$(CLASS).java
 .PHONY: rr
 
+# Other flags used:
 # >   -ea \
-# >   -XX:-BackgroundCompilation \
+# >   -XX:CompileCommand=print,$(CLASS)::test \
 # >   -XX:+LogCompilation \
-# >   -XX:+PrintLIRWithAssembly \
+# >   -XX:+PrintCFG \
 # >   -XX:+PrintIdeal \
 # >   -XX:+PrintIR \
+# >   -XX:+PrintLIRWithAssembly \
 # >   -XX:+PrintNMethods \
 # >   -XX:+PrintOptoAssembly \
-# >   -XX:-UseOnStackReplacement \
+# >   -XX:+PrintIdeal \
+# >   -XX:+PrintIntrinsics \
+# >   -XX:+TraceLoopOpts \
+# >   -XX:+TraceNewVectors \
+# >   -XX:+TraceOptoParse \
+# >   -XX:+TraceSuperWord \
