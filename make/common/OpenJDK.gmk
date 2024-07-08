@@ -42,7 +42,7 @@ $(java): $(shell find $(JDK_HOME)/src -type f -name '*.ad')
 $(java):
 > pushd $(JDK_HOME)
 > CONF=$(conf_name) make
-> cp $(capstone_lib) $(JDK_HOME)/build/$(conf_name)/jdk/lib
+> cp $(usr_home)/lib/libcapstone* $(JDK_HOME)/build/$(conf_name)/jdk/lib
 > popd
 > cp $(lldbinit) $(JDK_HOME)/build/$(conf_name)
 > touch $@
