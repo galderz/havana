@@ -9,7 +9,7 @@ else ifeq ($(UNAME_S),Darwin)
   usr_home = /usr/local
 endif
 
-capstone_lib = $(usr_home)/lib/libcapstone.so.5
+capstone_lib = $(usr_home)/lib/libcapstone.a
 
 $(capstone_lib): $(capstone_makefile)
 > cd $(capstone_repo)
