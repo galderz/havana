@@ -2,6 +2,8 @@ include $(TOPDIR)/make/common/Capstone.gmk
 
 CONF ?= slow
 
+ant_home = $(opt)/ant
+ant_bin = $(opt)/ant/bin/ant
 call_java += $(java)
 gtest_opt = $(opt)/googletest
 java = $(java_build_dir)/jdk/bin/java
@@ -76,10 +78,16 @@ clear-logs:
 > rm -f *.log
 .PHONY: clear-logs
 
-idea:
+idea: $(ant_bin)
 > cd $(JDK_HOME)
 > ANT_HOME=$(HOME)/opt/ant CONF=$(conf_name) sh bin/idea.sh
 .PHONY: idea
+
+$(ant_bin):
+> cd $(opt)
+> wget https://dlcdn.apache.org//ant/binaries/apache-ant-1.10.14-bin.tar.gz
+> tar -xzvpf apache-ant-1.10.14-bin.tar.gz
+> ln -s apache-ant-1.10.14 ant
 
 $(jmh):
 > cd $(JDK_HOME)
