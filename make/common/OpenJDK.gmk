@@ -1,6 +1,6 @@
 include $(TOPDIR)/make/common/Capstone.gmk
 
-CONF ?= slow
+CONF ?= fast
 
 ant_home = $(opt)/ant
 ant_bin = $(opt)/ant/bin/ant
