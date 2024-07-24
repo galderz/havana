@@ -1,17 +1,14 @@
 package org.sample;
 
 import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.results.RunResult;
 import org.openjdk.jmh.runner.BenchmarkException;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import java.util.Collection;
-
 @State(Scope.Thread)
-public class FailBenchmark
+public class FailOnErrorBenchmark
 {
     @Benchmark
     public void singleException()
@@ -41,7 +38,7 @@ public class FailBenchmark
     {
         System.out.println("FailBenchmark.main");
         Options opt = new OptionsBuilder()
-            .include(FailBenchmark.class.getSimpleName())
+            .include(FailOnErrorBenchmark.class.getSimpleName())
             .forks(0)
             .jvmArgs("-ea")
             .shouldFailOnError(true)
