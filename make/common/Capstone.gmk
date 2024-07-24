@@ -10,6 +10,7 @@ else ifeq ($(UNAME_S),Darwin)
 endif
 
 capstone_lib = $(usr_home)/lib/libcapstone.a
+capstone_dylib = $(usr_home)/lib/libcapstone.5.dylib
 
 $(capstone_lib): $(capstone_makefile)
 > cd $(capstone_repo)

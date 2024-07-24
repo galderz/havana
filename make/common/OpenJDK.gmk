@@ -55,7 +55,7 @@ clean-jdk:
 .PHONY: clean-jdk
 
 configure: $(jmh) $(capstone_lib) $(jtreg_bin) $(gtest_opt)
-> cd $(JDK_HOME)
+> pushd $(JDK_HOME)
 > bash configure \
 >   --enable-hsdis-bundling \
 >   --disable-precompiled-headers \
@@ -67,6 +67,8 @@ configure: $(jmh) $(capstone_lib) $(jtreg_bin) $(gtest_opt)
 >   --with-jmh=build/jmh/jars \
 >   --with-jtreg=$(jtreg_home) \
 >   $(conf_args)
+> popd
+> cp $(capstone_dylib) . | true
 .PHONY: configure
 
 compile-commands:
@@ -108,8 +110,17 @@ $(jtreg_opt):
 
 test: $(java)
 > cd $(JDK_HOME)
+> mkdir -p $(java_build_dir)/images/test
+> cp $(capstone_dylib) $(java_build_dir)/images/test | true
 > CONF=$(conf_name) make test TEST="$(TEST)"
 .PHONY: test
+
+micro: $(java)
+> cd $(JDK_HOME)
+> mkdir -p $(java_build_dir)/images/test
+> cp $(capstone_dylib) $(java_build_dir)/images/test | true
+> CONF=$(conf_name) make test TEST="$(TEST)" MICRO="$(MICRO)"
+.PHONY: micro
 
 micro-c1: $(java)
 > cd $(JDK_HOME)
