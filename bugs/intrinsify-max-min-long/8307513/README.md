@@ -17,3 +17,8 @@ It will give you messages with tips on where it's looking for things:
   Reason: tried: 'libcapstone.5.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OSlibcapstone.5.dylib' (no such file), 'libcapstone.5.dylib' (no such file), '/Users/galder/1/jdk-intrinsify-max-min-long/build/fast-darwin-arm64/images/test/libcapstone.5.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/galder/1/jdk-intrinsify-max-min-long/build/fast-darwin-arm64/images/test/libcapstone.5.dylib' (no such file), '/Users/galder/1/jdk-intrinsify-max-min-long/build/fast-darwin-arm64/images/test/libcapstone.5.dylib' (no such file)
 [0.008s][warning][os] Loading hsdis library failed
 ```
+
+If you have multiple parameters you can run with a single one via:
+```shell
+TEST="micro:lang.MathVectorizedBench.reductionMultiLongMax" MICRO="FORK=1;OPTIONS=-prof xctraceasm -p size=16384" m micro
+```
