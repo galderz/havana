@@ -3,34 +3,39 @@ import java.util.concurrent.ThreadLocalRandom;
 
 class Test
 {
-    static final int RANGE = 1024;
-    static final int ITER = 10_000;
+    static final int RANGE = 16*1024;
+    static final int ITER = 100_000;
 
-    static void init(long[] data)
-    {
-        for (int i = 0; i < RANGE; i++)
+    static long init(long[] a, long[] b, long[] c) {
+        ThreadLocalRandom rand = ThreadLocalRandom.current();
+        for (int j = 0; j < RANGE; j++)
         {
-            data[i] = i + 1;
+            a[j] = rand.nextLong();
+            b[j] = rand.nextLong();
+            c[j] = rand.nextLong();
         }
+        return rand.nextLong();
     }
 
-    static long test(long[] data, long sum)
+    static long test(long[] a, long[] b, long[] c, long total)
     {
         for (int i = 0; i < RANGE; i++)
         {
-            final long v = 11 * data[i];
-            sum = Math.max(sum, v);
+            long v = (a[i] * b[i]) + (a[i] * c[i]) + (b[i] * c[i]);
+            total = Math.max(total, v);
         }
-        return sum;
+        return total;
     }
 
     public static void main(String[] args)
     {
-        long[] data = new long[RANGE];
-        init(data);
-        for (long i = 0; i < ITER; i++)
+        long[] a = new long[RANGE];
+        long[] b = new long[RANGE];
+        long[] c = new long[RANGE];
+        long start = init(a, b, c);
+        for (int i = 0; i < ITER; i++)
         {
-            test(data, i);
+            test(a, b, c, start);
         }
     }
 }
