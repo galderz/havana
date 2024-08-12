@@ -33,9 +33,19 @@ class Test
         long[] b = new long[RANGE];
         long[] c = new long[RANGE];
         long start = init(a, b, c);
+        long gold = test(a, b, c, start);
         for (int i = 0; i < ITER; i++)
         {
-            test(a, b, c, start);
+            long total = test(a, b, c, start);
+            verify("long max", total, gold);
+        }
+    }
+
+    static void verify(String context, long total, long gold)
+    {
+        if (total != gold)
+        {
+            throw new RuntimeException("Wrong result for " + context + ": " + total + " != " + gold);
         }
     }
 }
