@@ -11,6 +11,12 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 public class FailOnErrorBenchmark
 {
     @Benchmark
+    public void customException()
+    {
+        throw new CustomException();
+    }
+
+    @Benchmark
     public void singleException()
     {
         throw new ExpectedException();
