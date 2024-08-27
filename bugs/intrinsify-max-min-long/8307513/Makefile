@@ -13,11 +13,20 @@ ifdef AVX
   jvm_args += -XX:UseAVX=$(AVX)
 endif
 
+SVE ?=
+ifdef SVE
+  jvm_args += -XX:UseSVE=$(SVE)
+endif
+
 jvm_args += -Xbatch
+jvm_args += -Xlog:os
 jvm_args += -XX:CompileCommand=compileonly,$(CLASS)::test
 jvm_args += -XX:CompileCommand=TraceAutoVectorization,$(CLASS)::test,ALL
-jvm_args += -XX:CompileCommand=PrintIdealPhase,$(CLASS)::test,"BEFORE_MACRO_EXPANSION,AFTER_MACRO_EXPANSION_STEP"
+jvm_args += -XX:CompileCommand=PrintIdealPhase,$(CLASS)::test,"OPTIMIZE_FINISHED"
 jvm_args += -XX:-BackgroundCompilation
+jvm_args += -XX:+LogCompilation
+jvm_args += -XX:+PrintAssembly
+jvm_args += -XX:+TraceNewVectors
 
 # Other args
 #jvm_args += -XX:+PrintCompilation
@@ -71,3 +80,7 @@ rr: $(java)
 # >   -XX:+TraceNewVectors \
 # >   -XX:+TraceOptoParse \
 # >   -XX:+TraceSuperWord \
+# >   -XX:CompileCommand=PrintIdealPhase,$(CLASS)::test,"BEFORE_MACRO_EXPANSION,AFTER_MACRO_EXPANSION_STEP"
+
+# Other env variables used:
+> DYLD_PRINT_LIBRARIES=1 \
