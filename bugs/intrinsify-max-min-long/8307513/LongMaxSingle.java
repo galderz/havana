@@ -1,7 +1,7 @@
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-class Test
+class LongMaxSingle
 {
     static final int RANGE = 1024;
     static final int ITER = 10_000;
