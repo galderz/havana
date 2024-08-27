@@ -18,15 +18,38 @@ ifdef SVE
   jvm_args += -XX:UseSVE=$(SVE)
 endif
 
-jvm_args += -Xbatch
-jvm_args += -Xlog:os
-jvm_args += -XX:CompileCommand=compileonly,$(CLASS)::test
-jvm_args += -XX:CompileCommand=TraceAutoVectorization,$(CLASS)::test,ALL
-jvm_args += -XX:CompileCommand=PrintIdealPhase,$(CLASS)::test,"OPTIMIZE_FINISHED"
-jvm_args += -XX:-BackgroundCompilation
-jvm_args += -XX:+LogCompilation
-jvm_args += -XX:+PrintAssembly
-jvm_args += -XX:+TraceNewVectors
+base_jvm_args += -Xbatch
+base_jvm_args += -Xlog:os
+base_jvm_args += -XX:-BackgroundCompilation
+base_jvm_args += -XX:CompileCommand=compileonly,$(CLASS)::test
+
+comp_jvm_args += -XX:+LogCompilation
+comp_jvm_args += -XX:+PrintAssembly
+
+ideal_jvm_args += -XX:CompileCommand=PrintIdealPhase,$(CLASS)::test,"OPTIMIZE_FINISHED"
+
+loop_jvm_args += -XX:+TraceLoopOpts
+
+vector_jvm_args += -XX:CompileCommand=TraceAutoVectorization,$(CLASS)::test,ALL
+vector_jvm_args += -XX:+TraceNewVectors
+
+jvm_args += $(base_jvm_args)
+
+ifdef COMP_ARGS
+  jvm_args += $(comp_jvm_args)
+endif
+
+ifdef IDEAL_ARGS
+  jvm_args += $(ideal_jvm_args)
+endif
+
+ifdef VECTOR_ARGS
+  jvm_args += $(vector_jvm_args)
+endif
+
+ifdef LOOP_ARGS
+  jvm_args += $(loop_jvm_args)
+endif
 
 # Other args
 #jvm_args += -XX:+PrintCompilation
