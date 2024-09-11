@@ -9,12 +9,14 @@ call_java += $(java)
 gtest_opt = $(opt)/googletest
 java = $(java_build_dir)/jdk/bin/java
 java_build_dir = $(JDK_HOME)/build/$(conf_name)
+java_libs_dir = $(java_build_dir)/jdk/lib/server
 jmh = $(JDK_HOME)/build/jmh/jars/.jmh
 # todo use JTreg.gmk instead?
 jtreg_bin = $(jtreg_home)/bin/jtreg
 jtreg_opt = $(opt)/jtreg
 jtreg_home = $(jtreg_opt)/build/images/jtreg
 lldbinit = $(TOPDIR)/make/common/.lldbinit
+modules_libs_dir = $(java_build_dir)/support/modules_libs/java.base/server
 os = $(shell uname | tr A-Z a-z)
 
 CPU ?=
@@ -44,11 +46,21 @@ $(java): $(shell find $(JDK_HOME)/test -type f -name '*pp')
 $(java): $(shell find $(JDK_HOME)/src -type f -name '*.ad')
 $(java):
 > pushd $(JDK_HOME)
-> CONF=$(conf_name) LOG=$(BUILD_LOG) make
-> cp $(usr_home)/lib/libcapstone* $(JDK_HOME)/build/$(conf_name)/jdk/lib || true
-> popd
-> cp $(lldbinit) $(JDK_HOME)/build/$(conf_name)
+> CONF=$(conf_name) LOG=$(BUILD_LOG) make hotspot
+> ifeq ($(UNAME_S),Linux)
+>   cp $(modules_libs_dir)/libjvm.so $(java_libs_dir)
+>   cp $(modules_libs_dir)/libjvm.debuginfo $(java_libs_dir)
+> else ifeq ($(UNAME_S),Darwin)
+>   cp $(modules_libs_dir)/libjvm.dylib $(java_libs_dir)
+>   cp -r $(modules_libs_dir)/libjvm.dylib.dSYM $(java_libs_dir)
+> endif
 > touch $@
+
+build-jdk:
+> pushd $(JDK_HOME)
+> CONF=$(conf_name) LOG=$(BUILD_LOG) make
+> touch $(java)
+.PHONY: build-jdk
 
 clean-jdk:
 > pushd $(JDK_HOME)
@@ -68,8 +80,10 @@ configure: $(jmh) $(capstone_lib) $(jtreg_bin) $(gtest_opt)
 >   --with-jmh=build/jmh/jars \
 >   --with-jtreg=$(jtreg_home) \
 >   $(conf_args)
+> cp $(usr_home)/lib/libcapstone* $(JDK_HOME)/build/$(conf_name)/jdk/lib || true
 > popd
 > cp $(capstone_dylib) . || true
+> cp $(lldbinit) $(JDK_HOME)/build/$(conf_name)
 .PHONY: configure
 
 compile-commands:
