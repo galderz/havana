@@ -47,13 +47,14 @@ $(java): $(shell find $(JDK_HOME)/src -type f -name '*.ad')
 $(java):
 > pushd $(JDK_HOME)
 > CONF=$(conf_name) LOG=$(BUILD_LOG) make hotspot
-> ifeq ($(UNAME_S),Linux)
->   cp $(modules_libs_dir)/libjvm.so $(java_libs_dir)
->   cp $(modules_libs_dir)/libjvm.debuginfo $(java_libs_dir)
-> else ifeq ($(UNAME_S),Darwin)
->   cp $(modules_libs_dir)/libjvm.dylib $(java_libs_dir)
->   cp -r $(modules_libs_dir)/libjvm.dylib.dSYM $(java_libs_dir)
-> endif
+ifeq ($(UNAME_S),Linux)
+>  cp $(modules_libs_dir)/libjvm.so $(java_libs_dir)
+>  cp $(modules_libs_dir)/libjvm.debuginfo $(java_libs_dir)
+else ifeq ($(UNAME_S),Darwin)
+>  cp $(modules_libs_dir)/libjvm.dylib $(java_libs_dir)
+>  rm -drf $(java_libs_dir)/libjvm.dylib.dSYM
+>  cp -r $(modules_libs_dir)/libjvm.dylib.dSYM $(java_libs_dir)
+endif
 > touch $@
 
 build-jdk:
