@@ -58,6 +58,9 @@ else ifeq ($(UNAME_S),Darwin)
 endif
 > touch $@
 
+build-hotspot: $(java)
+.PHONY: build-hotspot
+
 build-jdk:
 > pushd $(JDK_HOME)
 > CONF=$(conf_name) LOG=$(BUILD_LOG) make
@@ -125,41 +128,41 @@ $(jtreg_opt):
 > cd $(opt)
 > git clone https://github.com/openjdk/jtreg
 
-test: $(java)
+test:
 > cd $(JDK_HOME)
 > mkdir -p $(java_build_dir)/images/test
 > cp $(capstone_dylib) $(java_build_dir)/images/test || true
 > CONF=$(conf_name) make test TEST="$(TEST)"
 .PHONY: test
 
-micro: $(java)
+micro:
 > cd $(JDK_HOME)
 > mkdir -p $(java_build_dir)/images/test
 > cp $(capstone_dylib) $(java_build_dir)/images/test || true
 > CONF=$(conf_name) make test TEST="$(TEST)" MICRO="$(MICRO)"
 .PHONY: micro
 
-micro-c1: $(java)
+micro-c1:
 > cd $(JDK_HOME)
 > CONF=$(conf_name) make test TEST="$(TEST)" MICRO="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
 .PHONY: micro-c1
 
-test-all: $(java)
+test-all:
 > cd $(JDK_HOME)
 > CONF=$(conf_name) make test TEST="hotspot_compiler hotspot_gc hotspot_serviceability hotspot_runtime tier1 tier2 tier3"
 .PHONY: test-all
 
-test-tier1: $(java)
+test-tier1:
 > cd $(JDK_HOME)
 > CONF=$(conf_name) make test TEST="tier1"
 .PHONY: test-tier1
 
-test-hotspot-compiler: $(java)
+test-hotspot-compiler:
 > cd $(JDK_HOME)
 > CONF=$(conf_name) make test TEST="hotspot_compiler"
 .PHONY: test-hotspot-compiler
 
-test-hotspot-compiler-c1: $(java)
+test-hotspot-compiler-c1:
 > cd $(JDK_HOME)
 > CONF=$(conf_name) make test TEST="hotspot_compiler" JTREG="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
 .PHONY: test-hotspot-compiler-c1-only
