@@ -7,8 +7,6 @@ bench()
     local jdk_home=$1
 
     CONF=release \
-      TEST="micro:lang.MinMaxReductionBench.singleLongMax" \
-      MICRO="OPTIONS=-p size=10000" \
       JDK_HOME=$jdk_home \
       make configure clean-jdk
 
