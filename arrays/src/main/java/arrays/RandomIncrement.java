@@ -99,5 +99,10 @@ public class RandomIncrement
         testMax(randomIncrement(1000, 60), 60);
         testMax(randomIncrement(1000, 80), 80);
         testMax(randomIncrement(1000, 100), 100);
+
+        testMax(randomIncrement(10000, 50), 50);
+        testMax(randomIncrement(10000, 60), 60);
+        testMax(randomIncrement(10000, 80), 80);
+        testMax(randomIncrement(10000, 100), 100);
     }
 }
