@@ -34,7 +34,7 @@ bench()
 for jdk_home in \
     "$HOME/jdk" \
     "$HOME/jdk/jdk-intrinsify-max-min-long.intrinsic" \
-    "$HOME/jdk/jdk-intrinsify-max-min-long" \
+    "$HOME/jdk/jdk-intrinsify-max-min-long"
 do
     bench $jdk_home
 done
