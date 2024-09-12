@@ -30,7 +30,7 @@ public class RandomIncrement
                 {
                     int increment = random.nextInt(10);
                     value = max + increment;
-                    System.out.printf("Above, increment: %d, max: %d%n", increment, max);
+                    // System.out.printf("Above, increment: %d, max: %d%n", increment, max);
                     aboveCount++;
                 }
                 else
@@ -38,7 +38,7 @@ public class RandomIncrement
                     // Decrement by at least 1
                     int decrement = random.nextInt(10) + 1;
                     value = max - decrement;
-                    System.out.printf("Decrement, decrement: %d, max: %d%n", decrement, max);
+                    // System.out.printf("Decrement, decrement: %d, max: %d%n", decrement, max);
                     belowCount++;
                 }
 
@@ -65,10 +65,10 @@ public class RandomIncrement
             if (nums[i] >= max) {
                 above++;
                 max = nums[i];
-                System.out.println("Element: " + nums[i] + ", Current Max: " + max + ", Max");
+                // System.out.println("Element: " + nums[i] + ", Current Max: " + max + ", Max");
             }
             if (nums[i] < max) {
-                System.out.println("Element: " + nums[i] + ", Current Max: " + max + ", Below");
+                // System.out.println("Element: " + nums[i] + ", Current Max: " + max + ", Below");
             }
 
         }
@@ -92,16 +92,19 @@ public class RandomIncrement
 
         testMax(randomIncrement(100, 50), 50);
         testMax(randomIncrement(100, 60), 60);
+        testMax(randomIncrement(100, 75), 75);
         testMax(randomIncrement(100, 80), 80);
         testMax(randomIncrement(100, 100), 100);
 
         testMax(randomIncrement(1000, 50), 50);
         testMax(randomIncrement(1000, 60), 60);
+        testMax(randomIncrement(1000, 75), 75);
         testMax(randomIncrement(1000, 80), 80);
         testMax(randomIncrement(1000, 100), 100);
 
         testMax(randomIncrement(10000, 50), 50);
         testMax(randomIncrement(10000, 60), 60);
+        testMax(randomIncrement(10000, 75), 75);
         testMax(randomIncrement(10000, 80), 80);
         testMax(randomIncrement(10000, 100), 100);
     }
