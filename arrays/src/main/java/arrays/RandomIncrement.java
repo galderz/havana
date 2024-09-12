@@ -5,30 +5,30 @@ import java.util.Random;
 
 public class RandomIncrement
 {
-    static int[] randomIncrement(int size, int probability)
+    static long[] randomIncrement(int size, int probability)
     {
         final Random random = new Random();
 
-        int[] result;
+        long[] result;
         int aboveCount;
         int abovePercent;
         int belowCount;
 
         // Iterate until you find a set that matches the requirement probability
         do {
-            int max = random.nextInt(10);
-            result = new int[size];
+            long max = random.nextLong(10);
+            result = new long[size];
             result[0] = max;
 
             aboveCount = 0;
             belowCount = 0;
             for (int i = 1; i < result.length; i++)
             {
-                int value;
+                long value;
 
-                if (random.nextInt(101) <= probability)
+                if (random.nextLong(101) <= probability)
                 {
-                    int increment = random.nextInt(10);
+                    long increment = random.nextLong(10);
                     value = max + increment;
                     // System.out.printf("Above, increment: %d, max: %d%n", increment, max);
                     aboveCount++;
@@ -36,7 +36,7 @@ public class RandomIncrement
                 else
                 {
                     // Decrement by at least 1
-                    int decrement = random.nextInt(10) + 1;
+                    long decrement = random.nextLong(10) + 1;
                     value = max - decrement;
                     // System.out.printf("Decrement, decrement: %d, max: %d%n", decrement, max);
                     belowCount++;
@@ -56,9 +56,9 @@ public class RandomIncrement
         return result;
     }
     
-    private static void testMax(int[] nums, int expectedAboveOrEqualMax)
+    private static void testMax(long[] nums, int expectedAboveOrEqualMax)
     {
-        int max = Integer.MIN_VALUE;
+        long max = Long.MIN_VALUE;
         int above = 0;
 
         for (int i = 0; i < nums.length; i++) {
