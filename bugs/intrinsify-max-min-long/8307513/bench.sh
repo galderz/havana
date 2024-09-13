@@ -2,6 +2,11 @@
 
 set -e -x
 
+if [ -z "$TEST" ]; then
+    echo "TEST is not defined"
+    exit 1
+fi
+
 bench()
 {
     local jdk_home=$1
@@ -11,20 +16,14 @@ bench()
       make configure clean-jdk
 
     CONF=release \
-      TEST="micro:lang.MinMaxReductionBench.singleLongMax" \
+      TEST="micro:lang.$TEST" \
       MICRO="OPTIONS=-p size=10000" \
       JDK_HOME=$jdk_home \
       make test
 
     CONF=release \
-      TEST="micro:lang.MinMaxReductionBench.singleLongMax" \
-      MICRO="OPTIONS=-p size=10000 -f 1 -prof perfnorm" \
-      JDK_HOME=$jdk_home \
-      make test
-
-    CONF=release \
-      TEST="micro:lang.MinMaxReductionBench.singleLongMax" \
-      MICRO="OPTIONS=-p size=10000 -f 1 -prof perfasm" \
+      TEST="micro:lang.$TEST" \
+      MICRO="OPTIONS=-p size=10000 -f 1 -prof perfnorm -prof perfasm" \
       JDK_HOME=$jdk_home \
       make test
 }
