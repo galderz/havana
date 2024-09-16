@@ -25,10 +25,14 @@ bench()
     local clean=$1
     local jdk_home=$2
 
+    CONF=release \
+      JDK_HOME=$jdk_home \
+      make configure
+
     if [[ $clean == "true" ]]; then
       CONF=release \
         JDK_HOME=$jdk_home \
-        make configure clean-jdk
+        make clean-jdk
     fi
 
     CONF=release \
