@@ -33,13 +33,13 @@ bench()
 
     CONF=release \
       TEST="micro:lang.$TEST" \
-      MICRO="$MICRO" \
+      MICRO="OPTION=$MICRO" \
       JDK_HOME=$jdk_home \
       make test
 
     CONF=release \
       TEST="micro:lang.$TEST" \
-      MICRO="$MICRO -f 1 -prof perfnorm -prof perfasm" \
+      MICRO="OPTION=$MICRO -f 1 -prof perfnorm -prof perfasm" \
       JDK_HOME=$jdk_home \
       make test
 }
