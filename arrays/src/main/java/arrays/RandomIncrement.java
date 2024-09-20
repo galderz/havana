@@ -61,7 +61,7 @@ public class RandomIncrement
     {
         return LongStream.of(nums).map(l -> -l).toArray();
     }
-    
+
     private static void testMax(long[] nums, int expectedAboveOrEqualMax)
     {
         long max = Long.MIN_VALUE;
@@ -123,7 +123,6 @@ public class RandomIncrement
         testMin(negate(randomIncrement(10, 80)), 80);
         testMin(negate(randomIncrement(10, 100)), 100);
 
-        testMax(randomIncrement(10, 50), 50);
         testMax(randomIncrement(10, 50), 50);
         testMax(randomIncrement(10, 60), 60);
         testMax(randomIncrement(10, 80), 80);
