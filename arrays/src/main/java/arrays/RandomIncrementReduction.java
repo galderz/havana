@@ -62,7 +62,7 @@ public class RandomIncrementReduction
         return LongStream.of(nums).map(l -> -l).toArray();
     }
 
-    private static void testMax(long[] nums, int expectedAboveOrEqualMax)
+    private static void testMaxReduction(long[] nums, int expectedAboveOrEqualMax)
     {
         long max = Long.MIN_VALUE;
         int above = 0;
@@ -88,7 +88,7 @@ public class RandomIncrementReduction
         assert aboveOrEqualMaxPercentage == expectedAboveOrEqualMax : String.format("Expected %d%% above or equal max but got %d%%", expectedAboveOrEqualMax, aboveOrEqualMaxPercentage);
     }
 
-    private static void testMin(long[] nums, int expectedBelowOrEqualMin)
+    private static void testMinReduction(long[] nums, int expectedBelowOrEqualMin)
     {
         long min = Long.MAX_VALUE;
         int below = 0;
@@ -117,33 +117,33 @@ public class RandomIncrementReduction
     public static void main(String[] args)
     {
         Asserts.needEnabledAsserts();
-        testMin(negate(randomIncrement(10, 50)), 50);
-        testMin(negate(randomIncrement(10, 50)), 50);
-        testMin(negate(randomIncrement(10, 60)), 60);
-        testMin(negate(randomIncrement(10, 80)), 80);
-        testMin(negate(randomIncrement(10, 100)), 100);
+        testMinReduction(negate(randomIncrement(10, 50)), 50);
+        testMinReduction(negate(randomIncrement(10, 50)), 50);
+        testMinReduction(negate(randomIncrement(10, 60)), 60);
+        testMinReduction(negate(randomIncrement(10, 80)), 80);
+        testMinReduction(negate(randomIncrement(10, 100)), 100);
 
-        testMax(randomIncrement(10, 50), 50);
-        testMax(randomIncrement(10, 60), 60);
-        testMax(randomIncrement(10, 80), 80);
-        testMax(randomIncrement(10, 100), 100);
+        testMaxReduction(randomIncrement(10, 50), 50);
+        testMaxReduction(randomIncrement(10, 60), 60);
+        testMaxReduction(randomIncrement(10, 80), 80);
+        testMaxReduction(randomIncrement(10, 100), 100);
 
-        testMax(randomIncrement(100, 50), 50);
-        testMax(randomIncrement(100, 60), 60);
-        testMax(randomIncrement(100, 75), 75);
-        testMax(randomIncrement(100, 80), 80);
-        testMax(randomIncrement(100, 100), 100);
+        testMaxReduction(randomIncrement(100, 50), 50);
+        testMaxReduction(randomIncrement(100, 60), 60);
+        testMaxReduction(randomIncrement(100, 75), 75);
+        testMaxReduction(randomIncrement(100, 80), 80);
+        testMaxReduction(randomIncrement(100, 100), 100);
 
-        testMax(randomIncrement(1000, 50), 50);
-        testMax(randomIncrement(1000, 60), 60);
-        testMax(randomIncrement(1000, 75), 75);
-        testMax(randomIncrement(1000, 80), 80);
-        testMax(randomIncrement(1000, 100), 100);
+        testMaxReduction(randomIncrement(1000, 50), 50);
+        testMaxReduction(randomIncrement(1000, 60), 60);
+        testMaxReduction(randomIncrement(1000, 75), 75);
+        testMaxReduction(randomIncrement(1000, 80), 80);
+        testMaxReduction(randomIncrement(1000, 100), 100);
 
-        testMax(randomIncrement(10000, 50), 50);
-        testMax(randomIncrement(10000, 60), 60);
-        testMax(randomIncrement(10000, 75), 75);
-        testMax(randomIncrement(10000, 80), 80);
-        testMax(randomIncrement(10000, 100), 100);
+        testMaxReduction(randomIncrement(10000, 50), 50);
+        testMaxReduction(randomIncrement(10000, 60), 60);
+        testMaxReduction(randomIncrement(10000, 75), 75);
+        testMaxReduction(randomIncrement(10000, 80), 80);
+        testMaxReduction(randomIncrement(10000, 100), 100);
     }
 }
