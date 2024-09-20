@@ -2,6 +2,7 @@ package arrays;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.stream.LongStream;
 
 public class RandomIncrementNonReduction
 {
@@ -111,9 +112,45 @@ public class RandomIncrementNonReduction
         assert aboveOrEqualMaxPercentage == expectedAboveOrEqualMax : String.format("Expected %d%% above or equal max but got %d%%", expectedAboveOrEqualMax, aboveOrEqualMaxPercentage);
     }
 
+    private static void testMinReduction(long[] nums, int expectedBelowOrEqualMin)
+    {
+        long min = Long.MAX_VALUE;
+        int below = 0;
+
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] <= min) {
+                below++;
+                min = nums[i];
+                System.out.println("Element: " + nums[i] + ", Current Min: " + min + ", Below");
+            }
+            if (nums[i] > min) {
+                System.out.println("Element: " + nums[i] + ", Current Min: " + min + ", Above");
+            }
+
+        }
+
+        int belowOrEqualMinPercentage = (below * 100) / nums.length;
+        int aboveMinPercentage = 100 - belowOrEqualMinPercentage;
+
+        System.out.printf("Percentage above or equal max value: %d%% from above %d and and array size %d%n", belowOrEqualMinPercentage, below, nums.length);
+        System.out.printf("Percentage below to max value: %d%%%n", aboveMinPercentage);
+
+        assert belowOrEqualMinPercentage == expectedBelowOrEqualMin : String.format("Expected %d%% above or equal max but got %d%%", expectedBelowOrEqualMin, belowOrEqualMinPercentage);
+    }
+
+    static long[] negate(long[] nums)
+    {
+        return LongStream.of(nums).map(l -> -l).toArray();
+    }
+
     public static void main(String[] args)
     {
         Asserts.needEnabledAsserts();
+
+        testMinReduction(negate(randomIncrement(10, 50)[0]), 50);
+        testMinReduction(negate(randomIncrement(10, 60)[0]), 60);
+        testMinReduction(negate(randomIncrement(10, 80)[0]), 80);
+        testMinReduction(negate(randomIncrement(10, 100)[0]), 100);
 
         testMaxReduction(randomIncrement(10, 50)[0], 50);
         testMaxReduction(randomIncrement(10, 60)[0], 60);
