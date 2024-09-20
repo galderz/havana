@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.LongStream;
 
-public class RandomIncrement
+public class RandomIncrementReduction
 {
     static long[] randomIncrement(int size, int probability)
     {

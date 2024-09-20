@@ -3,7 +3,7 @@ package arrays;
 import java.util.Arrays;
 import java.util.Random;
 
-public class RandomIncrementDuo
+public class RandomIncrementNonReduction
 {
     static long[][] randomIncrement(int size, int probability)
     {
