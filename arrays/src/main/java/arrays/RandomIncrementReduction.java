@@ -118,7 +118,6 @@ public class RandomIncrementReduction
     {
         Asserts.needEnabledAsserts();
         testMinReduction(negate(randomIncrement(10, 50)), 50);
-        testMinReduction(negate(randomIncrement(10, 50)), 50);
         testMinReduction(negate(randomIncrement(10, 60)), 60);
         testMinReduction(negate(randomIncrement(10, 80)), 80);
         testMinReduction(negate(randomIncrement(10, 100)), 100);
