@@ -19,6 +19,12 @@ lldbinit = $(TOPDIR)/make/common/.lldbinit
 modules_libs_dir = $(java_build_dir)/support/modules_libs/java.base/server
 os = $(shell uname | tr A-Z a-z)
 
+ifeq ($(UNAME_S),Linux)
+  autoconf = /usr/bin/autoconf
+else ifeq ($(UNAME_S),Darwin)
+  autoconf = /opt/homebrew/bin/autoconf
+endif
+
 CPU ?=
 ifdef CPU
   cpu = $(CPU)
@@ -58,6 +64,14 @@ else ifeq ($(UNAME_S),Darwin)
 endif
 > touch $@
 
+# todo trim it for linux
+$(autoconf):
+ifeq ($(UNAME_S),Linux)
+>  sudo dnf groupinstall -y "Development Tools"
+else ifeq ($(UNAME_S),Darwin)
+>  brew install autoconf
+endif
+
 build-hotspot: $(java)
 .PHONY: build-hotspot
 
@@ -72,7 +86,7 @@ clean-jdk:
 > CONF=$(conf_name) make clean
 .PHONY: clean-jdk
 
-configure: $(jmh) $(capstone_lib) $(jtreg_bin) $(gtest_opt)
+configure: $(jmh) $(capstone_lib) $(jtreg_bin) $(gtest_opt) $(autoconf)
 > pushd $(JDK_HOME)
 > bash configure \
 >   --enable-hsdis-bundling \
