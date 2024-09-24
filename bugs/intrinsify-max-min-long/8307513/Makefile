@@ -5,7 +5,7 @@ default: run
 
 CLASS ?= Test
 JDK_HOME ?= $(HOME)/1/jdk-intrinsify-max-min-long
-BOOT_JDK_HOME ?= $(opt)/java-22
+BOOT_JDK_VERSION ?= 22
 include $(TOPDIR)/make/common/OpenJDK.gmk
 
 AVX ?=
