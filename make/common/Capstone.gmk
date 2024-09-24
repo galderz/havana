@@ -19,6 +19,6 @@ $(capstone_lib): $(capstone_makefile)
 > ./make.sh
 > sudo ./make.sh install
 
-$(capstone_makefile): $(opt)
+$(capstone_makefile):
 > cd $(opt)
 > git clone https://github.com/capstone-engine/capstone
