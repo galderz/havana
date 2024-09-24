@@ -112,7 +112,12 @@ sudo dnf groupinstall -y "Development Tools"
 sudo dnf install -y \
   alsa-lib-devel \
   cups-devel \
-  fontconfig-devel
+  fontconfig-devel \
+  libXi-devel \
+  libXrandr-devel \
+  libXrender-devel \
+  libXt-devel \
+  libXtst-devel
 endef
 
 tools: $(autoconf)
