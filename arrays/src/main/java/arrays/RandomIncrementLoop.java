@@ -1,10 +1,9 @@
 package arrays;
 
-import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.LongStream;
 
-public class RandomIncrementNonReduction
+public class RandomIncrementLoop
 {
     static long[][] randomIncrement(int size, int probability)
     {
@@ -60,7 +59,7 @@ public class RandomIncrementNonReduction
         return result;
     }
 
-    private static void testMaxNonReduction(long[][] nums, int expectedAboveOrEqualMax)
+    private static void testMaxLoop(long[][] nums, int expectedAboveOrEqualMax)
     {
         final long[] a = nums[0];
         final long[] b = nums[1];
@@ -175,27 +174,27 @@ public class RandomIncrementNonReduction
         testMaxReduction(randomIncrement(10000, 80)[0], 80);
         testMaxReduction(randomIncrement(10000, 100)[0], 100);
 
-        testMaxNonReduction(randomIncrement(10, 50), 50);
-        testMaxNonReduction(randomIncrement(10, 60), 60);
-        testMaxNonReduction(randomIncrement(10, 80), 80);
-        testMaxNonReduction(randomIncrement(10, 100), 100);
+        testMaxLoop(randomIncrement(10, 50), 50);
+        testMaxLoop(randomIncrement(10, 60), 60);
+        testMaxLoop(randomIncrement(10, 80), 80);
+        testMaxLoop(randomIncrement(10, 100), 100);
 
-        testMaxNonReduction(randomIncrement(100, 50), 50);
-        testMaxNonReduction(randomIncrement(100, 60), 60);
-        testMaxNonReduction(randomIncrement(100, 75), 75);
-        testMaxNonReduction(randomIncrement(100, 80), 80);
-        testMaxNonReduction(randomIncrement(100, 100), 100);
+        testMaxLoop(randomIncrement(100, 50), 50);
+        testMaxLoop(randomIncrement(100, 60), 60);
+        testMaxLoop(randomIncrement(100, 75), 75);
+        testMaxLoop(randomIncrement(100, 80), 80);
+        testMaxLoop(randomIncrement(100, 100), 100);
 
-        testMaxNonReduction(randomIncrement(1000, 50), 50);
-        testMaxNonReduction(randomIncrement(1000, 60), 60);
-        testMaxNonReduction(randomIncrement(1000, 75), 75);
-        testMaxNonReduction(randomIncrement(1000, 80), 80);
-        testMaxNonReduction(randomIncrement(1000, 100), 100);
+        testMaxLoop(randomIncrement(1000, 50), 50);
+        testMaxLoop(randomIncrement(1000, 60), 60);
+        testMaxLoop(randomIncrement(1000, 75), 75);
+        testMaxLoop(randomIncrement(1000, 80), 80);
+        testMaxLoop(randomIncrement(1000, 100), 100);
 
-        testMaxNonReduction(randomIncrement(10000, 50), 50);
-        testMaxNonReduction(randomIncrement(10000, 60), 60);
-        testMaxNonReduction(randomIncrement(10000, 75), 75);
-        testMaxNonReduction(randomIncrement(10000, 80), 80);
-        testMaxNonReduction(randomIncrement(10000, 100), 100);
+        testMaxLoop(randomIncrement(10000, 50), 50);
+        testMaxLoop(randomIncrement(10000, 60), 60);
+        testMaxLoop(randomIncrement(10000, 75), 75);
+        testMaxLoop(randomIncrement(10000, 80), 80);
+        testMaxLoop(randomIncrement(10000, 100), 100);
     }
 }
