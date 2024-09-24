@@ -5,12 +5,14 @@ capstone_makefile = $(capstone_repo)/Makefile
 
 ifeq ($(UNAME_S),Linux)
   usr_home = /usr
+  lib_home = $(usr_home)/lib64
 else ifeq ($(UNAME_S),Darwin)
   usr_home = /usr/local
+  lib_home = $(usr_home)/lib
 endif
 
-capstone_lib = $(usr_home)/lib/libcapstone.a
-capstone_dylib = $(usr_home)/lib/libcapstone.5.dylib
+capstone_lib = $(lib_home)/libcapstone.a
+capstone_dylib = $(lib_home)/libcapstone.5.dylib
 
 $(capstone_lib): $(capstone_makefile)
 > cd $(capstone_repo)

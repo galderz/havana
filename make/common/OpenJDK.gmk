@@ -93,7 +93,7 @@ configure: $(jmh) $(capstone_lib) $(jtreg_bin) $(gtest_opt) $(autoconf) $(boot_j
 >   --with-jmh=build/jmh/jars \
 >   --with-jtreg=$(jtreg_home) \
 >   $(conf_args)
-> cp $(usr_home)/lib/libcapstone* $(JDK_HOME)/build/$(conf_name)/jdk/lib || true
+> cp $(lib_home)/libcapstone* $(JDK_HOME)/build/$(conf_name)/jdk/lib || true
 > popd
 > cp $(capstone_dylib) . || true
 > cp $(lldbinit) $(JDK_HOME)/build/$(conf_name)
