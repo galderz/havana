@@ -99,18 +99,23 @@ configure: $(boot_jdk_java) $(jmh) $(capstone_lib) $(jtreg_bin) $(gtest_opt) $(a
 > cp $(lldbinit) $(JDK_HOME)/build/$(conf_name)
 .PHONY: configure
 
-# todo trim it for linux
 $(autoconf):
 ifeq ($(UNAME_S),Linux)
->  sudo dnf groupinstall -y "Development Tools"
->  sudo dnf install -y \
->    alsa-lib-devel
+> $(call tools)
 else ifeq ($(UNAME_S),Darwin)
 >  brew install autoconf
 endif
 
-tooling: $(autoconf)
-.PHONY: tooling
+# todo trim it for linux
+define tools
+sudo dnf groupinstall -y "Development Tools"
+sudo dnf install -y \
+  alsa-lib-devel
+endef
+
+tools: $(autoconf)
+> $(call tools)
+.PHONY: tools
 
 $(boot_jdk_java): $(opt)
 > $(TOPDIR)/make/common/download-jdk.sh $(BOOT_JDK_VERSION) $(opt)
