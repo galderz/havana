@@ -2,6 +2,7 @@
 
 set -e -x
 
+CONFIGURE="true"
 CLEAN="true"
 
 if [ -z "$TEST" ]; then
@@ -20,14 +21,22 @@ if [[ "$1" == "--clean=false" ]]; then
     fi
 fi
 
+# Check for configure parameter
+if [[ "$2" == "--configure=false" ]]; then
+    CONFIGURE="false"
+fi
+
 bench()
 {
     local clean=$1
-    local jdk_home=$2
+    local configure=$2
+    local jdk_home=$3
 
-    CONF=release \
-      JDK_HOME=$jdk_home \
-      make configure
+    if [[ $configure == "true" ]]; then
+      CONF=release \
+        JDK_HOME=$jdk_home \
+        make configure
+    fi
 
     if [[ $clean == "true" ]]; then
       CONF=release \
@@ -55,5 +64,5 @@ for jdk_home in \
     "$HOME/1/jdk-intrinsify-max-min-long.intrinsic" \
     "$HOME/1/jdk"
 do
-    bench $CLEAN $jdk_home
+    bench $CLEAN $CONFIGURE $jdk_home
 done
