@@ -10,3 +10,6 @@ endif
 .RECIPEPREFIX = >
 
 opt := $(HOME)/opt
+
+$(opt):
+> mkdir -p $@
