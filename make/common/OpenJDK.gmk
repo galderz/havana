@@ -80,7 +80,7 @@ clean-jdk:
 > CONF=$(conf_name) make clean
 .PHONY: clean-jdk
 
-configure: $(jmh) $(capstone_lib) $(jtreg_bin) $(gtest_opt) $(autoconf) $(boot_jdk_java)
+configure: $(boot_jdk_java) $(jmh) $(capstone_lib) $(jtreg_bin) $(gtest_opt) $(autoconf)
 > pushd $(JDK_HOME)
 > bash configure \
 >   --enable-hsdis-bundling \
@@ -144,7 +144,7 @@ $(gtest_opt):
 
 $(jtreg_bin): $(jtreg_opt)
 > cd $<
-> sh make/build.sh --jdk $(BOOT_JDK_HOME)
+> sh make/build.sh --jdk $(boot_jdk_home)
 
 $(jtreg_opt):
 > cd $(opt)
