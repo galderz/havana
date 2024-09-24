@@ -48,8 +48,10 @@ bench()
       make test
 }
 
+# Skip ad changes for now
+# "$HOME/1/jdk-intrinsify-max-min-long" \
+
 for jdk_home in \
-    "$HOME/1/jdk-intrinsify-max-min-long" \
     "$HOME/1/jdk-intrinsify-max-min-long.intrinsic" \
     "$HOME/1/jdk"
 do
