@@ -111,7 +111,8 @@ define tools
 sudo dnf groupinstall -y "Development Tools"
 sudo dnf install -y \
   alsa-lib-devel \
-  cups-devel
+  cups-devel \
+  fontconfig-devel
 endef
 
 tools: $(autoconf)
