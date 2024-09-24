@@ -117,7 +117,8 @@ sudo dnf install -y \
   libXrandr-devel \
   libXrender-devel \
   libXt-devel \
-  libXtst-devel
+  libXtst-devel \
+  perf
 endef
 
 tools: $(autoconf)
