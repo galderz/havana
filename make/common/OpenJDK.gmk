@@ -5,6 +5,8 @@ BUILD_LOG ?= info
 
 ant_home = $(opt)/ant
 ant_bin = $(opt)/ant/bin/ant
+boot_jdk_home = $(opt)/java-$(BOOT_JDK_VERSION)
+boot_jdk_java = $(boot_jdk_home)/bin/java
 call_java += $(java)
 gtest_opt = $(opt)/googletest
 java = $(java_build_dir)/jdk/bin/java
@@ -64,14 +66,6 @@ else ifeq ($(UNAME_S),Darwin)
 endif
 > touch $@
 
-# todo trim it for linux
-$(autoconf):
-ifeq ($(UNAME_S),Linux)
->  sudo dnf groupinstall -y "Development Tools"
-else ifeq ($(UNAME_S),Darwin)
->  brew install autoconf
-endif
-
 build-hotspot: $(java)
 .PHONY: build-hotspot
 
@@ -86,12 +80,12 @@ clean-jdk:
 > CONF=$(conf_name) make clean
 .PHONY: clean-jdk
 
-configure: $(jmh) $(capstone_lib) $(jtreg_bin) $(gtest_opt) $(autoconf)
+configure: $(jmh) $(capstone_lib) $(jtreg_bin) $(gtest_opt) $(autoconf) $(boot_jdk_java)
 > pushd $(JDK_HOME)
 > bash configure \
 >   --enable-hsdis-bundling \
 >   --disable-precompiled-headers \
->   --with-boot-jdk=$(BOOT_JDK_HOME) \
+>   --with-boot-jdk=$(boot_jdk_home) \
 >   --with-capstone=$(usr_home) \
 >   --with-conf-name=$(conf_name) \
 >   --with-hsdis=capstone \
@@ -104,6 +98,20 @@ configure: $(jmh) $(capstone_lib) $(jtreg_bin) $(gtest_opt) $(autoconf)
 > cp $(capstone_dylib) . || true
 > cp $(lldbinit) $(JDK_HOME)/build/$(conf_name)
 .PHONY: configure
+
+# todo trim it for linux
+$(autoconf):
+ifeq ($(UNAME_S),Linux)
+>  sudo dnf groupinstall -y "Development Tools"
+else ifeq ($(UNAME_S),Darwin)
+>  brew install autoconf
+endif
+
+$(boot_jdk_java): $(opt)
+> $(TOPDIR)/make/common/download-jdk.sh $(BOOT_JDK_VERSION) $(opt)
+
+boot-jdk: $(boot_jdk_java)
+.PHONY: boot-jdk
 
 compile-commands:
 > cd $(JDK_HOME)
