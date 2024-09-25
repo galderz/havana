@@ -27,3 +27,8 @@ Running microbenchmark on base JDK with multiple jvm arguments:
 ```shell
 CONF=release TEST="micro:lang.MathLoopBench.reductionSingleLongMax" MICRO="OPTIONS=-p size=16384 -jvmArgs -XX:+UnlockDiagnosticVMOptions -jvmArgs -XX:+PrintMethodData" JDK_HOME=$HOME/1/jdk m test
 ```
+
+Running microbenchmark tracing vectorization:
+```shell
+TEST="micro:lang.MinMaxLoopBench.longReductionMax" MICRO='OPTIONS=-p size=10000 -f 1 -wi 0 -i 1 -v EXTRA -jvmArgs -Xlog:os -jvmArgs -XX:CompileCommand=TraceAutoVectorization,org.openjdk.bench.java.lang.MinMaxLoopBench::longReductionMax,ALL' JDK_HOME=/root/1/jdk-intrinsify-max-min-long.intrinsic make test
+```
