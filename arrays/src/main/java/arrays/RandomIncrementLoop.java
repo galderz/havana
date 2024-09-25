@@ -91,15 +91,15 @@ public class RandomIncrementLoop
         int above = 0;
 
         for (int i = 0; i < nums.length; i++) {
-            if (nums[i] >= max) {
+            final long v = 11 * nums[i];
+            if (v >= max) {
                 above++;
-                max = nums[i];
+                max = v;
                 // System.out.println("Element: " + nums[i] + ", Current Max: " + max + ", Max");
             }
-            if (nums[i] < max) {
+            if (v < max) {
                 // System.out.println("Element: " + nums[i] + ", Current Max: " + max + ", Below");
             }
-
         }
 
         int aboveOrEqualMaxPercentage = (above * 100) / nums.length;
@@ -117,13 +117,14 @@ public class RandomIncrementLoop
         int below = 0;
 
         for (int i = 0; i < nums.length; i++) {
-            if (nums[i] <= min) {
+            final long v = 11 * nums[i];
+            if (v <= min) {
                 below++;
-                min = nums[i];
-                System.out.println("Element: " + nums[i] + ", Current Min: " + min + ", Below");
+                min = v;
+                System.out.println("Element: " + v + ", Current Min: " + min + ", Below");
             }
-            if (nums[i] > min) {
-                System.out.println("Element: " + nums[i] + ", Current Min: " + min + ", Above");
+            if (v > min) {
+                System.out.println("Element: " + v + ", Current Min: " + min + ", Above");
             }
 
         }
