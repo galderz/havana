@@ -22,3 +22,8 @@ If you have multiple parameters you can run with a single one via:
 ```shell
 TEST="micro:lang.MathVectorizedBench.reductionMultiLongMax" MICRO="FORK=1;OPTIONS=-prof xctraceasm -p size=16384" m micro
 ```
+
+Running microbenchmark on base JDK with multiple jvm arguments:
+```shell
+CONF=release TEST="micro:lang.MathLoopBench.reductionSingleLongMax" MICRO="OPTIONS=-p size=16384 -jvmArgs -XX:+UnlockDiagnosticVMOptions -jvmArgs -XX:+PrintMethodData" JDK_HOME=$HOME/1/jdk m test
+```
