@@ -207,3 +207,10 @@ test-hotspot-compiler-c1: build-jdk
 > cd $(JDK_HOME)
 > CONF=$(conf_name) make test TEST="hotspot_compiler" JTREG="JAVA_OPTIONS=-XX:TieredStopAtLevel=1"
 .PHONY: test-hotspot-compiler-c1-only
+
+igv:
+> pushd $(JDK_HOME)/src/utils/IdealGraphVisualizer
+> JAVA_HOME=$(opt)/java-21 $(opt)/boot-maven-3/bin/mvn install -DskipTests
+> popd
+> $(TOPDIR)/make/common/run-igv.sh $(JDK_HOME)/src/utils/IdealGraphVisualizer
+.PHONY: igv
