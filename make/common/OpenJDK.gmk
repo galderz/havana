@@ -35,7 +35,7 @@ else
 endif
 conf_name = $(CONF)-$(os)-$(cpu)
 
-ifeq ($(ARCH),686)
+ifeq ($(CPU),686)
   conf_args += --with-target-bits=32
 endif
 
