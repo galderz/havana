@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu
+set -eux
 
 VERSION=$1
 DIR=$2
