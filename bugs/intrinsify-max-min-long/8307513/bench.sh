@@ -36,12 +36,10 @@ if [[ "$2" == "--configure=false" ]]; then
     CONFIGURE="false"
 fi
 
-bench()
+check_commit_id()
 {
-    local clean=$1
-    local configure=$2
-    local jdk_home=$3
-    local unresolved_commit_id=$4
+    local jdk_home=$1
+    local unresolved_commit_id=$2
 
     pushd $jdk_home
     latest_commit_id=$(git rev-parse HEAD)
@@ -55,6 +53,13 @@ bench()
         exit 1
     fi
     popd
+}
+
+bench()
+{
+    local clean=$1
+    local configure=$2
+    local jdk_home=$3
 
     if [[ $configure == "true" ]]; then
       CONF=release \
@@ -81,5 +86,7 @@ bench()
       make test
 }
 
-bench $CLEAN $CONFIGURE "$HOME/1/jdk-intrinsify-max-min-long" $PATCH_CID
-bench $CLEAN $CONFIGURE "$HOME/1/jdk" $BASE_CID
+check_commit_id "$HOME/1/jdk-intrinsify-max-min-long" $PATCH_CID
+check_commit_id "$HOME/1/jdk" $BASE_CID
+bench $CLEAN $CONFIGURE "$HOME/1/jdk-intrinsify-max-min-long"
+bench $CLEAN $CONFIGURE "$HOME/1/jdk"
