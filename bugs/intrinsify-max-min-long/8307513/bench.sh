@@ -41,10 +41,11 @@ bench()
     local clean=$1
     local configure=$2
     local jdk_home=$3
-    local expected_commit_id=$4
+    local unresolved_commit_id=$4
 
     pushd $jdk_home
     latest_commit_id=$(git rev-parse HEAD)
+    expected_commit_id=$(git rev-parse "$unresolved_commit_id" 2>/dev/null)
     if [ "$latest_commit_id" != "$expected_commit_id" ]; then
         echo "The latest commit ID does not match the given commit ID."
         echo "Git log for the latest commit (HEAD):"
