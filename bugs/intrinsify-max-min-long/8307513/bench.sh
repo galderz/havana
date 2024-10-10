@@ -10,6 +10,16 @@ if [ -z "$TEST" ]; then
     exit 1
 fi
 
+if [ -z "$PATCH_CID" ]; then
+    echo "PATCH_COMMIT_ID is not defined"
+    exit 1
+fi
+
+if [ -z "$BASE_CID" ]; then
+    echo "BASE_CID is not defined"
+    exit 1
+fi
+
 # Check for clean parameter
 if [[ "$1" == "--clean=false" ]]; then
     read -p "Are you sure you want to run without cleaning first? (yes/no): " RESPONSE
@@ -31,6 +41,19 @@ bench()
     local clean=$1
     local configure=$2
     local jdk_home=$3
+    local expected_commit_id=$4
+
+    pushd $jdk_home
+    latest_commit_id=$(git rev-parse HEAD)
+    if [ "$latest_commit_id" != "$expected_commit_id" ]; then
+        echo "The latest commit ID does not match the given commit ID."
+        echo "Git log for the latest commit (HEAD):"
+        git log --oneline -1 "$latest_commit_id"
+        echo "Git log for the given commit:"
+        git log --oneline -1 "$expected_commit_id"
+        exit 1
+    fi
+    popd
 
     if [[ $configure == "true" ]]; then
       CONF=release \
@@ -57,9 +80,5 @@ bench()
       make test
 }
 
-for jdk_home in \
-    "$HOME/1/jdk-intrinsify-max-min-long" \
-    "$HOME/1/jdk"
-do
-    bench $CLEAN $CONFIGURE $jdk_home
-done
+bench $CLEAN $CONFIGURE "$HOME/1/jdk-intrinsify-max-min-long" $PATCH_CID
+bench $CLEAN $CONFIGURE "$HOME/1/jdk" $BASE_CID
