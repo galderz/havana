@@ -49,9 +49,9 @@ bench()
     if [ "$latest_commit_id" != "$expected_commit_id" ]; then
         echo "The latest commit ID does not match the given commit ID."
         echo "Git log for the latest commit (HEAD):"
-        git log --oneline -1 "$latest_commit_id"
+        GIT_PAGER="cat" git log --oneline -1 "$latest_commit_id"
         echo "Git log for the given commit:"
-        git log --oneline -1 "$expected_commit_id"
+        GIT_PAGER="cat" git log --oneline -1 "$expected_commit_id"
         exit 1
     fi
     popd
