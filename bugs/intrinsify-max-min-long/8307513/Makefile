@@ -26,7 +26,14 @@ base_jvm_args += -XX:CompileCommand=compileonly,$(CLASS)::test
 comp_jvm_args += -XX:+LogCompilation
 comp_jvm_args += -XX:+PrintAssembly
 
-ideal_jvm_args += -XX:CompileCommand=PrintIdealPhase,$(CLASS)::test,"OPTIMIZE_FINISHED"
+#ideal_jvm_args += -XX:+PrintIR
+ideal_jvm_args += -XX:CompileCommand=PrintIdealPhase,$(CLASS)::test,"ITER_GVN4"
+#ideal_jvm_args += -XX:CompileCommand=PrintIdealPhase,$(CLASS)::test,"BEFORE_REMOVEUSELESS"
+#ideal_jvm_args += -XX:CompileCommand=PrintIdealPhase,$(CLASS)::test,"BEFORE_BEAUTIFY_LOOPS"
+#ideal_jvm_args += -XX:CompileCommand=PrintIdealPhase,$(CLASS)::test,"AFTER_BEAUTIFY_LOOPS"
+#ideal_jvm_args += -XX:CompileCommand=PrintIdealPhase,$(CLASS)::test,"PHASEIDEALLOOP_ITERATIONS"
+#ideal_jvm_args += -XX:CompileCommand=PrintIdealPhase,$(CLASS)::test,"BARRIER_EXPANSION"
+#ideal_jvm_args += -XX:CompileCommand=PrintIdealPhase,$(CLASS)::test,"OPTIMIZE_FINISHED"
 
 loop_jvm_args += -XX:+TraceLoopOpts
 
@@ -59,6 +66,7 @@ ifeq ($(OSR),false)
   jvm_args += -XX:-UseOnStackReplacement
 endif
 
+# E.g. IGV=3 (0 print nothing except IGVPrintLevel directives, 6 all details)
 IGV ?=
 ifdef IGV
   jvm_args += -XX:PrintIdealGraphLevel=$(IGV)
@@ -96,6 +104,7 @@ rr: $(java)
 # >   -XX:+PrintIR \
 # >   -XX:+PrintLIRWithAssembly \
 # >   -XX:+PrintNMethods \
+# >   -XX:+PrintMethodData \
 # >   -XX:+PrintOptoAssembly \
 # >   -XX:+PrintIdeal \
 # >   -XX:+PrintIntrinsics \
