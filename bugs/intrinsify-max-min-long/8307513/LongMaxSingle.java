@@ -6,6 +6,8 @@ class LongMaxSingle
     static final int RANGE = 1024;
     static final int ITER = 10_000;
 
+    // Initializes data with increasing values,
+    // so max one of the branches is the one that is always taken
     static void init(long[] data)
     {
         for (int i = 0; i < RANGE; i++)
