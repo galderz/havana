@@ -126,6 +126,7 @@ tools: $(autoconf)
 .PHONY: tools
 
 $(boot_jdk_java):
+> mkdir -p $(opt)
 > $(TOPDIR)/make/common/download-jdk.sh $(BOOT_JDK_VERSION) $(opt)
 > touch $@
 
