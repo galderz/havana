@@ -43,35 +43,11 @@ public class ExtractJson
         }
     }
 
-    static class BuildStats
-    {
-        public final GeneralInfo general_info;
+    public record BuildStats(GeneralInfo general_info) {}
 
-        BuildStats(GeneralInfo generalInfo)
-        {
-            general_info = generalInfo;
-        }
-    }
+    public record GeneralInfo(GraalCompiler graal_compiler) {}
 
-    static class GeneralInfo
-    {
-        public final GraalCompiler graal_compiler;
-
-        GeneralInfo(GraalCompiler graalCompiler)
-        {
-            graal_compiler = graalCompiler;
-        }
-    }
-
-    static class GraalCompiler
-    {
-        public final String[] pgo;
-
-        GraalCompiler(String[] pgo)
-        {
-            this.pgo = pgo;
-        }
-    }
+    public record GraalCompiler(String[] pgo) {}
 
     private final static String JSON_CE =
         """
