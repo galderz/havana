@@ -34,7 +34,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.sample</groupId>
-    <artifactId>jmh</artifactId>
+    <artifactId>jmh-examples</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
