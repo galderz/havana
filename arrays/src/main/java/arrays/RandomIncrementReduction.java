@@ -14,9 +14,12 @@ public class RandomIncrementReduction
         int aboveCount;
         int abovePercent;
         int belowCount;
+        int numberOfRounds = 0;
 
         // Iterate until you find a set that matches the requirement probability
         do {
+            numberOfRounds++;
+
             long max = random.nextLong(10);
             result = new long[size];
             result[0] = max;
@@ -52,7 +55,14 @@ public class RandomIncrementReduction
 
         } while (abovePercent != probability);
 
-        System.out.printf("Size: %d, above max: %d, below max: %d, array: %s%n", size, aboveCount, belowCount, Arrays.toString(result));
+        System.out.printf(
+            "Number of rounds: %d, size: %d, above max: %d, below max: %d, array: %s%n"
+            , numberOfRounds
+            , size
+            , aboveCount
+            , belowCount
+            , Arrays.toString(result)
+        );
 
         return result;
     }
