@@ -22,5 +22,14 @@ public class Rounding
             final int abovePercent = (aboveCount + 1) * 100 / size;
             System.out.println(abovePercent);
         }
+
+        {
+            final long base = Long.MAX_VALUE;
+            final int range = 90;
+            final long rangeMax = (long) (base * (range / 100f));
+            final long rangeMin = Long.MIN_VALUE + (base - rangeMax);
+            System.out.println(rangeMax);
+            System.out.println(rangeMin);
+        }
     }
 }
