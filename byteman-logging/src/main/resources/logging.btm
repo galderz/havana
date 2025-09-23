@@ -1,5 +1,5 @@
 RULE hello entry
-CLASS org.example.byteman.logging.App
+CLASS App
 METHOD hello
 AT ENTRY
 BIND count = $1;
@@ -8,7 +8,7 @@ DO org.example.byteman.logging.Logger.LOG.log(org.example.byteman.logging.Logger
 ENDRULE
 
 RULE hello exit
-CLASS org.example.byteman.logging.App
+CLASS App
 METHOD hello
 AT EXIT
 BIND count = $1;
