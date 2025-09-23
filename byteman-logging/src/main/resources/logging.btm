@@ -1,0 +1,15 @@
+RULE hello entry
+CLASS org.example.byteman.logging.App
+METHOD hello
+AT ENTRY
+IF true
+DO traceln("entering hello()")
+ENDRULE
+
+RULE hello exit
+CLASS org.example.byteman.logging.App
+METHOD hello
+AT EXIT
+IF true
+DO traceln("exiting hello()")
+ENDRULE
