@@ -13,13 +13,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-<!--    <dependencies>-->
-<!--        <dependency>-->
-<!--            <groupId>org.jboss.byteman</groupId>-->
-<!--            <artifactId>byteman</artifactId>-->
-<!--            <version>4.0.25</version>-->
-<!--        </dependency>-->
-<!--    </dependencies>-->
+    <dependencies>
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

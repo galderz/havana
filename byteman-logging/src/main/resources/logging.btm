@@ -2,14 +2,24 @@ RULE hello entry
 CLASS org.example.byteman.logging.App
 METHOD hello
 AT ENTRY
+BIND count = $1;
 IF true
-DO traceln("entering hello()")
+DO org.example.byteman.logging.Logger.LOG.log(org.example.byteman.logging.Logger$Context.HELLO_METHOD_ENTRY, count)
 ENDRULE
 
 RULE hello exit
 CLASS org.example.byteman.logging.App
 METHOD hello
 AT EXIT
+BIND count = $1;
 IF true
-DO traceln("exiting hello()")
+DO org.example.byteman.logging.Logger.LOG.log(org.example.byteman.logging.Logger$Context.HELLO_METHOD_EXIT, count)
+ENDRULE
+
+RULE app exit
+CLASS org.example.byteman.logging.Main
+METHOD main
+AT EXIT
+IF true
+DO org.example.byteman.logging.Logger.LOG.close()
 ENDRULE

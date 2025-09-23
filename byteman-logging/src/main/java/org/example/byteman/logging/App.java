@@ -2,8 +2,8 @@ package org.example.byteman.logging;
 
 public class App
 {
-    public void hello()
+    public void hello(int count)
     {
-        System.out.println("Hello");
+        System.out.println("Hello " + count);
     }
 }
