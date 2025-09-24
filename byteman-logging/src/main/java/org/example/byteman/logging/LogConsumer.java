@@ -9,7 +9,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
-public class LogConsumer implements EventHandler<Logger.Event>, AutoCloseable
+public class LogConsumer implements EventHandler<Log.Event>, AutoCloseable
 {
     private FileChannel channel;
     private ByteBuffer bb;
@@ -31,7 +31,7 @@ public class LogConsumer implements EventHandler<Logger.Event>, AutoCloseable
     }
 
     @Override
-    public void onEvent(Logger.Event event, long sequence, boolean endOfBatch) throws Exception
+    public void onEvent(Log.Event event, long sequence, boolean endOfBatch) throws Exception
     {
         bb.putLong(System.currentTimeMillis());
         bb.putShort((short) event.context.ordinal());

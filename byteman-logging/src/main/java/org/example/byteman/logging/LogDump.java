@@ -26,7 +26,7 @@ public class LogDump
             builder
                 .append(buffer.getLong())
                 .append(':')
-                .append(Logger.Context.values()[buffer.getShort()].name())
+                .append(Log.Context.values()[buffer.getShort()].name())
                 .append(':')
                 .append(buffer.getInt())
                 .append('\n');

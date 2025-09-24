@@ -1,25 +1,28 @@
 RULE hello entry
 CLASS App
 METHOD hello
+HELPER org.example.byteman.logging.Logger
 AT ENTRY
 BIND count = $1;
 IF true
-DO org.example.byteman.logging.Logger.LOG.log(org.example.byteman.logging.Logger$Context.HELLO_METHOD_ENTRY, count)
+DO log(org.example.byteman.logging.Log$Context.HELLO_METHOD_ENTRY, count)
 ENDRULE
 
 RULE hello exit
 CLASS App
 METHOD hello
+HELPER org.example.byteman.logging.Logger
 AT EXIT
 BIND count = $1;
 IF true
-DO org.example.byteman.logging.Logger.LOG.log(org.example.byteman.logging.Logger$Context.HELLO_METHOD_EXIT, count)
+DO log(org.example.byteman.logging.Log$Context.HELLO_METHOD_EXIT, count)
 ENDRULE
 
 RULE app exit
 CLASS org.example.byteman.logging.Main
 METHOD main
+HELPER org.example.byteman.logging.Logger
 AT EXIT
 IF true
-DO org.example.byteman.logging.Logger.LOG.close()
+DO close()
 ENDRULE
