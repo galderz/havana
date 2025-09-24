@@ -32,24 +32,24 @@ public class ReTreeCursor
         return new AddNode(last, treeRoot);
     }
 
-    static Node tree(int depth, Node[] cursor, String indent)
+    static Node tree(int depth, Node[] chainCursor, String indent)
     {
         if (1 == depth)
         {
-            final Node node = cursor[0];
+            final Node node = chainCursor[0];
             if (node instanceof AddNode)
             {
-                cursor[0] = node.in(2);
+                chainCursor[0] = node.in(2);
                 return node.in(1);
             }
-            cursor[0] = null;
+            chainCursor[0] = null;
             return node;
         }
 
         final int leftDepth = depth / 2;
         final int rightDepth = depth - leftDepth;
-        final Node left = tree(leftDepth, cursor, indent + " ");
-        final Node right = tree(rightDepth, cursor, indent + " ");
+        final Node left = tree(leftDepth, chainCursor, indent + " ");
+        final Node right = tree(rightDepth, chainCursor, indent + " ");
         return new AddNode(left, right);
     }
 
