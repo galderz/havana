@@ -5,7 +5,7 @@ HELPER org.example.byteman.logging.Logger
 AT ENTRY
 BIND count = $1;
 IF true
-DO log(org.example.byteman.logging.Log$Context.HELLO_METHOD_ENTRY, count)
+DO log(Log$Context.HELLO_METHOD_ENTRY, count)
 ENDRULE
 
 RULE hello exit
@@ -15,7 +15,7 @@ HELPER org.example.byteman.logging.Logger
 AT EXIT
 BIND count = $1;
 IF true
-DO log(org.example.byteman.logging.Log$Context.HELLO_METHOD_EXIT, count)
+DO log(Log$Context.HELLO_METHOD_EXIT, count)
 ENDRULE
 
 RULE app exit
