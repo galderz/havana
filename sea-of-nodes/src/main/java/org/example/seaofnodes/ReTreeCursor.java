@@ -22,17 +22,10 @@ public class ReTreeCursor
 
     static Node reassociate(Node root, int depth)
     {
-        Node current = root;
-        while (current.in(2) instanceof AddNode)
-        {
-            current = current.in(2);
-        }
-        final Node last = current.in(2);
-        final Node treeRoot = tree(depth, new Node[]{root}, "");
-        return new AddNode(last, treeRoot);
+        return reassociateTree(depth, new Node[]{root}, "");
     }
 
-    static Node tree(int depth, Node[] chainCursor, String indent)
+    static Node reassociateTree(int depth, Node[] chainCursor, String indent)
     {
         if (1 == depth)
         {
@@ -48,8 +41,8 @@ public class ReTreeCursor
 
         final int leftDepth = depth / 2;
         final int rightDepth = depth - leftDepth;
-        final Node left = tree(leftDepth, chainCursor, indent + " ");
-        final Node right = tree(rightDepth, chainCursor, indent + " ");
+        final Node left = reassociateTree(leftDepth, chainCursor, indent + " ");
+        final Node right = reassociateTree(rightDepth, chainCursor, indent + " ");
         return new AddNode(left, right);
     }
 
