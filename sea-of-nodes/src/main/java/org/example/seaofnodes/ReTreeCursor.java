@@ -48,13 +48,15 @@ public class ReTreeCursor
     static Node reassociate(Node root)
     {
         Node current = root;
-        int depth = 1;
+        int depth = 0;
         while (current instanceof AddNode)
         {
             current = current.in(2);
             depth++;
         }
-        return reassociateTree(depth, new Node[]{root}, "");
+        final Node last = current;
+        final Node treeRoot = reassociateTree(depth, new Node[]{root}, "");
+        return new AddNode(last, treeRoot);
     }
 
     static Node reassociateTree(int depth, Node[] chainCursor, String indent)
@@ -108,7 +110,11 @@ public class ReTreeCursor
             new ConstantNode(new TypeInteger(8))
             , n6
         );
-        return n7;
+        final AddNode n8 = new AddNode(
+            new ConstantNode(new TypeInteger(9))
+            , n7
+        );
+        return n8;
     }
 
     static Node chain16()
@@ -173,6 +179,10 @@ public class ReTreeCursor
             new ConstantNode(new TypeInteger(16))
             , n14
         );
-        return n15;
+        final AddNode n16 = new AddNode(
+            new ConstantNode(new TypeInteger(17))
+            , n15
+        );
+        return n16;
     }
 }
