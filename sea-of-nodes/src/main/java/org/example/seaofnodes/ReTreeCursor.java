@@ -11,17 +11,24 @@ public class ReTreeCursor
     {
         Node node = chain8();
         System.out.println("Input: " + node);
-        Node reassociated = reassociate(node, 8);
+        Node reassociated = reassociate(node);
         System.out.println("Reassociated with a binary tree: " + reassociated);
 
         node = chain16();
         System.out.println("Input: " + node);
-        reassociated = reassociate(node, 16);
+        reassociated = reassociate(node);
         System.out.println("Reassociated with a binary tree: " + reassociated);
     }
 
-    static Node reassociate(Node root, int depth)
+    static Node reassociate(Node root)
     {
+        Node current = root;
+        int depth = 1;
+        while (current instanceof AddNode)
+        {
+            current = current.in(2);
+            depth++;
+        }
         return reassociateTree(depth, new Node[]{root}, "");
     }
 
