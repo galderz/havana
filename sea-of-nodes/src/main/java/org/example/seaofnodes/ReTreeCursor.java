@@ -13,11 +13,36 @@ public class ReTreeCursor
         System.out.println("Input: " + node);
         Node reassociated = reassociate(node);
         System.out.println("Reassociated with a binary tree: " + reassociated);
+        printTree(reassociated);
 
         node = chain16();
         System.out.println("Input: " + node);
         reassociated = reassociate(node);
         System.out.println("Reassociated with a binary tree: " + reassociated);
+    }
+
+    static void printTree(Node root)
+    {
+        final Node left = root.in(1);
+        if (left instanceof AddNode)
+        {
+            System.out.println(left);
+        }
+
+        final Node right = root.in(2);
+        if (right instanceof AddNode)
+        {
+            System.out.println(right);
+        }
+
+        if (left instanceof AddNode)
+        {
+            printTree(left);
+        }
+        if (right instanceof AddNode)
+        {
+            printTree(right);
+        }
     }
 
     static Node reassociate(Node root)
