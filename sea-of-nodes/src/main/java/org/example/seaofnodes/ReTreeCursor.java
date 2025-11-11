@@ -9,9 +9,16 @@ public class ReTreeCursor
 {
     public static void main(String[] args)
     {
-        Node node = chain8();
+        Node node, reassociated;
+
+        node = chain4();
         System.out.println("Input: " + node);
-        Node reassociated = reassociate(node);
+        reassociated = reassociate(node);
+        System.out.println("Reassociated with a binary tree: " + reassociated);
+
+        node = chain8();
+        System.out.println("Input: " + node);
+        reassociated = reassociate(node);
         System.out.println("Reassociated with a binary tree: " + reassociated);
         printTree(reassociated);
 
@@ -184,5 +191,26 @@ public class ReTreeCursor
             , n15
         );
         return n16;
+    }
+
+    static Node chain4()
+    {
+        final AddNode n1 = new AddNode(
+            new ConstantNode(new TypeInteger(2))
+            , new ConstantNode(new TypeInteger(1))
+        );
+        final AddNode n2 = new AddNode(
+            new ConstantNode(new TypeInteger(3))
+            , n1
+        );
+        final AddNode n3 = new AddNode(
+            new ConstantNode(new TypeInteger(4))
+            , n2
+        );
+        final AddNode n4 = new AddNode(
+            new ConstantNode(new TypeInteger(5))
+            , n3
+        );
+        return n4;
     }
 }
