@@ -34,6 +34,7 @@ public class LessThanCombinations
 
         if (index == types.length)
         {
+            // Skip empty results
             if (!cache.isEmpty())
             {
                 // Swallow copy cache and add it to result
